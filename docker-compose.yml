@@ -5,7 +5,7 @@ services:
     image: mariadb:10.7.1
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: $MARIADB_ROOT_PASSWORD
+      MARIADB_ROOT_PASSWORD: $DB_ADMINISTRATIVO_ROOT_PASSWORD
     volumes:
       - ./data/administrativo/mariadb:/var/lib/mysql
     ports:
@@ -16,7 +16,7 @@ services:
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: $MONGO_USER_ROOT_PASSWORD
+      MONGO_INITDB_ROOT_PASSWORD: $DB_MATERIA_ROOT_PASSWORD
     volumes:
       - ./data/matéria/mongodb:/data/db
     ports:

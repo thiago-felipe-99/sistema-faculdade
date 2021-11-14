@@ -15,6 +15,7 @@ Curso
   - ID Curso
   - Data De Início
   - Data De Desativação
+  - IDs Das Matérias
 
 Aluno
 - Herdar: Pessoa
@@ -26,8 +27,7 @@ Aluno
   - Data De Saída
   - Período
   - Status
-  - ID Das Turmas Já Realizadas
-  - ID Da Matérias Atuais
+  - IDs Das Turmas (Realizadas E Ativas)
 
 Professor
 - Herdar: Pessoa
@@ -45,7 +45,7 @@ Administrativo
 - Herdar: Pessoa
 - Atributos:
   - ID Professor
-  - Número Do Professor
+  - Número Do Administrador
   - Data De Ingresso
   - Data De Saída
   - Status
@@ -71,4 +71,22 @@ Turma
   - IDs Dos Cursos Ofertados
   - Horário Da Aulas
   - Quantidade De Vagas
+  - Notas
+
+## Variáveis De Ambiente
+Para rodar o programa deve ter as seguintes variáveis de ambiente:
+```Shell
+DB_ADMINISTRATIVO_ROOT_PASSWORD= #Senha do root do banco de dados administrativo
+DB_MATERIA_ROOT_PASSWORD= #Senha do root do banco de dados matéria
+DB_ADMINISTRATIVO_PORT= #Porta que o banco de dados matéria vai ser diponibilizado
+DB_MATERIA_PORT= #Porta que o banco de dados matéria vai ser diponibilizado
+```
+
+## Volumes
+Os seguintes volumes deve ser criados para rodar o projeto localmente com docker
+compose:
+```Shell
+./data/administrativo/mariadb
+./data/matéria/mongodb
+```
 

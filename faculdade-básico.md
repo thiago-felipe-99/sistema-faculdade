@@ -36,9 +36,9 @@ Professor
   - Número Do Professor
   - Data De Ingresso
   - Data De Saída
-  - Formação
   - Status
   - Grau
+  - Carga Horária Semanal
   - Horário De Aulas
 
 Administrativo
@@ -56,7 +56,7 @@ Matéria
 - Herdar: Não
 - Atributos:
   - ID matéria
-  - Quantidade De Horas Semanais
+  - Carga Horária Semanal
   - Créditos
   - IDs Dos Pré-requisitos
   - Tipo
@@ -72,6 +72,8 @@ Turma
   - Horário Da Aulas
   - Quantidade De Vagas
   - Notas
+  - Data De Início
+  - Data De Fim
 
 ## Variáveis De Ambiente
 Para rodar o programa deve ter as seguintes variáveis de ambiente:

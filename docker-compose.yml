@@ -23,5 +23,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: $DB_MATERIA_ROOT_PASSWORD
     volumes:
       - ./data/matéria/mongodb:/data/db
+      - ./scripts/init-db-matéria/init.js:/docker-entrypoint-initdb.d/init.js
     ports:
       - "$DB_MATERIA_PORT:27017"

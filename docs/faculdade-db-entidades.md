@@ -118,11 +118,12 @@ Tabela Turma
 - Database: Banco De Dados Matéria
 - Atributos:
   - ID Da Turma: UUID
+  - ID Da Matéria: UUID
   - IDs Dos Professores: ARRAY DE UUID
   - IDs Dos Alunos: ARRAY DE UUID
-  - IDs Dos Curso Responsáveis: ARRAY DE UUID
+  - IDs Dos Cursos Responsáveis: ARRAY DE UUID
   - IDs Dos Cursos Ofertados: ARRAY DE UUID
-  - Horário Da Aulas: SEMANA
+  - Horário Das Aulas: SEMANA
   - Quantidade De Vagas: NÚMERO INTEIRO
   - Notas: NOTA
   - Data De Início: DATA

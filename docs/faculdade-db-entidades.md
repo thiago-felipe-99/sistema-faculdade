@@ -41,8 +41,9 @@ Tabela Aluno
 - Database: Banco De Dados Administrativo
 - Atributos:
   - ID Aluno: UUID
-  - Número Do Aluno: NÚMERO INTEIRO
+  - ID Pessoa: UUID
   - ID Curso : UUID
+  - Número Do Aluno: NÚMERO INTEIRO
   - Data De Ingresso: DATA
   - Data De Saída: DATA
   - Período: CARACTERES
@@ -59,8 +60,9 @@ Tabela Professor
 - Entidade: Professor
 - Database: Banco De Dados Administrativo
 - Atributos:
-- ID Professor: UUID
-- Número Do Professor: NÚMERO INTEIRO
+  - ID Professor: UUID
+  - ID Pessoa: UUID
+  - Número Do Professor: NÚMERO INTEIRO
   - Data De Ingresso: DATA
   - Data De Saída: DATA
   - Status: CARACTERES
@@ -72,16 +74,18 @@ Tabela Professor~Horário
 - Database: Banco De Dados Administrativo
 - Atributos:
   - ID Do Horário: UUID
+  - ID Do Professor: UUID
+  - ID Da Turma: UUID
   - Dia: CARACTERES
   - Horário Inicial: HORA
   - Horário Final: HORA
-  - ID Da Turma: UUID
 
 Tabela Administrativo
 - Herdar: Pessoa
 - Database: Banco De Dados Administrativo
 - Atributos:
-  - ID Professor: UUID
+  - ID Administrativo: UUID
+  - ID Pessoa: UUID
   - Número Do Administrador: NÚMERO INTEIRO
   - Data De Ingresso: DATA
   - Data De Saída: DATA
@@ -93,6 +97,7 @@ Tabela Administrativo~Horário
 - Database: Banco De Dados Administrativo
 - Atributos:
   - ID Do Horário: UUID
+  - ID Do Administrativo: UUID
   - Dia: CARACTERES
   - Horário Inicial: HORA
   - Horário Final: HORA
@@ -102,6 +107,7 @@ Tabela Matéria
 - Database: Banco De Dados Matéria
 - Atributos:
   - ID matéria: UUID
+  - Nome: CARACTERES
   - Carga Horária Semanal: HORA
   - Créditos: NÚMERO REAL
   - IDs Dos Pré-requisitos: ARRAY DE UUID

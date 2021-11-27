@@ -20,8 +20,8 @@ type Professor struct {
 	HorárioDeAula       Horário
 }
 
-type professorToInsert struct {
-	Pessoa              pessoaToInsert
+type ProfessorToInsert struct {
+	Pessoa              PessoaToInsert
 	Matrícula           string
 	DataDeIngresso      time.Time
 	DataDeSaída         time.Time
@@ -32,10 +32,11 @@ type professorToInsert struct {
 	HorárioDeAula       Horário
 }
 
-// ProfessorData representa as opereçãoes que se possa fazer com a entidade Professor
+// ProfessorData representa as opereçãoes que se possa fazer com a entidade
+// Professor
 type ProfessorData interface {
-	Insert(professor professorToInsert) (Professor, errors.ApplicationError)
-	Update(id, ID, professor professorToInsert) (Professor, errors.ApplicationError)
-	Get(id ID) (Professor, errors.ApplicationError)
-	Delete(id ID) errors.ApplicationError
+	Insert(*ProfessorToInsert) (*Professor, *errors.Application)
+	Update(ID, *ProfessorToInsert) (*Professor, *errors.Application)
+	Get(ID) (*Professor, *errors.Application)
+	Delete(ID) *errors.Application
 }

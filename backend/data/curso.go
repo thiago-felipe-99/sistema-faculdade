@@ -15,7 +15,7 @@ type Curso struct {
 	Matérias          []ID
 }
 
-type cursoToInsert struct {
+type CursoToInsert struct {
 	Nome              string
 	DataDeInício      time.Time
 	DataDeDesativação time.Time
@@ -24,8 +24,8 @@ type cursoToInsert struct {
 
 // CursoData representa as operaçãoes para modificar um curso definitivamente
 type CursoData interface {
-	Insert(curso cursoToInsert) (Curso, errors.ApplicationError)
-	Update(id ID, curso cursoToInsert) (Curso, errors.ApplicationError)
-	Get(id ID) (Curso, errors.ApplicationError)
-	Delete(id ID) errors.ApplicationError
+	Insert(*CursoToInsert) (*Curso, *errors.Application)
+	Update(ID, *CursoToInsert) (*Curso, *errors.Application)
+	Get(ID) (*Curso, *errors.Application)
+	Delete(ID) *errors.Application
 }

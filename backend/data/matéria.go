@@ -27,8 +27,8 @@ type matériaToInsert struct {
 // MatériaData representa as opereçãoes que se possa fazer com a entidade
 // Matéria
 type MatériaData interface {
-	Insert(matériaToInsert) (Matéria, errors.ApplicationError)
-	Update(ID, matériaToInsert) (Matéria, errors.ApplicationError)
-	Get(ID) (Matéria, errors.ApplicationError)
-	Delete(ID) errors.ApplicationError
+	Insert(matériaToInsert) (Matéria, errors.Application)
+	Update(ID, matériaToInsert) (Matéria, errors.Application)
+	Get(ID) (Matéria, errors.Application)
+	Delete(ID) errors.Application
 }

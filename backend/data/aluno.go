@@ -25,8 +25,8 @@ type Aluno struct {
 	Turmas         []TurmaID
 }
 
-type alunoToInsert struct {
-	Pessoa         pessoaToInsert
+type AlunoToInsert struct {
+	Pessoa         PessoaToInsert
 	Matrícula      string
 	Curso          ID
 	DataDeIngresso time.Time
@@ -38,8 +38,8 @@ type alunoToInsert struct {
 
 // AlunoData representa as opereçãoes que se possa fazer com a entidade Aluno
 type AlunoData interface {
-	Insert(aluno alunoToInsert) (Aluno, errors.ApplicationError)
-	Update(id, ID, aluno alunoToInsert) (Aluno, errors.ApplicationError)
-	Get(id ID) (Aluno, errors.ApplicationError)
-	Delete(id ID) errors.ApplicationError
+	Insert(*AlunoToInsert) (*Aluno, *errors.Application)
+	Update(ID, *AlunoToInsert) (*Aluno, *errors.Application)
+	Get(ID) (*Aluno, *errors.Application)
+	Delete(ID) *errors.Application
 }

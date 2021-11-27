@@ -47,8 +47,8 @@ type turmaToInsert struct {
 // TurmaData representa as opereções que se possa fazer com a entidade
 // Turma
 type TurmaData interface {
-	Insert(turmaToInsert) (TurmaID, errors.ApplicationError)
-	Update(ID, turmaToInsert) (TurmaID, errors.ApplicationError)
-	Get(ID) (TurmaID, errors.ApplicationError)
-	Delete(ID) errors.ApplicationError
+	Insert(turmaToInsert) (TurmaID, errors.Application)
+	Update(ID, turmaToInsert) (TurmaID, errors.Application)
+	Get(ID) (TurmaID, errors.Application)
+	Delete(ID) errors.Application
 }

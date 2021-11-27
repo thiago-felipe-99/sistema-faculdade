@@ -6,7 +6,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-// CPF representa o documento CPF(Cadatro De Pessoa Física) no Brasil.
+// CPF representa o documento CPF(Cadatro De Pessoa Física) do Brasil.
 type CPF = string
 
 // Senha representa uma senha na aplicação.
@@ -21,7 +21,8 @@ type Pessoa struct {
 	Senha            Senha
 }
 
-type pessoaToInsert struct {
+// PessoaToInsert contém somente os campos requeridos para modificar uma pessoa.
+type PessoaToInsert struct {
 	Nome             string
 	CPF              CPF
 	DataDeNascimento time.Time
@@ -31,8 +32,8 @@ type pessoaToInsert struct {
 // PessoaData representa quais são as opereçãoes necessárias para salvar e
 // alterar uma pessoa definitivamente.
 type PessoaData interface {
-	Insert(pessoa pessoaToInsert) errors.ApplicationError
-	Update(id ID, pessoa pessoaToInsert) errors.ApplicationError
-	Get(id ID) (Pessoa, errors.ApplicationError)
-	Delete(id ID) errors.ApplicationError
+	Insert(PessoaToInsert) (*Pessoa, *errors.Application)
+	Update(ID, PessoaToInsert) (*Pessoa, *errors.Application)
+	Get(ID) (*Pessoa, *errors.Application)
+	Delete(ID) *errors.Application
 }

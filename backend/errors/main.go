@@ -1,6 +1,6 @@
 package errors
 
-// ApplicationError representa um erro na aplicação.
-type ApplicationError struct {
+// Application representa um erro na aplicação.
+type Application struct {
 	Error string
 }

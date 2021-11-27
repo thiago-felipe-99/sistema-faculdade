@@ -32,8 +32,8 @@ type Turma struct {
 	DataDeTérmino      time.Time
 }
 
-type turmaToInsert struct {
-	Matéria            matériaToInsert
+type TurmaToInsert struct {
+	Matéria            MatériaToInsert
 	Professores        []ID
 	Alunos             []ID
 	CursosResponsáveis []ID
@@ -47,8 +47,8 @@ type turmaToInsert struct {
 // TurmaData representa as opereções que se possa fazer com a entidade
 // Turma
 type TurmaData interface {
-	Insert(turmaToInsert) (TurmaID, errors.Application)
-	Update(ID, turmaToInsert) (TurmaID, errors.Application)
-	Get(ID) (TurmaID, errors.Application)
-	Delete(ID) errors.Application
+	Insert(*TurmaToInsert) (*Turma, *errors.Application)
+	Update(ID, *TurmaToInsert) (*Turma, *errors.Application)
+	Get(ID) (*Turma, *errors.Application)
+	Delete(ID) *errors.Application
 }

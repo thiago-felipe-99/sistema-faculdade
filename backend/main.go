@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -9,67 +10,119 @@ import (
 	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/data"
 	"thiagofelipe.com.br/sistema-faculdade/data/database/mariadb"
+	"thiagofelipe.com.br/sistema-faculdade/data/database/mongodb"
 )
 
+type logFiles struct {
+	pessoa         io.Writer
+	curso          io.Writer
+	aluno          io.Writer
+	professor      io.Writer
+	administrativo io.Writer
+	matéria        io.Writer
+	turma          io.Writer
+}
+
+func openLogFiles() *logFiles {
+
+	defaultDir := "./logs/data/"
+
+	pessoa, err := os.OpenFile(
+		defaultDir+"pessoaLogs.txt",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	curso, err := os.OpenFile(
+		defaultDir+"cursoLogs.txt",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	aluno, err := os.OpenFile(
+		defaultDir+"alunoLogs.txt",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	professor, err := os.OpenFile(
+		defaultDir+"professorLogs.txt",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	administrativo, err := os.OpenFile(
+		defaultDir+"administrativoLogs.txt",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	matéria, err := os.OpenFile(
+		defaultDir+"matériaLogs.txt",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	turma, err := os.OpenFile(
+		defaultDir+"turmaLogs.txt",
+		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+		0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &logFiles{
+		pessoa:         pessoa,
+		curso:          curso,
+		aluno:          aluno,
+		professor:      professor,
+		administrativo: administrativo,
+		matéria:        matéria,
+		turma:          turma,
+	}
+}
+
 func newData() *data.Data {
-	pessoaFile, err := os.OpenFile(
-		"pessoaLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	cursoFile, err := os.OpenFile(
-		"cursoLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	alunoFile, err := os.OpenFile(
-		"alunoLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	professorFile, err := os.OpenFile(
-		"professorLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	administrativoFile, err := os.OpenFile(
-		"administrativoLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
+	logFiles := openLogFiles()
 
 	MariaDBPessoa := mariadb.Pessoa{
-		Connection: *mariadb.NewConnection(pessoaFile),
+		Connection: *mariadb.NewConnection(logFiles.pessoa),
 	}
 
 	MariaDBCurso := mariadb.Curso{
-		Connection: *mariadb.NewConnection(cursoFile),
+		Connection: *mariadb.NewConnection(logFiles.curso),
 	}
 
 	MariaDBAluno := mariadb.Aluno{
-		Connection: *mariadb.NewConnection(alunoFile),
+		Connection: *mariadb.NewConnection(logFiles.aluno),
 	}
 
 	MariaDBProfessor := mariadb.Professor{
-		Connection: *mariadb.NewConnection(professorFile),
+		Connection: *mariadb.NewConnection(logFiles.professor),
 	}
 
 	MariaDBAdministrativo := mariadb.Administrativo{
-		Connection: *mariadb.NewConnection(administrativoFile),
+		Connection: *mariadb.NewConnection(logFiles.administrativo),
+	}
+
+	MongoDBMatéria := mongodb.Matéria{
+		Connection: *mongodb.NewConnection(logFiles.matéria),
+	}
+
+	MongoDBTurma := mongodb.Turma{
+		Connection: *mongodb.NewConnection(logFiles.turma),
 	}
 
 	return &data.Data{
@@ -78,6 +131,8 @@ func newData() *data.Data {
 		Aluno:          MariaDBAluno,
 		Professor:      MariaDBProfessor,
 		Administrativo: MariaDBAdministrativo,
+		Matéria:        MongoDBMatéria,
+		Turma:          MongoDBTurma,
 	}
 }
 

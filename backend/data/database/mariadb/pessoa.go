@@ -14,14 +14,14 @@ type Pessoa struct {
 }
 
 // Insert é uma função que faz inserção de uma Pessoa no banco de dados MariaDB.
-func (pessoa Pessoa) Insert(pessoaToInsert) (*data.Pessoa, *errors.Application) {
+func (pessoa Pessoa) Insert(*pessoaToInsert) (*data.Pessoa, *errors.Application) {
 	pessoa.Log.Info.Println("Inserindo Pessoa")
 
 	return nil, nil
 }
 
 // Update é uma função que faz a atualização de Pessoa no banco de dados MariaDB.
-func (pessoa Pessoa) Update(id, pessoaToInsert) (*data.Pessoa, *errors.Application) {
+func (pessoa Pessoa) Update(id, *pessoaToInsert) (*data.Pessoa, *errors.Application) {
 	pessoa.Log.Info.Println("Atualizando Pessoa")
 
 	return nil, nil

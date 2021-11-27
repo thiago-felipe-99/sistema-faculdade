@@ -32,8 +32,8 @@ type PessoaToInsert struct {
 // PessoaData representa quais são as opereçãoes necessárias para salvar e
 // alterar uma pessoa definitivamente.
 type PessoaData interface {
-	Insert(PessoaToInsert) (*Pessoa, *errors.Application)
-	Update(ID, PessoaToInsert) (*Pessoa, *errors.Application)
+	Insert(*PessoaToInsert) (*Pessoa, *errors.Application)
+	Update(ID, *PessoaToInsert) (*Pessoa, *errors.Application)
 	Get(ID) (*Pessoa, *errors.Application)
 	Delete(ID) *errors.Application
 }

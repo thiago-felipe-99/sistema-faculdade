@@ -18,7 +18,7 @@ db.createCollection("Matéria",{
         _id: { bsonType: "binData" },
         Carga_Horária_Semanal: { bsonType: "date" },
         Créditos: { bsonType: "double" },
-        "Pré_requisitos": {
+        Pré_requisitos: {
           bsonType: "array",
           items: { bsonType: "binData" },
           uniqueItems: true
@@ -35,6 +35,7 @@ db.createCollection("Turma",{
       bsonType: "object",
       required: [ 
         "Matéria",
+        "Professores",
         "Alunos",
         "Cursos_Responsáveis",
         "Cursos_Ofertados",

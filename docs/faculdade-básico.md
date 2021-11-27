@@ -3,7 +3,7 @@
 Pessoa
 - Herdar: não
 - Atributos:
-  - ID Pessoa
+  - ID
   - Nome
   - CPF
   - Data De Nascimento
@@ -12,28 +12,29 @@ Pessoa
 Curso
 - Herdar: não
 - Atributos:
-  - ID Curso
+  - ID
+  - Nome
   - Data De Início
   - Data De Desativação
-  - IDs Das Matérias
+  - Matérias Do Curso
 
 Aluno
 - Herdar: Pessoa
 - Atributos:
-  - ID Aluno
-  - Número Do Aluno
-  - ID Curso 
+  - ID
+  - Curso 
+  - Matrícula
   - Data De Ingresso
   - Data De Saída
   - Período
   - Status
-  - IDs Das Turmas (Realizadas E Ativas)
+  - Turmas (Realizadas E Ativas)
 
 Professor
 - Herdar: Pessoa
 - Atributos:
-  - ID Professor
-  - Número Do Professor
+  - ID
+  - Matrícula
   - Data De Ingresso
   - Data De Saída
   - Status
@@ -44,33 +45,35 @@ Professor
 Administrativo
 - Herdar: Pessoa
 - Atributos:
-  - ID Professor
-  - Número Do Administrador
+  - ID
+  - Matrícula
   - Data De Ingresso
   - Data De Saída
   - Status
   - Grau
+  - Carga Horária Semanal
   - Horário De Trabalho
 
 Matéria
 - Herdar: Não
 - Atributos:
-  - ID matéria
+  - ID
+  - Nome
   - Carga Horária Semanal
   - Créditos
-  - IDs Dos Pré-requisitos
+  - Pré-requisitos
   - Tipo
 
 Turma
 - Herdar: Matéria
 - Atributos:
-  - ID Da Turma
-  - IDs Dos Professores
-  - IDs Dos Alunos
-  - IDs Dos Curso Responsáveis
-  - IDs Dos Cursos Ofertados
-  - Horário Da Aulas
-  - Quantidade De Vagas
+  - ID
+  - Matéria
+  - Professores
+  - Alunos
+  - Curso Responsáveis
+  - Cursos Ofertados
+  - Horário Das Aulas
   - Notas
   - Data De Início
   - Data De Fim
@@ -85,7 +88,7 @@ DB_MATERIA_PORT= #Porta que o banco de dados matéria vai ser diponibilizado
 ```
 
 ## Volumes
-Os seguintes volumes deve ser criados para rodar o projeto localmente com docker
+Os seguintes volumes serão criados ao rodar o projeto localmente com docker o
 compose:
 ```Shell
 ./data/administrativo/mariadb

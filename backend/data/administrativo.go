@@ -19,23 +19,11 @@ type Administrativo struct {
 	HorárioDeAula       Horário
 }
 
-type AdministrativoToInsert struct {
-	Pessoa              PessoaToInsert
-	Matrícula           string
-	DataDeIngresso      time.Time
-	DataDeSaída         time.Time
-	Status              string
-	Grau                string
-	Turmas              []TurmaID
-	CargaHoráriaSemanal time.Duration
-	HorárioDeAula       Horário
-}
-
 // AdministrativoData representa as opereçãoes que se possa fazer com a entidade
 // Administrativo
 type AdministrativoData interface {
-	Insert(*AdministrativoToInsert) (*Administrativo, *errors.Application)
-	Update(ID, *AdministrativoToInsert) (*Administrativo, *errors.Application)
+	Insert(*Administrativo) (*Administrativo, *errors.Application)
+	Update(ID, *Administrativo) (*Administrativo, *errors.Application)
 	Get(ID) (*Administrativo, *errors.Application)
 	Delete(ID) *errors.Application
 }

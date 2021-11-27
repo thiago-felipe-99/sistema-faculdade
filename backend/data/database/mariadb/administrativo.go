@@ -5,7 +5,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-type administrativoToInsert = data.AdministrativoToInsert
+type administrativoToInsert = data.Administrativo
 
 // Administrativo representa a conexão com o banco de dados MariaDB para fazer
 // alterações na entidade Administrativo.

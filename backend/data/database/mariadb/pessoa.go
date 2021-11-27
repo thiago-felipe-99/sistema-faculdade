@@ -1,42 +1,149 @@
 package mariadb
 
 import (
+	"database/sql"
+
 	"thiagofelipe.com.br/sistema-faculdade/data"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-type pessoaToInsert = data.PessoaToInsert
-
-// Pessoa representa a conexão com o banco de dados MariaDB para fazer alterações
-// na entidade Pessoa.
-type Pessoa struct {
+// PessoaDB representa a conexão com o banco de dados MariaDB para fazer
+// alterações na entidade PessoaDB.
+type PessoaDB struct {
 	Connection
+	TableName string
 }
 
 // Insert é uma função que faz inserção de uma Pessoa no banco de dados MariaDB.
-func (pessoa Pessoa) Insert(*pessoaToInsert) (*data.Pessoa, *errors.Application) {
-	pessoa.Log.Info.Println("Inserindo Pessoa")
+func (db PessoaDB) Insert(pessoa *data.Pessoa) *errors.Application {
+	db.Log.Info.Println("Inserindo Pessoa com o seguinte ID: " + pessoa.ID.String())
 
-	return nil, nil
+	query := "INSERT INTO " + db.TableName +
+		" (ID, Nome, CPF, Data_De_Nascimento, Senha) VALUES (?, ?, ?, ?, ?)"
+
+	_, err := db.DB.Exec(
+		query,
+		pessoa.ID,
+		pessoa.Nome,
+		pessoa.CPF,
+		pessoa.DataDeNascimento,
+		pessoa.Senha,
+	)
+
+	if err != nil {
+		db.Log.Warning.Println(
+			"Erro ao inserir a Pessoa com o seguinte ID: "+pessoa.ID.String(),
+			"\nErro: "+err.Error(),
+		)
+		return errors.NewApplication(
+			"Error ao inserir a pessoa com o seguinte ID: "+pessoa.ID.String(),
+			nil,
+			err,
+		)
+	}
+
+	return nil
 }
 
 // Update é uma função que faz a atualização de Pessoa no banco de dados MariaDB.
-func (pessoa Pessoa) Update(id, *pessoaToInsert) (*data.Pessoa, *errors.Application) {
-	pessoa.Log.Info.Println("Atualizando Pessoa")
+func (db PessoaDB) Update(id id, pessoa *data.Pessoa) *errors.Application {
+	db.Log.Info.Println("Atualizando Pessoa com o seguinte ID: " + id.String())
 
-	return nil, nil
+	query := "UPDATE " + db.TableName +
+		" SET Nome = ?, CPF = ?, Data_De_Nascimento = ?, Senha = ?" +
+		" WHERE ID = ?"
+
+	_, err := db.DB.Exec(
+		query,
+		pessoa.Nome,
+		pessoa.CPF,
+		pessoa.DataDeNascimento,
+		pessoa.Senha,
+		pessoa.ID,
+	)
+
+	if err != nil {
+		db.Log.Warning.Println(
+			"Erro ao atualizar a Pessoa com o seguinte ID: "+id.String(),
+			"\nErro: "+err.Error(),
+		)
+		return errors.NewApplication(
+			"Error ao atualizar a pessoa com o seguinte ID: "+id.String(),
+			nil,
+			err,
+		)
+	}
+	return nil
 }
 
 // Get é uma função que retorna uma Pessoa do banco de dados MariaDB.
-func (pessoa Pessoa) Get(id) (*data.Pessoa, *errors.Application) {
-	pessoa.Log.Info.Println("Pegando Pessoa")
+func (db PessoaDB) Get(id id) (*data.Pessoa, *errors.Application) {
+	db.Log.Info.Println("Pegando Pessoa com o seguinte ID: " + id.String())
 
-	return nil, nil
+	var pessoa data.Pessoa
+
+	query := "SELECT ID, Nome, CPF, Data_De_Nascimento, Senha FROM " + db.TableName +
+		" WHERE ID = ?"
+
+	row := db.DB.QueryRow(query, id)
+
+	err := row.Scan(
+		&pessoa.ID,
+		&pessoa.Nome,
+		&pessoa.CPF,
+		&pessoa.DataDeNascimento,
+		&pessoa.Senha,
+	)
+
+	if err != nil {
+
+		if err == sql.ErrNoRows {
+			db.Log.Warning.Println(
+				"Não foi encontrada nenhuma a pessoa com o seguinte ID: "+id.String(),
+				"\nErro: "+err.Error(),
+			)
+			return nil, errors.NewApplication(
+				"Não foi encontrada nenhuma a pessoa com o seguinte ID: "+id.String(),
+				nil,
+				err,
+			)
+		}
+
+		db.Log.Warning.Println(
+			"Erro ao tentar econtrar a pessoa com o seguinte ID: "+id.String(),
+			"\nErro: "+err.Error(),
+		)
+		return nil, errors.NewApplication(
+			"Erro ao tentar econtrar a pessoa com o seguinte ID: "+id.String(),
+			nil,
+			err,
+		)
+
+	}
+
+	return &pessoa, nil
 }
 
 // Delete é uma função que remove uma Pessoa do banco de dados MariaDB.
-func (pessoa Pessoa) Delete(id) *errors.Application {
-	pessoa.Log.Info.Print("Deletando Pessoa")
+func (db PessoaDB) Delete(id id) *errors.Application {
+	db.Log.Info.Print("Deletando Pessoa com o seguinte ID: " + id.String())
+
+	query := "DELETE FROM " + db.TableName + " WHERE ID = ?"
+
+	_, err := db.DB.Exec(query, id)
+
+	if err != nil {
+		db.Log.Warning.Println(
+			"Erro ao tentar deletar a pessoa com o seguinte ID: "+id.String(),
+			"\nErro: "+err.Error(),
+		)
+
+		return errors.NewApplication(
+			"Erro ao tentar deletar a pessoa com o seguinte ID: "+id.String(),
+			nil,
+			err,
+		)
+	}
 
 	return nil
 }

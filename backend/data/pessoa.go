@@ -21,19 +21,11 @@ type Pessoa struct {
 	Senha            Senha
 }
 
-// PessoaToInsert contém somente os campos requeridos para modificar uma pessoa.
-type PessoaToInsert struct {
-	Nome             string
-	CPF              CPF
-	DataDeNascimento time.Time
-	Senha            Senha
-}
-
 // PessoaData representa quais são as opereçãoes necessárias para salvar e
 // alterar uma pessoa definitivamente.
 type PessoaData interface {
-	Insert(*PessoaToInsert) (*Pessoa, *errors.Application)
-	Update(ID, *PessoaToInsert) (*Pessoa, *errors.Application)
+	Insert(*Pessoa) *errors.Application
+	Update(ID, *Pessoa) *errors.Application
 	Get(ID) (*Pessoa, *errors.Application)
 	Delete(ID) *errors.Application
 }

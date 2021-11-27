@@ -5,7 +5,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-type professorToInsert = data.ProfessorToInsert
+type professorToInsert = data.Professor
 
 // Professor representa a conexão com o banco de dados MariaDB para fazer
 // alterações na entidade Professor.

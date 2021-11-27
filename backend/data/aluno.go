@@ -25,21 +25,10 @@ type Aluno struct {
 	Turmas         []TurmaID
 }
 
-type AlunoToInsert struct {
-	Pessoa         PessoaToInsert
-	Matrícula      string
-	Curso          ID
-	DataDeIngresso time.Time
-	DataDeSaída    time.Time
-	Período        string
-	Status         string
-	Turmas         []TurmaID
-}
-
 // AlunoData representa as opereçãoes que se possa fazer com a entidade Aluno
 type AlunoData interface {
-	Insert(*AlunoToInsert) (*Aluno, *errors.Application)
-	Update(ID, *AlunoToInsert) (*Aluno, *errors.Application)
+	Insert(*Aluno) (*Aluno, *errors.Application)
+	Update(ID, *Aluno) (*Aluno, *errors.Application)
 	Get(ID) (*Aluno, *errors.Application)
 	Delete(ID) *errors.Application
 }

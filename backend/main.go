@@ -1,16 +1,18 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/data"
 	"thiagofelipe.com.br/sistema-faculdade/data/database/mariadb"
-	"thiagofelipe.com.br/sistema-faculdade/data/database/mongodb"
 )
 
 type logFiles struct {
@@ -24,7 +26,6 @@ type logFiles struct {
 }
 
 func openLogFiles() *logFiles {
-
 	defaultDir := "./logs/data/"
 
 	pessoa, err := os.OpenFile(
@@ -97,43 +98,41 @@ func openLogFiles() *logFiles {
 func newData() *data.Data {
 	logFiles := openLogFiles()
 
-	MariaDBPessoa := mariadb.Pessoa{
-		Connection: *mariadb.NewConnection(logFiles.pessoa),
+	config := mysql.Config{
+		User:                 "root",
+		Passwd:               "root",
+		Net:                  "tcp",
+		Addr:                 "localhost:9000",
+		DBName:               "Administrativo",
+		AllowNativePasswords: true,
+		ParseTime:            true,
 	}
 
-	MariaDBCurso := mariadb.Curso{
-		Connection: *mariadb.NewConnection(logFiles.curso),
+	dns := config.FormatDSN()
+	log.Println(dns)
+
+	db, err := mariadb.NewDB(config.FormatDSN())
+	if err != nil {
+		log.Panicln(err.Message)
 	}
 
-	MariaDBAluno := mariadb.Aluno{
-		Connection: *mariadb.NewConnection(logFiles.aluno),
-	}
-
-	MariaDBProfessor := mariadb.Professor{
-		Connection: *mariadb.NewConnection(logFiles.professor),
-	}
-
-	MariaDBAdministrativo := mariadb.Administrativo{
-		Connection: *mariadb.NewConnection(logFiles.administrativo),
-	}
-
-	MongoDBMatéria := mongodb.Matéria{
-		Connection: *mongodb.NewConnection(logFiles.matéria),
-	}
-
-	MongoDBTurma := mongodb.Turma{
-		Connection: *mongodb.NewConnection(logFiles.turma),
+	MariaDBPessoa := mariadb.PessoaDB{
+		Connection: *mariadb.NewConnection(logFiles.pessoa, db),
+		TableName:  "Pessoa",
 	}
 
 	return &data.Data{
-		Pessoa:         MariaDBPessoa,
-		Curso:          MariaDBCurso,
-		Aluno:          MariaDBAluno,
-		Professor:      MariaDBProfessor,
-		Administrativo: MariaDBAdministrativo,
-		Matéria:        MongoDBMatéria,
-		Turma:          MongoDBTurma,
+		Pessoa: MariaDBPessoa,
 	}
+}
+
+func prettyStruc(s ...interface{}) string {
+	sJSON, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		log.Panicln(err.Error())
+	}
+
+	return string(sJSON)
 }
 
 func main() {
@@ -142,11 +141,46 @@ func main() {
 	Data := newData()
 
 	r.GET("/ping", func(c *gin.Context) {
-		Data.Pessoa.Get(uuid.New())
-		Data.Curso.Get(uuid.New())
-		Data.Aluno.Get(uuid.New())
-		Data.Professor.Get(uuid.New())
-		Data.Administrativo.Get(uuid.New())
+		novaPessoa := data.Pessoa{
+			ID:               uuid.New(),
+			Nome:             "Thiago Felipe",
+			CPF:              "12345678910",
+			DataDeNascimento: time.Date(1999, 12, 8, 1, 1, 1, 1, time.FixedZone("UTC-4", -4*60*60)),
+			Senha:            "Senha",
+		}
+
+		err := Data.Pessoa.Insert(&novaPessoa)
+		if err != nil {
+			log.Panicln(err.Message)
+		}
+
+		resultGet, err := Data.Pessoa.Get(novaPessoa.ID)
+		if err != nil {
+			log.Panicln(err.Message)
+		}
+
+		log.Println(prettyStruc(resultGet))
+
+		novaPessoa.Senha = "Passwd"
+		novaPessoa.Nome = "Thiago Felipe Cruz E Souza"
+
+		err = Data.Pessoa.Update(novaPessoa.ID, &novaPessoa)
+		if err != nil {
+			log.Panicln(err.Message)
+		}
+
+		resultGet, err = Data.Pessoa.Get(novaPessoa.ID)
+		if err != nil {
+			log.Panicln(err.Message)
+		}
+
+		log.Println(prettyStruc(resultGet))
+
+		err = Data.Pessoa.Delete(novaPessoa.ID)
+		if err != nil {
+			log.Panicln(err.Message)
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})

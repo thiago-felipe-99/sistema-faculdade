@@ -26,7 +26,7 @@ func TestMain(m *testing.M) {
 		User:                 "Teste",
 		Passwd:               "Teste",
 		Net:                  "tcp",
-		Addr:                 "localhost:" + ambiente.Portas.BDAdministrativo,
+		Addr:                 "127.0.0.1:" + ambiente.Portas.BDAdministrativo,
 		DBName:               "Teste",
 		AllowNativePasswords: true,
 		ParseTime:            true,

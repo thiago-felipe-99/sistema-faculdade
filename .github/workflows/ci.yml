@@ -1,0 +1,51 @@
+name: Test and coverage
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DB_ADMINISTRATIVO_ROOT_PASSWORD: ${{ secrets.DB_ADMINISTRATIVO_ROOT_PASSWORD }}
+      DB_MATERIA_ROOT_PASSWORD: ${{ secrets.DB_MATERIA_ROOT_PASSWORD }}
+      DB_ADMINISTRATIVO_PORT: 7000
+      DB_MATERIA_PORT: 7001
+      BACKEND_PORT: 8000
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    services:
+      db-administrativo:
+        image: mariadb:10.7.1
+        env:
+          MARIADB_ROOT_PASSWORD: $DB_ADMINISTRATIVO_ROOT_PASSWORD
+        volumes: 
+          - mariadb:/var/lib/mysql
+        ports:
+          - 7000:3306
+
+      db-materia:
+        image: mongo:5.0.3
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: $DB_MATERIA_ROOT_PASSWORD
+        volumes:
+          - mongodb:/data/db
+        ports:
+          - 7001:27017
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '1.17'
+      - name: Copiando arquivos de inicialização para o banco de dados administrativo
+        run: docker cp scripts/init-db-administrativo/.  ${{ job.services.db-administrativo.id }}:/init/
+      - name: Executando arquivo de inicialização do banco de dados administrativo
+        run: docker exec ${{ job.services.db-administrativo.id }} ./init/init-db.sh
+      - name: Verificando containers
+        run: docker ps
+      - name: Rodando corbetura de código
+        run: cd backend && go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+      - name: Enviando corbetura de código para codecov
+        run: cd backend && bash <(curl -s https://codecov.io/bash)

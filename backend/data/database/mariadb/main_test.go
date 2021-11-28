@@ -5,19 +5,22 @@ import (
 	"testing"
 
 	"github.com/go-sql-driver/mysql"
+	"thiagofelipe.com.br/sistema-faculdade/env"
 )
-
-var config = mysql.Config{
-	User:                 "Teste",
-	Passwd:               "Teste",
-	Net:                  "tcp",
-	Addr:                 "localhost:9000",
-	DBName:               "Teste",
-	AllowNativePasswords: true,
-}
 
 // TestNewDB verifica se a inicialização do banco de dados está okay.
 func TestNewDB(t *testing.T) {
+	ambiente := env.PegandoVariáveisDeAmbiente()
+
+	var config = mysql.Config{
+		User:                 "Teste",
+		Passwd:               "Teste",
+		Net:                  "tcp",
+		Addr:                 "localhost:" + ambiente.Portas.BDAdministrativo,
+		DBName:               "Teste",
+		AllowNativePasswords: true,
+	}
+
 	db, err := sql.Open("mysql", config.FormatDSN())
 	if err != nil {
 		t.Fatalf("Erro ao configurar ao banco de dados: %v", err)

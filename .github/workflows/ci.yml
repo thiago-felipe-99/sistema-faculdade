@@ -12,18 +12,15 @@ jobs:
       DB_MATERIA_PORT: 7001
       BACKEND_PORT: 8000
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-    container:
-      volumes:
-      - /workspace:/workspace
     services:
       db-administrativo:
         image: mariadb:10.7.1
         env:
           MARIADB_ROOT_PASSWORD: $DB_ADMINISTRATIVO_ROOT_PASSWORD
-        volumes: 
-          - /workspace/data/administrativo/mariadb:/var/lib/mysql
-          - /workspace/scripts/init-db-administrativo/init-db.sh:/docker-entrypoint-initdb.d/init.sh
-          - /workspace/scripts/init-db-administrativo/template.sql:/docker-entrypoint-initdb.d/template
+        volume: 
+          - data/administrativo/mariadb:/var/lib/mysql
+          - scripts/init-db-administrativo/init-db.sh:/docker-entrypoint-initdb.d/init.sh
+          - scripts/init-db-administrativo/template.sql:/docker-entrypoint-initdb.d/template
         ports:
           - 7000:3306
 
@@ -32,9 +29,9 @@ jobs:
         env:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: $DB_MATERIA_ROOT_PASSWORD
-        volumes:
-          - /workspace/data/matéria/mongodb:/data/db
-          - /workspace/scripts/init-db-matéria/init.js:/docker-entrypoint-initdb.d/init.js
+        volume:
+          - data/matéria/mongodb:/data/db
+          - scripts/init-db-matéria/init.js:/docker-entrypoint-initdb.d/init.js
         ports:
           - 7001:27017
 

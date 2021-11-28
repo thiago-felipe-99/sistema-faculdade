@@ -99,8 +99,8 @@ func newData() *data.Data {
 	logFiles := openLogFiles()
 
 	config := mysql.Config{
-		User:                 "root",
-		Passwd:               "root",
+		User:                 "Administrativo",
+		Passwd:               "Administrativo",
 		Net:                  "tcp",
 		Addr:                 "localhost:9000",
 		DBName:               "Administrativo",

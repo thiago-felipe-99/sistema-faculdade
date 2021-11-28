@@ -35,11 +35,7 @@ func (db PessoaDB) Insert(pessoa *data.Pessoa) *errors.Application {
 			"Erro ao inserir a Pessoa com o seguinte ID: "+pessoa.ID.String(),
 			"\nErro: "+err.Error(),
 		)
-		return errors.NewApplication(
-			"Error ao inserir a pessoa com o seguinte ID: "+pessoa.ID.String(),
-			nil,
-			err,
-		)
+		return errors.New(errors.InserirPessoa, nil, err)
 	}
 
 	return nil
@@ -59,7 +55,7 @@ func (db PessoaDB) Update(id id, pessoa *data.Pessoa) *errors.Application {
 		pessoa.CPF,
 		pessoa.DataDeNascimento,
 		pessoa.Senha,
-		pessoa.ID,
+		id,
 	)
 
 	if err != nil {
@@ -67,11 +63,7 @@ func (db PessoaDB) Update(id id, pessoa *data.Pessoa) *errors.Application {
 			"Erro ao atualizar a Pessoa com o seguinte ID: "+id.String(),
 			"\nErro: "+err.Error(),
 		)
-		return errors.NewApplication(
-			"Error ao atualizar a pessoa com o seguinte ID: "+id.String(),
-			nil,
-			err,
-		)
+		return errors.New(errors.AtualizarPessoa, nil, err)
 	}
 	return nil
 }
@@ -102,22 +94,14 @@ func (db PessoaDB) Get(id id) (*data.Pessoa, *errors.Application) {
 				"Não foi encontrada nenhuma a pessoa com o seguinte ID: "+id.String(),
 				"\nErro: "+err.Error(),
 			)
-			return nil, errors.NewApplication(
-				"Não foi encontrada nenhuma a pessoa com o seguinte ID: "+id.String(),
-				nil,
-				err,
-			)
+			return nil, errors.New(errors.PessoaNãoEncontrada, nil, err)
 		}
 
 		db.Log.Warning.Println(
 			"Erro ao tentar econtrar a pessoa com o seguinte ID: "+id.String(),
 			"\nErro: "+err.Error(),
 		)
-		return nil, errors.NewApplication(
-			"Erro ao tentar econtrar a pessoa com o seguinte ID: "+id.String(),
-			nil,
-			err,
-		)
+		return nil, errors.New(errors.PegarPessoa, nil, err)
 
 	}
 
@@ -138,11 +122,7 @@ func (db PessoaDB) Delete(id id) *errors.Application {
 			"\nErro: "+err.Error(),
 		)
 
-		return errors.NewApplication(
-			"Erro ao tentar deletar a pessoa com o seguinte ID: "+id.String(),
-			nil,
-			err,
-		)
+		return errors.New(errors.DeletarPessoa, nil, err)
 	}
 
 	return nil

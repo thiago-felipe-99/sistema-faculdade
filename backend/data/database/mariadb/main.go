@@ -23,11 +23,7 @@ type Connection struct {
 func NewDB(dsn string) (*sql.DB, *errors.Application) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		return nil, errors.NewApplication(
-			"Error ao abrir o banco de dados",
-			nil,
-			err,
-		)
+		return nil, errors.New(errors.ConfigurarBD, nil, err)
 	}
 
 	return db, nil

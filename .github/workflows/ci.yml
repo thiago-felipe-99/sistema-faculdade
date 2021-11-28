@@ -21,6 +21,8 @@ jobs:
           go-version: '1.17'
       - name: Subindo Os Bancos De Dados Necessários Para Rodar Os Testes
         run: docker-compose up -d  db-materia db-administrativo
+      - name: Verificando containers
+        run: docker ps
       - name: Rodando Corbetura De Código
         run: cd backend && go test -race -coverprofile=coverage.txt -covermode=atomic ./...
       - name: Enviando Corbetura De Código Para Codecov

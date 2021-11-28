@@ -2,6 +2,7 @@ package mariadb
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"reflect"
@@ -12,35 +13,46 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/env"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-var config = mysql.Config{
-	User:                 "Teste",
-	Passwd:               "Teste",
-	Net:                  "tcp",
-	Addr:                 "localhost:9000",
-	DBName:               "Teste",
-	AllowNativePasswords: true,
-	ParseTime:            true,
-}
+var db *PessoaDB
 
-func connection(t *testing.T) *PessoaDB {
+func TestMain(m *testing.M) {
+	ambiente := env.PegandoVariáveisDeAmbiente()
 
-	db, err := NewDB(config.FormatDSN())
-	if err != nil {
-		t.Fatalf("Erro ao configurar o banco de dados: %s", err)
+	config := mysql.Config{
+		User:                 "Teste",
+		Passwd:               "Teste",
+		Net:                  "tcp",
+		Addr:                 "localhost:" + ambiente.Portas.BDAdministrativo,
+		DBName:               "Teste",
+		AllowNativePasswords: true,
+		ParseTime:            true,
 	}
 
-	t.Cleanup(func() {
-		query := "DELETE FROM Pessoa"
-		db.Exec(query)
-	})
+	connection, err := NewDB(config.FormatDSN())
+	if err != nil {
+		log.Fatalf("Erro ao configurar o banco de dados: %s", err)
+	}
 
-	return &PessoaDB{
-		Connection: *NewConnection(os.Stderr, db),
+	errr := connection.Ping()
+	if errr != nil {
+		log.Fatalf("Erro ao conectar o banco de dados: %s", errr)
+	}
+
+	db = &PessoaDB{
+		Connection: *NewConnection(os.Stderr, connection),
 		TableName:  "Pessoa",
 	}
+
+	code := m.Run()
+
+	query := "DELETE FROM Pessoa"
+	db.DB.Exec(query)
+
+	os.Exit(code)
 }
 
 func criarPessoaAleatória() *data.Pessoa {
@@ -60,7 +72,7 @@ func criarPessoaAleatória() *data.Pessoa {
 	return pessoa
 }
 
-func adiconarPessoa(pessoa *data.Pessoa, db *PessoaDB, t *testing.T) {
+func adiconarPessoa(pessoa *data.Pessoa, t *testing.T) {
 
 	err := db.Insert(pessoa)
 	if err != nil {
@@ -81,14 +93,11 @@ func adiconarPessoa(pessoa *data.Pessoa, db *PessoaDB, t *testing.T) {
 	}
 
 	t.Cleanup(func() {
-		err := db.Delete(pessoa.ID)
-		if err != nil {
-			t.Fatalf("Erro ao tentar deletar o usuário teste: %v", err.Error())
-		}
+		removerPessoaTeste(pessoa.ID, t)
 	})
 }
 
-func removerPessoaTeste(id id, db *PessoaDB, t *testing.T) {
+func removerPessoaTeste(id id, t *testing.T) {
 	err := db.Delete(id)
 	if err != nil {
 		t.Fatalf("Erro ao tentar deletar o usuário teste: %v", err.Error())
@@ -96,16 +105,12 @@ func removerPessoaTeste(id id, db *PessoaDB, t *testing.T) {
 }
 
 func TestInsert(t *testing.T) {
-	db := connection(t)
-
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, db, t)
+	adiconarPessoa(pessoaTeste, t)
 }
 
 func TestInsert_duplicateID(t *testing.T) {
-	db := connection(t)
-
 	pattern, errRegex := regexp.Compile(`Duplicate entry.*PRIMARY`)
 	if errRegex != nil {
 		t.Fatal("Erro ao compilar o regex")
@@ -113,7 +118,7 @@ func TestInsert_duplicateID(t *testing.T) {
 
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, db, t)
+	adiconarPessoa(pessoaTeste, t)
 
 	pessoaTeste.CPF = fmt.Sprintf("%011d", rand.Intn(99999999999))
 
@@ -131,8 +136,6 @@ func TestInsert_duplicateID(t *testing.T) {
 }
 
 func TestInsert_duplicateCPF(t *testing.T) {
-	db := connection(t)
-
 	pattern, errRegex := regexp.Compile(`Duplicate entry.*CPF`)
 	if errRegex != nil {
 		t.Fatal("Erro ao compilar o regex")
@@ -140,7 +143,9 @@ func TestInsert_duplicateCPF(t *testing.T) {
 
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, db, t)
+	adiconarPessoa(pessoaTeste, t)
+
+	defer removerPessoaTeste(pessoaTeste.ID, t)
 
 	pessoaTeste.ID = uuid.New()
 
@@ -159,11 +164,9 @@ func TestInsert_duplicateCPF(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
-	db := connection(t)
-
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, db, t)
+	adiconarPessoa(pessoaTeste, t)
 
 	dataAgora := time.Now().UTC()
 	dataAgora = dataAgora.Truncate(24 * time.Hour)
@@ -193,23 +196,17 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestUpdate_invalidID(t *testing.T) {
-	db := connection(t)
-
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, db, t)
+	adiconarPessoa(pessoaTeste, t)
 
-	pessoaTeste.ID = uuid.New()
-
-	err := db.Update(pessoaTeste.ID, pessoaTeste)
+	err := db.Update(uuid.New(), pessoaTeste)
 	if err != nil {
 		t.Fatalf("Erro ao atualizar a pessoa teste: %s", err.Error())
 	}
 }
 
 func TestUpdate_duplicateCPF(t *testing.T) {
-	db := connection(t)
-
 	pattern, errRegex := regexp.Compile(`Duplicate entry.*CPF`)
 	if errRegex != nil {
 		t.Fatal("Erro ao compilar o regex")
@@ -217,11 +214,11 @@ func TestUpdate_duplicateCPF(t *testing.T) {
 
 	pessoaTeste1 := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste1, db, t)
+	adiconarPessoa(pessoaTeste1, t)
 
 	pessoaTeste2 := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste2, db, t)
+	adiconarPessoa(pessoaTeste2, t)
 
 	err := db.Update(pessoaTeste1.ID, pessoaTeste2)
 	if err == nil || err.SystemError == nil {
@@ -237,11 +234,9 @@ func TestUpdate_duplicateCPF(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	db := connection(t)
-
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, db, t)
+	adiconarPessoa(pessoaTeste, t)
 
 	pessoaSalva, err := db.Get(pessoaTeste.ID)
 	if err != nil {
@@ -258,8 +253,6 @@ func TestGet(t *testing.T) {
 }
 
 func TestGet_invalidID(t *testing.T) {
-	db := connection(t)
-
 	_, err := db.Get(uuid.New())
 
 	if err == nil || err.SystemError == nil {
@@ -276,17 +269,13 @@ func TestGet_invalidID(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	db := connection(t)
-
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, db, t)
+	adiconarPessoa(pessoaTeste, t)
 
-	removerPessoaTeste(pessoaTeste.ID, db, t)
+	removerPessoaTeste(pessoaTeste.ID, t)
 }
 
 func TestDelete_invalidID(t *testing.T) {
-	db := connection(t)
-
-	removerPessoaTeste(uuid.New(), db, t)
+	removerPessoaTeste(uuid.New(), t)
 }

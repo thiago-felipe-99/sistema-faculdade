@@ -19,8 +19,8 @@ jobs:
           MARIADB_ROOT_PASSWORD: $DB_ADMINISTRATIVO_ROOT_PASSWORD
         volumes: 
           - mariadb:/var/lib/mysql
-          - ${{ github.workspace }}/scripts/init-db-administrativo/init-db.sh:/docker-entrypoint-initdb.d/init.sh
-          - ${{ github.workspace }}/scripts/init-db-administrativo/template.sql:/docker-entrypoint-initdb.d/template
+          # - ${{ github.workspace }}/scripts/init-db-administrativo/init-db.sh:/docker-entrypoint-initdb.d/init.sh
+          # - ${{ github.workspace }}/scripts/init-db-administrativo/template.sql:/docker-entrypoint-initdb.d/template
         ports:
           - 7000:3306
 
@@ -31,7 +31,7 @@ jobs:
           MONGO_INITDB_ROOT_PASSWORD: $DB_MATERIA_ROOT_PASSWORD
         volumes:
           - mongodb:/data/db
-          - ${{ github.workspace }}/scripts/init-db-matéria/init.js:/docker-entrypoint-initdb.d/init.js
+          # - ${{ github.workspace }}/scripts/init-db-matéria/init.js:/docker-entrypoint-initdb.d/init.js
         ports:
           - 7001:27017
 
@@ -42,6 +42,10 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '1.17'
+      - name: Copiando arquivos de inicialização para o banco de dados administrativo
+        run: docker cp scripts/init-db-administrativo/.  ${{ job.services.db-administrativo.id }}:/init/
+      - name: Executando arquivo de inicialização do banco de dados administrativo
+        run: docker exec ${{ job.services.db-administrativo.id }} ./init-db.sh
       - name: Verificando containers
         run: docker ps
       - name: Verificando hosts

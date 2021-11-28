@@ -19,9 +19,9 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '1.14'
-      - name: Build the stack
-        run: docker-compose up -d
-      - name: Run coverage
+      - name: Subindo Os Bancos De Dados Necessários Para Rodar Os Testes
+        run: docker-compose up -d  db-materia db-administrativo
+      - name: Rodando Corbetura De Código
         run: cd backend && go test -race -coverprofile=coverage.txt -covermode=atomic ./...
-      - name: Upload coverage to Codecov
+      - name: Enviando Corbetura De Código Para Codecov
         run: cd backend && bash <(curl -s https://codecov.io/bash)

@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       DB_ADMINISTRATIVO_ROOT_PASSWORD: ${{ secrets.DB_ADMINISTRATIVO_ROOT_PASSWORD }}
       DB_MATERIA_ROOT_PASSWORD: ${{ secrets.DB_MATERIA_ROOT_PASSWORD }}
@@ -18,7 +18,7 @@ jobs:
         env:
           MARIADB_ROOT_PASSWORD: $DB_ADMINISTRATIVO_ROOT_PASSWORD
         volumes: 
-          - ${{ github.workspace }}/data/administrativo/mariadb:/var/lib/mysql
+          - mariadb:/var/lib/mysql
           - ${{ github.workspace }}/scripts/init-db-administrativo/init-db.sh:/docker-entrypoint-initdb.d/init.sh
           - ${{ github.workspace }}/scripts/init-db-administrativo/template.sql:/docker-entrypoint-initdb.d/template
         ports:
@@ -30,7 +30,7 @@ jobs:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: $DB_MATERIA_ROOT_PASSWORD
         volumes:
-          - ${{ github.workspace }}/data/matéria/mongodb:/data/db
+          - mongodb:/data/db
           - ${{ github.workspace }}/scripts/init-db-matéria/init.js:/docker-entrypoint-initdb.d/init.js
         ports:
           - 7001:27017

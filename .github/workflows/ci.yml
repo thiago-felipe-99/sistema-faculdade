@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       DB_ADMINISTRATIVO_ROOT_PASSWORD: ${{ secrets.DB_ADMINISTRATIVO_ROOT_PASSWORD }}
       DB_MATERIA_ROOT_PASSWORD: ${{ secrets.DB_MATERIA_ROOT_PASSWORD }}

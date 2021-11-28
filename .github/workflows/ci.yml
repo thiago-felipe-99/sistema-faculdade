@@ -12,6 +12,34 @@ jobs:
       DB_MATERIA_PORT: 7001
       BACKEND_PORT: 8000
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    
+    services:
+      db-administrativo:
+        image: mariadb:10.7.1
+        restart: always
+        container_name: db-administrativo
+        environment:
+          MARIADB_ROOT_PASSWORD: $DB_ADMINISTRATIVO_ROOT_PASSWORD
+        volumes:
+          - ./data/administrativo/mariadb:/var/lib/mysql
+          - ./scripts/init-db-administrativo/init-db.sh:/docker-entrypoint-initdb.d/init.sh
+          - ./scripts/init-db-administrativo/template.sql:/docker-entrypoint-initdb.d/template
+        ports:
+          - "$DB_ADMINISTRATIVO_PORT:3306"
+
+      db-materia:
+        image: mongo:5.0.3
+        container_name: db-materia
+        restart: always
+        environment:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: $DB_MATERIA_ROOT_PASSWORD
+        volumes:
+          - ./data/matéria/mongodb:/data/db
+          - ./scripts/init-db-matéria/init.js:/docker-entrypoint-initdb.d/init.js
+        ports:
+          - "$DB_MATERIA_PORT:27017"
+
     steps:
       - uses: actions/checkout@v2
         with:
@@ -19,8 +47,6 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '1.17'
-      - name: Subindo Os Bancos De Dados Necessários Para Rodar Os Testes
-        run: docker-compose up -d  db-materia db-administrativo
       - name: Verificando containers
         run: docker ps
       - name: Verificando hosts

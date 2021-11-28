@@ -16,8 +16,6 @@ jobs:
     services:
       db-administrativo:
         image: mariadb:10.7.1
-        restart: always
-        container_name: db-administrativo
         environment:
           MARIADB_ROOT_PASSWORD: $DB_ADMINISTRATIVO_ROOT_PASSWORD
         volumes:
@@ -29,8 +27,6 @@ jobs:
 
       db-materia:
         image: mongo:5.0.3
-        container_name: db-materia
-        restart: always
         environment:
           MONGO_INITDB_ROOT_USERNAME: root
           MONGO_INITDB_ROOT_PASSWORD: $DB_MATERIA_ROOT_PASSWORD

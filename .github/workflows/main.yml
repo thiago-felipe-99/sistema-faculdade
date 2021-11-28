@@ -5,6 +5,13 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      DB_ADMINISTRATIVO_ROOT_PASSWORD: ${{ secrets.DB_ADMINISTRATIVO_ROOT_PASSWORD }}
+      DB_MATERIA_ROOT_PASSWORD: ${{ secrets.DB_MATERIA_ROOT_PASSWORD }}
+      DB_ADMINISTRATIVO_PORT: 9000
+      DB_MATERIA_PORT: 9001
+      BACKEND_PORT: 8000
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
     steps:
       - uses: actions/checkout@v2
         with:

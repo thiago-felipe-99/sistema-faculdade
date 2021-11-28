@@ -45,7 +45,7 @@ jobs:
       - name: Copiando arquivos de inicialização para o banco de dados administrativo
         run: docker cp scripts/init-db-administrativo/.  ${{ job.services.db-administrativo.id }}:/init/
       - name: Executando arquivo de inicialização do banco de dados administrativo
-        run: docker exec ${{ job.services.db-administrativo.id }} ./init-db.sh
+        run: docker exec ${{ job.services.db-administrativo.id }} ./init/init-db.sh
       - name: Verificando containers
         run: docker ps
       - name: Verificando hosts

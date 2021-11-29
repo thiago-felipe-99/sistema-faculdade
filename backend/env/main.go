@@ -4,9 +4,9 @@ import (
 	"os"
 )
 
-const portaPadrãoDBAdministrativo = "9000"
+const portaPadrãoBDAdministrativo = "9000"
 
-const portaPadrãoDBMatéria = "9001"
+const portaPadrãoBDMatéria = "9001"
 
 type Portas struct {
 	BDAdministrativo string
@@ -18,14 +18,14 @@ type VariáveisDeAmbiente struct {
 }
 
 func PegandoVariáveisDeAmbiente() (variáveis VariáveisDeAmbiente) {
-	variáveis.Portas.BDAdministrativo = os.Getenv("DB_ADMINISTRATIVO_PORT")
+	variáveis.Portas.BDAdministrativo = os.Getenv("BD_ADMINISTRATIVO_PORT")
 	if variáveis.Portas.BDAdministrativo == "" {
-		variáveis.Portas.BDAdministrativo = portaPadrãoDBAdministrativo
+		variáveis.Portas.BDAdministrativo = portaPadrãoBDAdministrativo
 	}
 
-	variáveis.Portas.BDMateria = os.Getenv("DB_MATERIA_PORT")
+	variáveis.Portas.BDMateria = os.Getenv("BD_MATERIA_PORT")
 	if variáveis.Portas.BDMateria == "" {
-		variáveis.Portas.BDMateria = portaPadrãoDBMatéria
+		variáveis.Portas.BDMateria = portaPadrãoBDMatéria
 	}
 
 	return variáveis

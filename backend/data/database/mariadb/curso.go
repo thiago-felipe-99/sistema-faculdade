@@ -14,8 +14,8 @@ type CursoBD struct {
 }
 
 // InserirMatérias inseres as matérias de um curso no banco de dados MariaDB.
-func (bd CursoBD) InserirMatérias(matérias *[]data.CursoMatéria) *errors.Application {
-	bd.Log.Info.Println("Inserindo matérias no Curso")
+func (bd CursoBD) InserirMatérias(matérias *[]data.CursoMatéria) *errors.Aplicação {
+	bd.Log.Informação.Println("Inserindo matérias no Curso")
 
 	if len(*matérias) <= 0 {
 		return errors.New(errors.InserirCursoMatériasTamanhoMínimo, nil, nil)
@@ -40,9 +40,9 @@ func (bd CursoBD) InserirMatérias(matérias *[]data.CursoMatéria) *errors.Appl
 
 	query = query[:len(query)-1]
 
-	_, err := bd.DB.Exec(query, params...)
+	_, err := bd.BD.Exec(query, params...)
 	if err != nil {
-		bd.Log.Warning.Println(
+		bd.Log.Aviso.Println(
 			"Erro ao inserir as matérias do curso\nErro: " + err.Error(),
 		)
 		return errors.New(errors.InserirCursoMatérias, nil, err)
@@ -52,13 +52,13 @@ func (bd CursoBD) InserirMatérias(matérias *[]data.CursoMatéria) *errors.Appl
 }
 
 // Inserir é uma função que faz inserção de uma Curso no banco de dados MariaDB.
-func (bd CursoBD) Inserir(curso *data.Curso) *errors.Application {
-	bd.Log.Info.Println("Inserindo Curso com o seguinte ID: " + curso.ID.String())
+func (bd CursoBD) Inserir(curso *data.Curso) *errors.Aplicação {
+	bd.Log.Informação.Println("Inserindo Curso com o seguinte ID: " + curso.ID.String())
 
 	query := "INSERT INTO " + bd.NomeDaTabela +
 		"(ID, Nome, Data_De_Início, Data_De_Desativação) VALUES(?, ?, ?, ?)"
 
-	_, err := bd.DB.Exec(
+	_, err := bd.BD.Exec(
 		query,
 		curso.ID,
 		curso.Nome,
@@ -66,7 +66,7 @@ func (bd CursoBD) Inserir(curso *data.Curso) *errors.Application {
 		curso.DataDeDesativação,
 	)
 	if err != nil {
-		bd.Log.Warning.Println(
+		bd.Log.Aviso.Println(
 			"Erro ao inserir o Curso com o seguinte ID: "+curso.ID.String(),
 			"\nErro: "+err.Error(),
 		)
@@ -78,42 +78,42 @@ func (bd CursoBD) Inserir(curso *data.Curso) *errors.Application {
 
 // AtualizarMatérias é uma função que atualiza as matérias dos cursos no banco
 // de dados MariaDB
-func (bd CursoBD) AtualizarMatérias(matérias *[]data.CursoMatéria) *errors.Application {
-	bd.Log.Info.Println("Atualizando matérias no Curso")
+func (bd CursoBD) AtualizarMatérias(matérias *[]data.CursoMatéria) *errors.Aplicação {
+	bd.Log.Informação.Println("Atualizando matérias no Curso")
 
 	return nil
 }
 
 // Atualizar é uma função que faz a atualização de Curso no banco de dados
 // MariaDB.
-func (bd CursoBD) Atualizar(id id, curso *data.Curso) *errors.Application {
-	bd.Log.Info.Println("Atualizando Curso com o seguinte ID: " + id.String())
+func (bd CursoBD) Atualizar(id id, curso *data.Curso) *errors.Aplicação {
+	bd.Log.Informação.Println("Atualizando Curso com o seguinte ID: " + id.String())
 
 	return nil
 }
 
 // PegarMatérias é uma função que retonar as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
-func (bd CursoBD) PegarMatérias(id id) (*[]data.CursoMatéria, *errors.Application) {
+func (bd CursoBD) PegarMatérias(id id) (*[]data.CursoMatéria, *errors.Aplicação) {
 	return nil, nil
 }
 
 // Pegar é uma função que retorna uma Curso do banco de dados MariaDB.
-func (bd CursoBD) Pegar(id id) (*data.Curso, *errors.Application) {
-	bd.Log.Info.Println("Pegando Curso com o seguinte ID: " + id.String())
+func (bd CursoBD) Pegar(id id) (*data.Curso, *errors.Aplicação) {
+	bd.Log.Informação.Println("Pegando Curso com o seguinte ID: " + id.String())
 
 	return nil, nil
 }
 
 // DeletarMatérias é uma função que deleta as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
-func (bd CursoBD) DeletarMatérias(id id) *errors.Application {
+func (bd CursoBD) DeletarMatérias(id id) *errors.Aplicação {
 	return nil
 }
 
 // Deletar é uma função que remove uma Curso do banco de dados MariaDB.
-func (bd CursoBD) Deletar(id id) *errors.Application {
-	bd.Log.Info.Print("Deletando Curso com o seguinte ID: " + id.String())
+func (bd CursoBD) Deletar(id id) *errors.Aplicação {
+	bd.Log.Informação.Print("Deletando Curso com o seguinte ID: " + id.String())
 
 	return nil
 }

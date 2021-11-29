@@ -17,7 +17,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-var db *PessoaDB
+var bd *PessoaBD
 
 func TestMain(m *testing.M) {
 	ambiente := env.PegandoVariáveisDeAmbiente()
@@ -42,7 +42,7 @@ func TestMain(m *testing.M) {
 		log.Fatalf("Erro ao conectar o banco de dados: %s", errr)
 	}
 
-	db = &PessoaDB{
+	bd = &PessoaBD{
 		Conexão:   *NovaConexão(os.Stderr, connection),
 		TableName: "Pessoa",
 	}
@@ -50,7 +50,7 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 
 	query := "DELETE FROM Pessoa"
-	db.DB.Exec(query)
+	bd.BD.Exec(query)
 
 	os.Exit(code)
 }
@@ -74,12 +74,12 @@ func criarPessoaAleatória() *data.Pessoa {
 
 func adiconarPessoa(pessoa *data.Pessoa, t *testing.T) {
 
-	err := db.Insert(pessoa)
+	err := bd.Inserir(pessoa)
 	if err != nil {
 		t.Fatalf("Erro ao inserir a pessoa no banco de dados: %s", err.Error())
 	}
 
-	pessoaSalva, err := db.Get(pessoa.ID)
+	pessoaSalva, err := bd.Pegar(pessoa.ID)
 	if err != nil {
 		t.Fatalf("Erro ao pegar a pessoa no banco de dados: %s", err.Error())
 	}
@@ -98,7 +98,7 @@ func adiconarPessoa(pessoa *data.Pessoa, t *testing.T) {
 }
 
 func removerPessoaTeste(id id, t *testing.T) {
-	err := db.Delete(id)
+	err := bd.Deletar(id)
 	if err != nil {
 		t.Fatalf("Erro ao tentar deletar o usuário teste: %v", err.Error())
 	}
@@ -122,15 +122,15 @@ func TestInsert_duplicateID(t *testing.T) {
 
 	pessoaTeste.CPF = fmt.Sprintf("%011d", rand.Intn(99999999999))
 
-	err := db.Insert(pessoaTeste)
-	if err == nil || err.SystemError == nil {
+	err := bd.Inserir(pessoaTeste)
+	if err == nil || err.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
 	}
 
-	if !pattern.MatchString(err.SystemError.Error()) {
+	if !pattern.MatchString(err.ErroExterno.Error()) {
 		t.Fatalf(
 			"Erro ao inserir a pessoa queria: Duplicate entry for key 'PRIMARY', chegou %s",
-			err.SystemError.Error(),
+			err.ErroExterno.Error(),
 		)
 	}
 }
@@ -149,16 +149,16 @@ func TestInsert_duplicateCPF(t *testing.T) {
 
 	pessoaTeste.ID = uuid.New()
 
-	err := db.Insert(pessoaTeste)
+	err := bd.Inserir(pessoaTeste)
 
-	if err == nil || err.SystemError == nil {
+	if err == nil || err.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
 	}
 
-	if !pattern.MatchString(err.SystemError.Error()) {
+	if !pattern.MatchString(err.ErroExterno.Error()) {
 		t.Fatalf(
 			"Erro ao inserir a pessoa queria: Duplicate entry for key 'CPF', chegou %s",
-			err.SystemError.Error(),
+			err.ErroExterno.Error(),
 		)
 	}
 }
@@ -176,12 +176,12 @@ func TestUpdate(t *testing.T) {
 	pessoaTeste.DataDeNascimento = dataAgora.AddDate(0, 0, 30)
 	pessoaTeste.Senha = "Senha nova"
 
-	err := db.Update(pessoaTeste.ID, pessoaTeste)
+	err := bd.Atualizar(pessoaTeste.ID, pessoaTeste)
 	if err != nil {
 		t.Fatalf("Erro ao atualizar a pessoa teste: %s", err.Error())
 	}
 
-	pessoaSalva, err := db.Get(pessoaTeste.ID)
+	pessoaSalva, err := bd.Pegar(pessoaTeste.ID)
 	if err != nil {
 		t.Fatalf("Erro ao pegar a pessoa no banco de dados: %s", err.Error())
 	}
@@ -200,7 +200,7 @@ func TestUpdate_invalidID(t *testing.T) {
 
 	adiconarPessoa(pessoaTeste, t)
 
-	err := db.Update(uuid.New(), pessoaTeste)
+	err := bd.Atualizar(uuid.New(), pessoaTeste)
 	if err != nil {
 		t.Fatalf("Erro ao atualizar a pessoa teste: %s", err.Error())
 	}
@@ -220,15 +220,15 @@ func TestUpdate_duplicateCPF(t *testing.T) {
 
 	adiconarPessoa(pessoaTeste2, t)
 
-	err := db.Update(pessoaTeste1.ID, pessoaTeste2)
-	if err == nil || err.SystemError == nil {
+	err := bd.Atualizar(pessoaTeste1.ID, pessoaTeste2)
+	if err == nil || err.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
 	}
 
-	if !pattern.MatchString(err.SystemError.Error()) {
+	if !pattern.MatchString(err.ErroExterno.Error()) {
 		t.Fatalf(
 			"Erro ao inserir a pessoa queria: Duplicate entry for key 'CPF', chegou %s",
-			err.SystemError.Error(),
+			err.ErroExterno.Error(),
 		)
 	}
 }
@@ -238,7 +238,7 @@ func TestGet(t *testing.T) {
 
 	adiconarPessoa(pessoaTeste, t)
 
-	pessoaSalva, err := db.Get(pessoaTeste.ID)
+	pessoaSalva, err := bd.Pegar(pessoaTeste.ID)
 	if err != nil {
 		t.Fatalf("Erro ao pegar a pessoa no banco de dados: %s", err.Error())
 	}
@@ -253,9 +253,9 @@ func TestGet(t *testing.T) {
 }
 
 func TestGet_invalidID(t *testing.T) {
-	_, err := db.Get(uuid.New())
+	_, err := bd.Pegar(uuid.New())
 
-	if err == nil || err.SystemError == nil {
+	if err == nil || err.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
 	}
 

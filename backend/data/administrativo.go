@@ -22,8 +22,8 @@ type Administrativo struct {
 // AdministrativoData representa as opereçãoes que se possa fazer com a entidade
 // Administrativo
 type AdministrativoData interface {
-	Insert(*Administrativo) (*Administrativo, *errors.Application)
-	Update(ID, *Administrativo) (*Administrativo, *errors.Application)
-	Get(ID) (*Administrativo, *errors.Application)
-	Delete(ID) *errors.Application
+	Inserir(*Administrativo) *errors.Aplicação
+	Atualizar(ID, *Administrativo) *errors.Aplicação
+	Pegar(ID) (*Administrativo, *errors.Aplicação)
+	Deletar(ID) *errors.Aplicação
 }

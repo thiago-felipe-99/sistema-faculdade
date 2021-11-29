@@ -10,14 +10,14 @@ import (
 
 type id = data.ID
 
-type Connection struct {
+type Connexão struct {
 	ID  id
 	Log *logs.Log
 }
 
-func NewConnection(outlog io.Writer) *Connection {
-	return &Connection{
+func NovaConexão(arquivolog io.Writer) *Connexão {
+	return &Connexão{
 		ID:  uuid.New(),
-		Log: logs.NewLog(outlog),
+		Log: logs.NovoLog(arquivolog),
 	}
 }

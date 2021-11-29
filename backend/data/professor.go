@@ -23,8 +23,8 @@ type Professor struct {
 // ProfessorData representa as opereçãoes que se possa fazer com a entidade
 // Professor
 type ProfessorData interface {
-	Insert(*Professor) (*Professor, *errors.Application)
-	Update(ID, *Professor) (*Professor, *errors.Application)
-	Get(ID) (*Professor, *errors.Application)
-	Delete(ID) *errors.Application
+	Inserir(*Professor) *errors.Aplicação
+	Atualizar(ID, *Professor) *errors.Aplicação
+	Pegar(ID) (*Professor, *errors.Aplicação)
+	Deletar(ID) *errors.Aplicação
 }

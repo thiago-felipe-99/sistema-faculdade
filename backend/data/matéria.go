@@ -16,19 +16,11 @@ type Matéria struct {
 	Tipo                string
 }
 
-type MatériaToInsert struct {
-	Nome                string
-	CargaHoráriaSemanal time.Duration
-	Créditos            float32
-	PréRequisitos       []ID
-	Tipo                string
-}
-
 // MatériaData representa as opereçãoes que se possa fazer com a entidade
 // Matéria
 type MatériaData interface {
-	Insert(*MatériaToInsert) (*Matéria, *errors.Application)
-	Update(ID, *MatériaToInsert) (*Matéria, *errors.Application)
-	Get(ID) (*Matéria, *errors.Application)
-	Delete(ID) *errors.Application
+	Inserir(*Matéria) *errors.Aplicação
+	Atualizar(ID, *Matéria) *errors.Aplicação
+	Pegar(ID) (*Matéria, *errors.Aplicação)
+	Deletar(ID) *errors.Aplicação
 }

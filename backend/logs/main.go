@@ -6,15 +6,15 @@ import (
 )
 
 type Log struct {
-	Info    *log.Logger
-	Warning *log.Logger
-	Error   *log.Logger
+	Informação *log.Logger
+	Aviso      *log.Logger
+	Erro       *log.Logger
 }
 
-func NewLog(out io.Writer) *Log {
+func NovoLog(out io.Writer) *Log {
 	return &Log{
-		Info:    log.New(out, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile),
-		Warning: log.New(out, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile),
-		Error:   log.New(out, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile),
+		Informação: log.New(out, "INFORMAÇÃO: ", log.Ldate|log.Ltime|log.Lshortfile),
+		Aviso:      log.New(out, "AVISO: ", log.Ldate|log.Ltime|log.Lshortfile),
+		Erro:       log.New(out, "ERRO: ", log.Ldate|log.Ltime|log.Lshortfile),
 	}
 }

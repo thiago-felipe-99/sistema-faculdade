@@ -8,8 +8,8 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/env"
 )
 
-// TestNewDB verifica se a inicialização do banco de dados está okay.
-func TestNewDB(t *testing.T) {
+// TestNovoBD verifica se a inicialização do banco de dados está okay.
+func TestNovoBD(t *testing.T) {
 	ambiente := env.PegandoVariáveisDeAmbiente()
 
 	var config = mysql.Config{
@@ -21,12 +21,12 @@ func TestNewDB(t *testing.T) {
 		AllowNativePasswords: true,
 	}
 
-	db, err := sql.Open("mysql", config.FormatDSN())
+	bd, err := sql.Open("mysql", config.FormatDSN())
 	if err != nil {
 		t.Fatalf("Erro ao configurar ao banco de dados: %v", err)
 	}
 
-	err = db.Ping()
+	err = bd.Ping()
 	if err != nil {
 		t.Fatalf("Erro ao conectar ao banco de dados: %v", err)
 	}

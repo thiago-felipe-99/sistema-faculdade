@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
 	"log"
 	"math/rand"
@@ -14,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/data"
 	"thiagofelipe.com.br/sistema-faculdade/data/database/mariadb"
+	"thiagofelipe.com.br/sistema-faculdade/data/database/mongodb"
 )
 
 type logFiles struct {
@@ -26,6 +26,7 @@ type logFiles struct {
 	turma          io.Writer
 }
 
+//nolint:funlen
 func openLogFiles() *logFiles {
 	defaultDir := "./logs/data/"
 
@@ -96,9 +97,11 @@ func openLogFiles() *logFiles {
 	}
 }
 
+//nolint:funlen
 func newData() *data.Data {
 	logFiles := openLogFiles()
 
+	//nolint:exhaustivestruct
 	config := mysql.Config{
 		User:                 "Administrativo",
 		Passwd:               "Administrativo",
@@ -112,29 +115,51 @@ func newData() *data.Data {
 	dns := config.FormatDSN()
 	log.Println(dns)
 
-	db, err := mariadb.NovoBD(config.FormatDSN())
+	bd, err := mariadb.NovoBD(config.FormatDSN())
 	if err != nil {
-		log.Panicln(err.Message)
+		log.Panicln(err.Mensagem)
+	}
+
+	MariaDBPessoa := mariadb.PessoaBD{
+		Conexão:      *mariadb.NovaConexão(logFiles.pessoa, bd),
+		NomeDaTabela: "Pessoa",
 	}
 
 	MariaDBCurso := mariadb.CursoBD{
-		Conexão:                *mariadb.NovaConexão(logFiles.pessoa, db),
+		Conexão:                *mariadb.NovaConexão(logFiles.curso, bd),
 		NomeDaTabela:           "Curso",
 		NomeDaTabelaSecundária: "CursoMatérias",
 	}
 
+	MariaDBAluno := mariadb.AlunoBD{
+		Conexão: *mariadb.NovaConexão(logFiles.aluno, bd),
+	}
+
+	MariaDBProfessor := mariadb.ProfessorBD{
+		Conexão: *mariadb.NovaConexão(logFiles.professor, bd),
+	}
+
+	MariaDBAdministrativo := mariadb.AdministrativoBD{
+		Conexão: *mariadb.NovaConexão(logFiles.administrativo, bd),
+	}
+
+	MariaDBMatéria := mongodb.MatériaBD{
+		Connexão: *mongodb.NovaConexão(logFiles.matéria),
+	}
+
+	MariaDBTurma := mongodb.TurmaBD{
+		Connexão: *mongodb.NovaConexão(logFiles.turma),
+	}
+
 	return &data.Data{
-		Curso: MariaDBCurso,
+		Pessoa:         MariaDBPessoa,
+		Curso:          MariaDBCurso,
+		Aluno:          MariaDBAluno,
+		Professor:      MariaDBProfessor,
+		Administrativo: MariaDBAdministrativo,
+		Matéria:        MariaDBMatéria,
+		Turma:          MariaDBTurma,
 	}
-}
-
-func prettyStruct(s ...interface{}) string {
-	sJSON, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		log.Panicln(err.Error())
-	}
-
-	return string(sJSON)
 }
 
 func main() {
@@ -176,8 +201,8 @@ func main() {
 		err := Data.Curso.Inserir(curso)
 		if err != nil {
 			log.Panicln(err.Error())
-			if err.SystemError != nil {
-				log.Println(err.SystemError.Error())
+			if err.ErroExterno != nil {
+				log.Println(err.ErroExterno.Error())
 			}
 		}
 

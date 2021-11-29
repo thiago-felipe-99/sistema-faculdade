@@ -17,22 +17,22 @@ type id = data.ID
 type Conexão struct {
 	ID  id
 	Log *logs.Log
-	DB  *sql.DB
+	BD  *sql.DB
 }
 
-func NovoBD(dsn string) (*sql.DB, *errors.Application) {
-	db, err := sql.Open("mysql", dsn)
+func NovoBD(dsn string) (*sql.DB, *errors.Aplicação) {
+	bd, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, errors.New(errors.ConfigurarBD, nil, err)
 	}
 
-	return db, nil
+	return bd, nil
 }
 
-func NovaConexão(outlog io.Writer, db *sql.DB) *Conexão {
+func NovaConexão(arquivolog io.Writer, bd *sql.DB) *Conexão {
 	return &Conexão{
 		ID:  uuid.New(),
-		Log: logs.NewLog(outlog),
-		DB:  db,
+		Log: logs.NovoLog(arquivolog),
+		BD:  bd,
 	}
 }

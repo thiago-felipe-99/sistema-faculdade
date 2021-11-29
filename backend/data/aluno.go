@@ -27,8 +27,8 @@ type Aluno struct {
 
 // AlunoData representa as opereçãoes que se possa fazer com a entidade Aluno
 type AlunoData interface {
-	Insert(*Aluno) (*Aluno, *errors.Application)
-	Update(ID, *Aluno) (*Aluno, *errors.Application)
-	Get(ID) (*Aluno, *errors.Application)
-	Delete(ID) *errors.Application
+	Inserir(*Aluno) *errors.Aplicação
+	Atualizar(ID, *Aluno) *errors.Aplicação
+	Pegar(ID) (*Aluno, *errors.Aplicação)
+	Deletar(ID) *errors.Aplicação
 }

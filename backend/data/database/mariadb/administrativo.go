@@ -5,40 +5,38 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-type administrativoToInsert = data.Administrativo
-
-// Administrativo representa a conexão com o banco de dados MariaDB para fazer
-// alterações na entidade Administrativo.
-type Administrativo struct {
+// AdministrativoBD representa a conexão com o banco de dados MariaDB para fazer
+// alterações na entidade AdministrativoBD.
+type AdministrativoBD struct {
 	Conexão
 }
 
-// Insert é uma função que faz inserção de uma Administrativo no banco de dados
+// Inserir é uma função que faz inserção de uma Administrativo no banco de dados
 // MariaDB.
-func (administrativo Administrativo) Insert(*administrativoToInsert) (*data.Administrativo, *errors.Application) {
-	administrativo.Log.Info.Println("Inserindo Administrativo")
+func (bd AdministrativoBD) Inserir(*data.Administrativo) *errors.Aplicação {
+	bd.Log.Informação.Println("Inserindo Administrativo")
 
-	return nil, nil
+	return nil
 }
 
-// Update é uma função que faz a atualização de Administrativo no banco de dados
+// Atualizar é uma função que faz a atualização de Administrativo no banco de dados
 // MariaDB.
-func (administrativo Administrativo) Update(id, *administrativoToInsert) (*data.Administrativo, *errors.Application) {
-	administrativo.Log.Info.Println("Atualizando Administrativo")
+func (bd AdministrativoBD) Atualizar(id, *data.Administrativo) *errors.Aplicação {
+	bd.Log.Informação.Println("Atualizando Administrativo")
+
+	return nil
+}
+
+// Pegar é uma função que retorna uma Administrativo do banco de dados MariaDB.
+func (bd AdministrativoBD) Pegar(id) (*data.Administrativo, *errors.Aplicação) {
+	bd.Log.Informação.Println("Pegando Administrativo")
 
 	return nil, nil
 }
 
-// Get é uma função que retorna uma Administrativo do banco de dados MariaDB.
-func (administrativo Administrativo) Get(id) (*data.Administrativo, *errors.Application) {
-	administrativo.Log.Info.Println("Pegando Administrativo")
-
-	return nil, nil
-}
-
-// Delete é uma função que remove uma Administrativo do banco de dados MariaDB.
-func (administrativo Administrativo) Delete(id) *errors.Application {
-	administrativo.Log.Info.Print("Deletando Administrativo")
+// Deletar é uma função que remove uma Administrativo do banco de dados MariaDB.
+func (bd AdministrativoBD) Deletar(id) *errors.Aplicação {
+	bd.Log.Informação.Print("Deletando Administrativo")
 
 	return nil
 }

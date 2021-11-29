@@ -25,7 +25,7 @@ type Curso struct {
 	Matérias          []CursoMatéria
 }
 
-type CursoToInsert struct {
+type CursoObrigatório struct {
 	Nome              string
 	DataDeInício      time.Time
 	DataDeDesativação time.Time
@@ -34,12 +34,12 @@ type CursoToInsert struct {
 
 // CursoData representa as operaçãoes para modificar um curso definitivamente
 type CursoData interface {
-	InserirMatérias(*[]CursoMatéria) *errors.Application
-	Inserir(*Curso) *errors.Application
-	AtualizarMatérias(*[]CursoMatéria) *errors.Application
-	Atualizar(ID, *Curso) *errors.Application
-	PegarMatérias(ID) (*[]CursoMatéria, *errors.Application)
-	Pegar(ID) (*Curso, *errors.Application)
-	DeletarMatérias(ID) *errors.Application
-	Deletar(ID) *errors.Application
+	InserirMatérias(*[]CursoMatéria) *errors.Aplicação
+	Inserir(*Curso) *errors.Aplicação
+	AtualizarMatérias(*[]CursoMatéria) *errors.Aplicação
+	Atualizar(ID, *Curso) *errors.Aplicação
+	PegarMatérias(ID) (*[]CursoMatéria, *errors.Aplicação)
+	Pegar(ID) (*Curso, *errors.Aplicação)
+	DeletarMatérias(ID) *errors.Aplicação
+	Deletar(ID) *errors.Aplicação
 }

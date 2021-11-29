@@ -7,21 +7,21 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-// PessoaDB representa a conexão com o banco de dados MariaDB para fazer
-// alterações na entidade PessoaDB.
-type PessoaDB struct {
+// PessoaBD representa a conexão com o banco de dados MariaDB para fazer
+// alterações na entidade PessoaBD.
+type PessoaBD struct {
 	Conexão
-	TableName string
+	NomeDaTabela string
 }
 
-// Insert é uma função que faz inserção de uma Pessoa no banco de dados MariaDB.
-func (db PessoaDB) Insert(pessoa *data.Pessoa) *errors.Application {
-	db.Log.Info.Println("Inserindo Pessoa com o seguinte ID: " + pessoa.ID.String())
+// Inserir é uma função que faz inserção de uma Pessoa no banco de dados MariaDB.
+func (bd PessoaBD) Inserir(pessoa *data.Pessoa) *errors.Aplicação {
+	bd.Log.Informação.Println("Inserindo Pessoa com o seguinte ID: " + pessoa.ID.String())
 
-	query := "INSERT INTO " + db.TableName +
+	query := "INSERT INTO " + bd.NomeDaTabela +
 		" (ID, Nome, CPF, Data_De_Nascimento, Senha) VALUES (?, ?, ?, ?, ?)"
 
-	_, err := db.DB.Exec(
+	_, err := bd.BD.Exec(
 		query,
 		pessoa.ID,
 		pessoa.Nome,
@@ -31,7 +31,7 @@ func (db PessoaDB) Insert(pessoa *data.Pessoa) *errors.Application {
 	)
 
 	if err != nil {
-		db.Log.Warning.Println(
+		bd.Log.Aviso.Println(
 			"Erro ao inserir a Pessoa com o seguinte ID: "+pessoa.ID.String(),
 			"\nErro: "+err.Error(),
 		)
@@ -41,15 +41,15 @@ func (db PessoaDB) Insert(pessoa *data.Pessoa) *errors.Application {
 	return nil
 }
 
-// Update é uma função que faz a atualização de Pessoa no banco de dados MariaDB.
-func (db PessoaDB) Update(id id, pessoa *data.Pessoa) *errors.Application {
-	db.Log.Info.Println("Atualizando Pessoa com o seguinte ID: " + id.String())
+// Atualizar é uma função que faz a atualização de Pessoa no banco de dados MariaDB.
+func (bd PessoaBD) Atualizar(id id, pessoa *data.Pessoa) *errors.Aplicação {
+	bd.Log.Informação.Println("Atualizando Pessoa com o seguinte ID: " + id.String())
 
-	query := "UPDATE " + db.TableName +
+	query := "UPDATE " + bd.NomeDaTabela +
 		" SET Nome = ?, CPF = ?, Data_De_Nascimento = ?, Senha = ?" +
 		" WHERE ID = ?"
 
-	_, err := db.DB.Exec(
+	_, err := bd.BD.Exec(
 		query,
 		pessoa.Nome,
 		pessoa.CPF,
@@ -59,7 +59,7 @@ func (db PessoaDB) Update(id id, pessoa *data.Pessoa) *errors.Application {
 	)
 
 	if err != nil {
-		db.Log.Warning.Println(
+		bd.Log.Aviso.Println(
 			"Erro ao atualizar a Pessoa com o seguinte ID: "+id.String(),
 			"\nErro: "+err.Error(),
 		)
@@ -68,16 +68,16 @@ func (db PessoaDB) Update(id id, pessoa *data.Pessoa) *errors.Application {
 	return nil
 }
 
-// Get é uma função que retorna uma Pessoa do banco de dados MariaDB.
-func (db PessoaDB) Get(id id) (*data.Pessoa, *errors.Application) {
-	db.Log.Info.Println("Pegando Pessoa com o seguinte ID: " + id.String())
+// Pegar é uma função que retorna uma Pessoa do banco de dados MariaDB.
+func (bd PessoaBD) Pegar(id id) (*data.Pessoa, *errors.Aplicação) {
+	bd.Log.Informação.Println("Pegando Pessoa com o seguinte ID: " + id.String())
 
 	var pessoa data.Pessoa
 
-	query := "SELECT ID, Nome, CPF, Data_De_Nascimento, Senha FROM " + db.TableName +
+	query := "SELECT ID, Nome, CPF, Data_De_Nascimento, Senha FROM " + bd.NomeDaTabela +
 		" WHERE ID = ?"
 
-	row := db.DB.QueryRow(query, id)
+	row := bd.BD.QueryRow(query, id)
 
 	err := row.Scan(
 		&pessoa.ID,
@@ -90,14 +90,14 @@ func (db PessoaDB) Get(id id) (*data.Pessoa, *errors.Application) {
 	if err != nil {
 
 		if err == sql.ErrNoRows {
-			db.Log.Warning.Println(
+			bd.Log.Aviso.Println(
 				"Não foi encontrada nenhuma a pessoa com o seguinte ID: "+id.String(),
 				"\nErro: "+err.Error(),
 			)
 			return nil, errors.New(errors.PessoaNãoEncontrada, nil, err)
 		}
 
-		db.Log.Warning.Println(
+		bd.Log.Aviso.Println(
 			"Erro ao tentar econtrar a pessoa com o seguinte ID: "+id.String(),
 			"\nErro: "+err.Error(),
 		)
@@ -108,16 +108,16 @@ func (db PessoaDB) Get(id id) (*data.Pessoa, *errors.Application) {
 	return &pessoa, nil
 }
 
-// Delete é uma função que remove uma Pessoa do banco de dados MariaDB.
-func (db PessoaDB) Delete(id id) *errors.Application {
-	db.Log.Info.Print("Deletando Pessoa com o seguinte ID: " + id.String())
+// Deletar é uma função que remove uma Pessoa do banco de dados MariaDB.
+func (bd PessoaBD) Deletar(id id) *errors.Aplicação {
+	bd.Log.Informação.Print("Deletando Pessoa com o seguinte ID: " + id.String())
 
-	query := "DELETE FROM " + db.TableName + " WHERE ID = ?"
+	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"
 
-	_, err := db.DB.Exec(query, id)
+	_, err := bd.BD.Exec(query, id)
 
 	if err != nil {
-		db.Log.Warning.Println(
+		bd.Log.Aviso.Println(
 			"Erro ao tentar deletar a pessoa com o seguinte ID: "+id.String(),
 			"\nErro: "+err.Error(),
 		)

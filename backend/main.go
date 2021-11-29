@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"time"
@@ -111,22 +112,23 @@ func newData() *data.Data {
 	dns := config.FormatDSN()
 	log.Println(dns)
 
-	db, err := mariadb.NewDB(config.FormatDSN())
+	db, err := mariadb.NovoBD(config.FormatDSN())
 	if err != nil {
 		log.Panicln(err.Message)
 	}
 
-	MariaDBPessoa := mariadb.PessoaDB{
-		Connection: *mariadb.NewConnection(logFiles.pessoa, db),
-		TableName:  "Pessoa",
+	MariaDBCurso := mariadb.CursoBD{
+		Conexão:                *mariadb.NovaConexão(logFiles.pessoa, db),
+		NomeDaTabela:           "Curso",
+		NomeDaTabelaSecundária: "CursoMatérias",
 	}
 
 	return &data.Data{
-		Pessoa: MariaDBPessoa,
+		Curso: MariaDBCurso,
 	}
 }
 
-func prettyStruc(s ...interface{}) string {
+func prettyStruct(s ...interface{}) string {
 	sJSON, err := json.MarshalIndent(s, "", "  ")
 	if err != nil {
 		log.Panicln(err.Error())
@@ -141,44 +143,42 @@ func main() {
 	Data := newData()
 
 	r.GET("/ping", func(c *gin.Context) {
-		novaPessoa := data.Pessoa{
-			ID:               uuid.New(),
-			Nome:             "Thiago Felipe",
-			CPF:              "12345678910",
-			DataDeNascimento: time.Date(1999, 12, 8, 1, 1, 1, 1, time.FixedZone("UTC-4", -4*60*60)),
-			Senha:            "Senha",
+		rand.Seed(time.Now().UnixNano())
+		id := uuid.New()
+
+		materias := &[]data.CursoMatéria{
+			{
+				ID_Curso:   id,
+				ID_Matéria: uuid.New(),
+				Período:    "Teste",
+				Tipo:       "Não sei",
+				Status:     "Testando",
+				Observação: "Okay",
+			},
+			{
+				ID_Curso:   id,
+				ID_Matéria: uuid.New(),
+				Período:    "Teste",
+				Tipo:       "Não sei",
+				Status:     "Testando",
+				Observação: "Okay",
+			},
 		}
 
-		err := Data.Pessoa.Insert(&novaPessoa)
-		if err != nil {
-			log.Panicln(err.Message)
+		curso := &data.Curso{
+			ID:                id,
+			Nome:              "Curso novo",
+			DataDeInício:      time.Now(),
+			DataDeDesativação: time.Now(),
+			Matérias:          *materias,
 		}
 
-		resultGet, err := Data.Pessoa.Get(novaPessoa.ID)
+		err := Data.Curso.Inserir(curso)
 		if err != nil {
-			log.Panicln(err.Message)
-		}
-
-		log.Println(prettyStruc(resultGet))
-
-		novaPessoa.Senha = "Passwd"
-		novaPessoa.Nome = "Thiago Felipe Cruz E Souza"
-
-		err = Data.Pessoa.Update(novaPessoa.ID, &novaPessoa)
-		if err != nil {
-			log.Panicln(err.Message)
-		}
-
-		resultGet, err = Data.Pessoa.Get(novaPessoa.ID)
-		if err != nil {
-			log.Panicln(err.Message)
-		}
-
-		log.Println(prettyStruc(resultGet))
-
-		err = Data.Pessoa.Delete(novaPessoa.ID)
-		if err != nil {
-			log.Panicln(err.Message)
+			log.Panicln(err.Error())
+			if err.SystemError != nil {
+				log.Println(err.SystemError.Error())
+			}
 		}
 
 		c.JSON(http.StatusOK, gin.H{

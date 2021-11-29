@@ -32,7 +32,7 @@ func TestMain(m *testing.M) {
 		ParseTime:            true,
 	}
 
-	connection, err := NewDB(config.FormatDSN())
+	connection, err := NovoBD(config.FormatDSN())
 	if err != nil {
 		log.Fatalf("Erro ao configurar o banco de dados: %s", err)
 	}
@@ -43,8 +43,8 @@ func TestMain(m *testing.M) {
 	}
 
 	db = &PessoaDB{
-		Connection: *NewConnection(os.Stderr, connection),
-		TableName:  "Pessoa",
+		Conexão:   *NovaConexão(os.Stderr, connection),
+		TableName: "Pessoa",
 	}
 
 	code := m.Run()

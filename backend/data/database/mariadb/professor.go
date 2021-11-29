@@ -10,7 +10,7 @@ type professorToInsert = data.Professor
 // Professor representa a conexão com o banco de dados MariaDB para fazer
 // alterações na entidade Professor.
 type Professor struct {
-	Connection
+	Conexão
 }
 
 // Insert é uma função que faz inserção de uma Professor no banco de dados MariaDB.

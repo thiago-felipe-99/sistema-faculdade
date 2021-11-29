@@ -10,7 +10,7 @@ type administrativoToInsert = data.Administrativo
 // Administrativo representa a conexão com o banco de dados MariaDB para fazer
 // alterações na entidade Administrativo.
 type Administrativo struct {
-	Connection
+	Conexão
 }
 
 // Insert é uma função que faz inserção de uma Administrativo no banco de dados

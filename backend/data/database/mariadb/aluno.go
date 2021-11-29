@@ -10,7 +10,7 @@ type alunoToInsert = data.Aluno
 // Aluno representa a conexão com o banco de dados MariaDB para fazer alterações
 // na entidade Aluno.
 type Aluno struct {
-	Connection
+	Conexão
 }
 
 // Insert é uma função que faz inserção de uma Aluno no banco de dados MariaDB.

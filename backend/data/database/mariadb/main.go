@@ -14,13 +14,13 @@ import (
 
 type id = data.ID
 
-type Connection struct {
+type Conexão struct {
 	ID  id
 	Log *logs.Log
 	DB  *sql.DB
 }
 
-func NewDB(dsn string) (*sql.DB, *errors.Application) {
+func NovoBD(dsn string) (*sql.DB, *errors.Application) {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, errors.New(errors.ConfigurarBD, nil, err)
@@ -29,8 +29,8 @@ func NewDB(dsn string) (*sql.DB, *errors.Application) {
 	return db, nil
 }
 
-func NewConnection(outlog io.Writer, db *sql.DB) *Connection {
-	return &Connection{
+func NovaConexão(outlog io.Writer, db *sql.DB) *Conexão {
+	return &Conexão{
 		ID:  uuid.New(),
 		Log: logs.NewLog(outlog),
 		DB:  db,

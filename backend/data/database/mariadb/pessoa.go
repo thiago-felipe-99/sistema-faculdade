@@ -10,7 +10,7 @@ import (
 // PessoaDB representa a conexão com o banco de dados MariaDB para fazer
 // alterações na entidade PessoaDB.
 type PessoaDB struct {
-	Connection
+	Conexão
 	TableName string
 }
 

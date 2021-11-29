@@ -9,8 +9,6 @@ services:
       MARIADB_ROOT_PASSWORD: $DB_ADMINISTRATIVO_ROOT_PASSWORD
     volumes:
       - mariaDB:/var/lib/mysql
-      - ./scripts/init-db-administrativo/init-db.sh:/docker-entrypoint-initdb.d/init.sh
-      - ./scripts/init-db-administrativo/template.sql:/docker-entrypoint-initdb.d/template
     ports:
       - "$DB_ADMINISTRATIVO_PORT:3306"
 

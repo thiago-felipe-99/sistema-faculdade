@@ -43,8 +43,8 @@ func TestMain(m *testing.M) {
 	}
 
 	bd = &PessoaBD{
-		Conexão:   *NovaConexão(os.Stderr, connection),
-		TableName: "Pessoa",
+		Conexão:      *NovaConexão(os.Stderr, connection),
+		NomeDaTabela: "Pessoa",
 	}
 
 	code := m.Run()

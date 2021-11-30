@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
 	"log"
 	"math/rand"
@@ -162,6 +163,16 @@ func newData() *data.Data {
 	}
 }
 
+func prettyStruct(s ...interface{}) string {
+	sJSON, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		log.Panicln(err.Error())
+	}
+
+	return string(sJSON)
+}
+
+//nolint:funlen
 func main() {
 	r := gin.Default()
 
@@ -200,11 +211,21 @@ func main() {
 
 		err := Data.Curso.Inserir(curso)
 		if err != nil {
-			log.Panicln(err.Error())
+			log.Println(err.Error())
 			if err.ErroExterno != nil {
 				log.Println(err.ErroExterno.Error())
 			}
 		}
+
+		cursoSalvo, err := Data.Curso.Pegar(curso.ID)
+		if err != nil {
+			log.Println(err.Error())
+			if err.ErroExterno != nil {
+				log.Panicln(err.ErroExterno.Error())
+			}
+		}
+
+		log.Println(prettyStruct(cursoSalvo))
 
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",

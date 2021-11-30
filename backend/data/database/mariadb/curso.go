@@ -40,12 +40,12 @@ func (bd CursoBD) InserirMatérias(matérias *[]data.CursoMatéria) *errors.Apli
 
 	query = query[:len(query)-1]
 
-	_, err := bd.BD.Exec(query, params...)
-	if err != nil {
+	_, erro := bd.BD.Exec(query, params...)
+	if erro != nil {
 		bd.Log.Aviso.Println(
-			"Erro ao inserir as matérias do curso\nErro: " + err.Error(),
+			"Erro ao inserir as matérias do curso\nErro: " + erro.Error(),
 		)
-		return errors.New(errors.InserirCursoMatérias, nil, err)
+		return errors.New(errors.InserirCursoMatérias, nil, erro)
 	}
 
 	return nil
@@ -58,19 +58,19 @@ func (bd CursoBD) Inserir(curso *data.Curso) *errors.Aplicação {
 	query := "INSERT INTO " + bd.NomeDaTabela +
 		"(ID, Nome, Data_De_Início, Data_De_Desativação) VALUES(?, ?, ?, ?)"
 
-	_, err := bd.BD.Exec(
+	_, erro := bd.BD.Exec(
 		query,
 		curso.ID,
 		curso.Nome,
 		curso.DataDeInício,
 		curso.DataDeDesativação,
 	)
-	if err != nil {
+	if erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao inserir o Curso com o seguinte ID: "+curso.ID.String(),
-			"\nErro: "+err.Error(),
+			"\nErro: "+erro.Error(),
 		)
-		return errors.New(errors.InserirCurso, nil, err)
+		return errors.New(errors.InserirCurso, nil, erro)
 	}
 
 	return bd.InserirMatérias(&curso.Matérias)
@@ -95,14 +95,94 @@ func (bd CursoBD) Atualizar(id id, curso *data.Curso) *errors.Aplicação {
 // PegarMatérias é uma função que retonar as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
 func (bd CursoBD) PegarMatérias(id id) (*[]data.CursoMatéria, *errors.Aplicação) {
-	return nil, nil
+
+	var matérias []data.CursoMatéria
+
+	query := "SELECT ID_Curso, ID_Matéria, Período, Tipo, Status, Observação FROM " +
+		bd.NomeDaTabelaSecundária + " WHERE ID_Curso = ?"
+
+	linhas, erro := bd.BD.Query(query, id)
+	if erro != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
+			"\nErro: "+erro.Error(),
+		)
+
+		return nil, errors.New(errors.PegarCursoMatérias, nil, erro)
+	}
+	defer linhas.Close()
+
+	for linhas.Next() {
+		var matéria data.CursoMatéria
+
+		erro := linhas.Scan(
+			&matéria.ID_Curso,
+			&matéria.ID_Matéria,
+			&matéria.Período,
+			&matéria.Tipo,
+			&matéria.Status,
+			&matéria.Observação,
+		)
+
+		if erro != nil {
+			bd.Log.Aviso.Println(
+				"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
+				"\nErro: "+erro.Error(),
+			)
+
+			return nil, errors.New(errors.PegarCursoMatérias, nil, erro)
+		}
+
+		matérias = append(matérias, matéria)
+
+	}
+
+	if erro = linhas.Err(); erro != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
+			"\nErro: "+erro.Error(),
+		)
+
+		return nil, errors.New(errors.PegarCursoMatérias, nil, erro)
+	}
+
+	return &matérias, nil
 }
 
 // Pegar é uma função que retorna uma Curso do banco de dados MariaDB.
 func (bd CursoBD) Pegar(id id) (*data.Curso, *errors.Aplicação) {
 	bd.Log.Informação.Println("Pegando Curso com o seguinte ID: " + id.String())
 
-	return nil, nil
+	matérias, erroAplicação := bd.PegarMatérias(id)
+	if erroAplicação != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
+			"\nErro: "+erroAplicação.Error(),
+		)
+
+		return nil, errors.New(errors.PegarCurso, erroAplicação, nil)
+	}
+
+	var curso data.Curso
+	curso.Matérias = *matérias
+
+	query := "SELECT ID, Nome, Data_De_Início, Data_De_Desativação FROM " +
+		bd.NomeDaTabela + " WHERE ID = ?"
+
+	linha := bd.BD.QueryRow(query, id)
+
+	erro := linha.Scan(
+		&curso.ID,
+		&curso.Nome,
+		&curso.DataDeInício,
+		&curso.DataDeDesativação,
+	)
+
+	if erro != nil {
+		return nil, errors.New(errors.PegarCurso, nil, erro)
+	}
+
+	return &curso, nil
 }
 
 // DeletarMatérias é uma função que deleta as matérias de um Curso que está salvo

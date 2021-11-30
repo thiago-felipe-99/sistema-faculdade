@@ -74,8 +74,8 @@ func (bd PessoaBD) Pegar(id id) (*data.Pessoa, *errors.Aplicação) {
 
 	var pessoa data.Pessoa
 
-	query := "SELECT ID, Nome, CPF, Data_De_Nascimento, Senha FROM " + bd.NomeDaTabela +
-		" WHERE ID = ?"
+	query := "SELECT ID, Nome, CPF, Data_De_Nascimento, Senha FROM " +
+		bd.NomeDaTabela + " WHERE ID = ?"
 
 	row := bd.BD.QueryRow(query, id)
 

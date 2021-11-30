@@ -1,7 +1,7 @@
-package mariadb_test
+package mariadb
 
 import (
-	"database/sql"
+	"regexp"
 	"testing"
 
 	"github.com/go-sql-driver/mysql"
@@ -9,10 +9,12 @@ import (
 )
 
 // TestNovoBD verifica se a inicialização do banco de dados está okay.
+//nolint: paralleltest
 func TestNovoBD(t *testing.T) {
-	ambiente := env.PegandoVariáveisDeAmbiente()
+	var ambiente = env.PegandoVariáveisDeAmbiente()
 
-	var config = mysql.Config{
+	//nolint: exhaustivestruct
+	config := mysql.Config{
 		User:                 "Teste",
 		Passwd:               "Teste",
 		Net:                  "tcp",
@@ -21,13 +23,32 @@ func TestNovoBD(t *testing.T) {
 		AllowNativePasswords: true,
 	}
 
-	bd, err := sql.Open("mysql", config.FormatDSN())
-	if err != nil {
-		t.Fatalf("Erro ao configurar ao banco de dados: %v", err)
+	bd, erroAplicação := NovoBD(config.FormatDSN())
+	if erroAplicação != nil {
+		t.Fatalf("Erro ao configurar ao banco de dados: %v", erroAplicação)
 	}
 
-	err = bd.Ping()
-	if err != nil {
-		t.Fatalf("Erro ao conectar ao banco de dados: %v", err)
+	erro := bd.Ping()
+	if erro != nil {
+		t.Fatalf("Erro ao conectar ao banco de dados: %v", erro)
+	}
+}
+
+func TestNovoBD_EndereçoErrado(t *testing.T) {
+	padrão, erroRegex := regexp.Compile(`invalid DSN`)
+	if erroRegex != nil {
+		t.Fatal("Erro ao compilar o regex")
+	}
+
+	_, erro := NovoBD("endereço inválido")
+	if erro == nil {
+		t.Fatalf("Devia dar um erro na configuração")
+	}
+	if erro.ErroExterno == nil {
+		t.Fatalf("Devia da um erro externo")
+	}
+
+	if !padrão.MatchString(erro.ErroExterno.Error()) {
+		t.Fatalf("Esperava por um erro de configuração no DSN, chegou: %v", erro.ErroExterno.Error())
 	}
 }

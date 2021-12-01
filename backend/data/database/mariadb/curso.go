@@ -96,17 +96,17 @@ func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *errors.Aplicação {
 
 // PegarMatérias é uma função que retonar as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
-func (bd CursoBD) PegarMatérias(id id) (*[]entidades.CursoMatéria, *errors.Aplicação) {
+func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *errors.Aplicação) {
 
 	var matérias []entidades.CursoMatéria
 
 	query := "SELECT ID_Curso, ID_Matéria, Período, Tipo, Status, Observação FROM " +
 		bd.NomeDaTabelaSecundária + " WHERE ID_Curso = ?"
 
-	linhas, erro := bd.BD.Query(query, id)
+	linhas, erro := bd.BD.Query(query, idCurso)
 	if erro != nil {
 		bd.Log.Aviso.Println(
-			"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
+			"Erro ao pegar as matérias do Curso com o seguinte ID: "+idCurso.String(),
 			"\nErro: "+erro.Error(),
 		)
 
@@ -128,7 +128,7 @@ func (bd CursoBD) PegarMatérias(id id) (*[]entidades.CursoMatéria, *errors.Apl
 
 		if erro != nil {
 			bd.Log.Aviso.Println(
-				"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
+				"Erro ao pegar as matérias do Curso com o seguinte ID: "+idCurso.String(),
 				"\nErro: "+erro.Error(),
 			)
 
@@ -141,7 +141,7 @@ func (bd CursoBD) PegarMatérias(id id) (*[]entidades.CursoMatéria, *errors.Apl
 
 	if erro = linhas.Err(); erro != nil {
 		bd.Log.Aviso.Println(
-			"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
+			"Erro ao pegar as matérias do Curso com o seguinte ID: "+idCurso.String(),
 			"\nErro: "+erro.Error(),
 		)
 
@@ -203,8 +203,21 @@ func (bd CursoBD) Pegar(id id) (*entidades.Curso, *errors.Aplicação) {
 
 // DeletarMatérias é uma função que deleta as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
-func (bd CursoBD) DeletarMatérias(id id) *errors.Aplicação {
-	bd.Log.Informação.Print("Deletando as matérias do Curso com o seguinte ID: " + id.String())
+func (bd CursoBD) DeletarMatérias(idCurso id) *errors.Aplicação {
+	bd.Log.Informação.Print("Deletando as matérias do Curso com o seguinte ID: " + idCurso.String())
+
+	query := "DELETE FROM " + bd.NomeDaTabelaSecundária + " WHERE ID_Curso = ?"
+
+	_, err := bd.BD.Exec(query, idCurso)
+
+	if err != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao tentar deletar as matérias do curso com o seguinte ID: "+idCurso.String(),
+			"\nErro: "+err.Error(),
+		)
+
+		return errors.New(errors.DeletarCursoMatérias, nil, err)
+	}
 
 	return nil
 }
@@ -213,5 +226,23 @@ func (bd CursoBD) DeletarMatérias(id id) *errors.Aplicação {
 func (bd CursoBD) Deletar(id id) *errors.Aplicação {
 	bd.Log.Informação.Print("Deletando Curso com o seguinte ID: " + id.String())
 
-	return bd.DeletarMatérias(id)
+	erro := bd.DeletarMatérias(id)
+	if erro != nil {
+		return errors.New(errors.DeletarCurso, erro, nil)
+	}
+
+	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"
+
+	_, erroBD := bd.BD.Exec(query, id)
+
+	if erroBD != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao tentar deletar curso com o seguinte ID: "+id.String(),
+			"\nErro: "+erroBD.Error(),
+		)
+
+		return errors.New(errors.DeletarCurso, nil, erroBD)
+	}
+
+	return nil
 }

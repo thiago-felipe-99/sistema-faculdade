@@ -146,6 +146,14 @@ func main() {
 
 		log.Println(prettyStruct(cursoSalvo))
 
+		err = Data.Curso.Deletar(curso.ID)
+		if err != nil {
+			log.Println(err.Error())
+			if err.ErroExterno != nil {
+				log.Panicln(err.ErroExterno.Error())
+			}
+		}
+
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})

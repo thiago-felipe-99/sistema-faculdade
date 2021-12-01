@@ -21,7 +21,7 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *errors.Aplicação {
 	query := "INSERT INTO " + bd.NomeDaTabela +
 		" (ID, Nome, CPF, Data_De_Nascimento, Senha) VALUES (?, ?, ?, ?, ?)"
 
-	_, err := bd.BD.Exec(
+	_, erro := bd.BD.Exec(
 		query,
 		pessoa.ID,
 		pessoa.Nome,
@@ -30,12 +30,12 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *errors.Aplicação {
 		pessoa.Senha,
 	)
 
-	if err != nil {
+	if erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao inserir a Pessoa com o seguinte ID: "+pessoa.ID.String(),
-			"\nErro: "+err.Error(),
+			"\nErro: "+erro.Error(),
 		)
-		return errors.New(errors.InserirPessoa, nil, err)
+		return errors.New(errors.InserirPessoa, nil, erro)
 	}
 
 	return nil
@@ -49,7 +49,7 @@ func (bd PessoaBD) Atualizar(id id, pessoa *entidades.Pessoa) *errors.Aplicaçã
 		" SET Nome = ?, CPF = ?, Data_De_Nascimento = ?, Senha = ?" +
 		" WHERE ID = ?"
 
-	_, err := bd.BD.Exec(
+	_, erro := bd.BD.Exec(
 		query,
 		pessoa.Nome,
 		pessoa.CPF,
@@ -58,12 +58,12 @@ func (bd PessoaBD) Atualizar(id id, pessoa *entidades.Pessoa) *errors.Aplicaçã
 		id,
 	)
 
-	if err != nil {
+	if erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao atualizar a Pessoa com o seguinte ID: "+id.String(),
-			"\nErro: "+err.Error(),
+			"\nErro: "+erro.Error(),
 		)
-		return errors.New(errors.AtualizarPessoa, nil, err)
+		return errors.New(errors.AtualizarPessoa, nil, erro)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (bd PessoaBD) Pegar(id id) (*entidades.Pessoa, *errors.Aplicação) {
 
 	row := bd.BD.QueryRow(query, id)
 
-	err := row.Scan(
+	erro := row.Scan(
 		&pessoa.ID,
 		&pessoa.Nome,
 		&pessoa.CPF,
@@ -87,21 +87,21 @@ func (bd PessoaBD) Pegar(id id) (*entidades.Pessoa, *errors.Aplicação) {
 		&pessoa.Senha,
 	)
 
-	if err != nil {
+	if erro != nil {
 
-		if err == sql.ErrNoRows {
+		if erro == sql.ErrNoRows {
 			bd.Log.Aviso.Println(
 				"Não foi encontrada nenhuma a pessoa com o seguinte ID: "+id.String(),
-				"\nErro: "+err.Error(),
+				"\nErro: "+erro.Error(),
 			)
-			return nil, errors.New(errors.PessoaNãoEncontrada, nil, err)
+			return nil, errors.New(errors.PessoaNãoEncontrada, nil, erro)
 		}
 
 		bd.Log.Aviso.Println(
 			"Erro ao tentar econtrar a pessoa com o seguinte ID: "+id.String(),
-			"\nErro: "+err.Error(),
+			"\nErro: "+erro.Error(),
 		)
-		return nil, errors.New(errors.PegarPessoa, nil, err)
+		return nil, errors.New(errors.PegarPessoa, nil, erro)
 
 	}
 
@@ -114,15 +114,15 @@ func (bd PessoaBD) Deletar(id id) *errors.Aplicação {
 
 	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"
 
-	_, err := bd.BD.Exec(query, id)
+	_, erro := bd.BD.Exec(query, id)
 
-	if err != nil {
+	if erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao tentar deletar a pessoa com o seguinte ID: "+id.String(),
-			"\nErro: "+err.Error(),
+			"\nErro: "+erro.Error(),
 		)
 
-		return errors.New(errors.DeletarPessoa, nil, err)
+		return errors.New(errors.DeletarPessoa, nil, erro)
 	}
 
 	return nil

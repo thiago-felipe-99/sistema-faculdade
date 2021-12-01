@@ -77,7 +77,7 @@ func adiconarCursoMatérias(matérias *[]entidades.CursoMatéria, t *testing.T) 
 
 	if !reflect.DeepEqual(&matérias, &matériasSalvas) {
 		t.Fatalf(
-			"Erro ao salvar a pessoa no banco de dados, queria %v, chegou %v",
+			"Erro ao salvar a curso no banco de dados, queria %v, chegou %v",
 			matérias,
 			matériasSalvas,
 		)
@@ -310,6 +310,132 @@ func TestCurso_tabelaInválida2(t *testing.T) {
 	if !padrão.MatchString(erro.ErroExterno.Error()) {
 		t.Fatalf(
 			"Erro ao pegar o curso queria: %s, chegou %s",
+			texto,
+			erro.ErroExterno.Error(),
+		)
+	}
+}
+
+func TestDeletarCurso(t *testing.T) {
+	cursoTeste := criarCursoAleatório()
+
+	adiconarCurso(cursoTeste, t)
+
+	removerCurso(cursoTeste.ID, t)
+
+	_, erro := cursoBD.Pegar(cursoTeste.ID)
+	if erro == nil || !erro.ÉPadrão(errors.CursoNãoEncontrado) {
+		t.Fatalf(
+			"Deveria retonar um erro de curso não encontrado, retonou %s",
+			erro,
+		)
+	}
+}
+
+func TestDeletarCurso_invalídoID(t *testing.T) {
+	id := uuid.New()
+
+	removerCurso(id, t)
+
+	_, erro := cursoBD.Pegar(id)
+	if erro == nil || !erro.ÉPadrão(errors.CursoNãoEncontrado) {
+		t.Fatalf(
+			"Deveria retonar um erro de curso não encontrado, retonou %s",
+			erro,
+		)
+	}
+}
+
+func TestDeletarCurso_tabelaInválida(t *testing.T) {
+	texto := `Table .* doesn't exist`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatalf("Erro ao compilar o regex: %s", texto)
+	}
+
+	erro := cursoBDInválido.Deletar(uuid.New())
+
+	if erro == nil || erro.ErroInicial == nil || erro.ErroInicial.ErroExterno == nil {
+		t.Fatalf("Não foi enviado erro do sistema")
+	}
+
+	if !padrão.MatchString(erro.ErroInicial.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao pegar curso no banco de dados, queria %v, chegou %v",
+			texto,
+			erro.ErroInicial.ErroExterno.Error(),
+		)
+	}
+}
+
+func TestDeletarCurso_tabelaInválida2(t *testing.T) {
+	texto := `Table .* doesn't exist`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatalf("Erro ao compilar o regex: %s", texto)
+	}
+
+	erro := cursoBDInválido2.Deletar(uuid.New())
+
+	if erro == nil || erro.ErroExterno == nil {
+		t.Fatalf("Não foi enviado erro do sistema")
+	}
+
+	if !padrão.MatchString(erro.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao pegar curso no banco de dados, queria %v, chegou %v",
+			texto,
+			erro.ErroExterno.Error(),
+		)
+	}
+}
+
+func TestDeletarCursoMatérias(t *testing.T) {
+	cursoTeste := criarCursoAleatório()
+
+	adiconarCurso(cursoTeste, t)
+
+	removerCursoMatérias(cursoTeste.ID, t)
+
+	matérias, erro := cursoBD.PegarMatérias(cursoTeste.ID)
+	if erro != nil || len(*matérias) != 0 {
+		t.Fatalf(
+			"Deveria retonar um erro de curso não encontrado, retonou %s",
+			erro,
+		)
+	}
+}
+
+func TestDeletarCursoMatérias_invalídoID(t *testing.T) {
+	id := uuid.New()
+
+	removerCursoMatérias(id, t)
+
+	matérias, erro := cursoBD.PegarMatérias(id)
+	if erro != nil || len(*matérias) != 0 {
+		t.Fatalf(
+			"Deveria retonar um erro de curso não encontrado, retonou %s",
+			erro,
+		)
+	}
+}
+
+func TestDeletarCursoMatérias_tabelaInválida(t *testing.T) {
+	texto := `Table .* doesn't exist`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatalf("Erro ao compilar o regex: %s", texto)
+	}
+
+	erro := cursoBDInválido.DeletarMatérias(uuid.New())
+
+	if erro == nil || erro.ErroExterno == nil {
+		t.Fatalf("Não foi enviado erro do sistema")
+	}
+
+	if !padrão.MatchString(erro.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao pegar curso no banco de dados, queria %v, chegou %v",
 			texto,
 			erro.ErroExterno.Error(),
 		)

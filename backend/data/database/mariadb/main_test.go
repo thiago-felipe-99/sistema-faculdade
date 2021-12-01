@@ -1,12 +1,83 @@
 package mariadb
 
 import (
+	"log"
+	"math/rand"
+	"os"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade/env"
 )
+
+var (
+	pessoaBD         *PessoaBD
+	pessoaBDInválido *PessoaBD
+	cursoBD          *CursoBD
+	cursoBDInválido  *CursoBD
+)
+
+var ambiente = env.PegandoVariáveisDeAmbiente()
+
+//nolint:funlen
+func TestMain(m *testing.M) {
+
+	rand.Seed(time.Now().UnixNano())
+
+	config := mysql.Config{
+		User:                 "Teste",
+		Passwd:               "Teste",
+		Net:                  "tcp",
+		Addr:                 "127.0.0.1:" + ambiente.Portas.BDAdministrativo,
+		DBName:               "Teste",
+		AllowNativePasswords: true,
+		ParseTime:            true,
+	}
+
+	connexão, erro := NovoBD(config.FormatDSN())
+	if erro != nil {
+		log.Fatalf("Erro ao configurar o banco de dados: %s", erro)
+	}
+
+	erroPing := connexão.Ping()
+	if erroPing != nil {
+		log.Fatalf("Erro ao conectar o banco de dados: %s", erroPing)
+	}
+
+	pessoaBD = &PessoaBD{
+		Conexão:      *NovaConexão(os.Stderr, connexão),
+		NomeDaTabela: "Pessoa",
+	}
+
+	pessoaBDInválido = &PessoaBD{
+		Conexão:      *NovaConexão(os.Stderr, connexão),
+		NomeDaTabela: "PessoaErrada",
+	}
+
+	cursoBD = &CursoBD{
+		Conexão:                *NovaConexão(os.Stderr, connexão),
+		NomeDaTabela:           "Curso",
+		NomeDaTabelaSecundária: "CursoMatérias",
+	}
+
+	cursoBDInválido = &CursoBD{
+		Conexão:                *NovaConexão(os.Stderr, connexão),
+		NomeDaTabela:           "CursoMatérias",
+		NomeDaTabelaSecundária: "CursoMatériasErrado",
+	}
+
+	código := m.Run()
+
+	query := "DELETE FROM Curso"
+	connexão.Exec(query)
+
+	query = "DELETE FROM Pessoa"
+	connexão.Exec(query)
+
+	os.Exit(código)
+}
 
 // TestNovoBD verifica se a inicialização do banco de dados está okay.
 //nolint: paralleltest

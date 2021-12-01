@@ -2,69 +2,18 @@ package mariadb
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
-	"os"
 	"reflect"
 	"regexp"
 	"testing"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/data"
-	"thiagofelipe.com.br/sistema-faculdade/env"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-var bd *PessoaBD
-
-var bdInválido *PessoaBD
-
-func TestMain(m *testing.M) {
-	ambiente := env.PegandoVariáveisDeAmbiente()
-
-	config := mysql.Config{
-		User:                 "Teste",
-		Passwd:               "Teste",
-		Net:                  "tcp",
-		Addr:                 "127.0.0.1:" + ambiente.Portas.BDAdministrativo,
-		DBName:               "Teste",
-		AllowNativePasswords: true,
-		ParseTime:            true,
-	}
-
-	connexão, erro := NovoBD(config.FormatDSN())
-	if erro != nil {
-		log.Fatalf("Erro ao configurar o banco de dados: %s", erro)
-	}
-
-	erroPing := connexão.Ping()
-	if erroPing != nil {
-		log.Fatalf("Erro ao conectar o banco de dados: %s", erroPing)
-	}
-
-	bd = &PessoaBD{
-		Conexão:      *NovaConexão(os.Stderr, connexão),
-		NomeDaTabela: "Pessoa",
-	}
-
-	bdInválido = &PessoaBD{
-		Conexão:      *NovaConexão(os.Stderr, connexão),
-		NomeDaTabela: "PessoaErrada",
-	}
-
-	código := m.Run()
-
-	query := "DELETE FROM Pessoa"
-	bd.BD.Exec(query)
-
-	os.Exit(código)
-}
-
 func criarPessoaAleatória() *data.Pessoa {
-	rand.Seed(time.Now().UnixNano())
-
 	dataAgora := time.Now().UTC()
 	dataAgora = dataAgora.Truncate(24 * time.Hour)
 
@@ -81,12 +30,12 @@ func criarPessoaAleatória() *data.Pessoa {
 
 func adiconarPessoa(pessoa *data.Pessoa, t *testing.T) {
 
-	erro := bd.Inserir(pessoa)
+	erro := pessoaBD.Inserir(pessoa)
 	if erro != nil {
 		t.Fatalf("Erro ao inserir a pessoa no banco de dados: %s", erro.Error())
 	}
 
-	pessoaSalva, erro := bd.Pegar(pessoa.ID)
+	pessoaSalva, erro := pessoaBD.Pegar(pessoa.ID)
 	if erro != nil {
 		t.Fatalf("Erro ao pegar a pessoa no banco de dados: %s", erro.Error())
 	}
@@ -105,20 +54,21 @@ func adiconarPessoa(pessoa *data.Pessoa, t *testing.T) {
 }
 
 func removerPessoaTeste(id id, t *testing.T) {
-	erro := bd.Deletar(id)
+	erro := pessoaBD.Deletar(id)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o usuário teste: %v", erro.Error())
 	}
 }
 
-func TestInserir(t *testing.T) {
+func TestInserirPessoa(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
 	adiconarPessoa(pessoaTeste, t)
 }
 
-func TestInserir_duplicadoID(t *testing.T) {
-	padrão, erroRegex := regexp.Compile(`Duplicate entry.*PRIMARY`)
+func TestInserirPessoa_duplicadoID(t *testing.T) {
+	texto := `Duplicate entry.*PRIMARY`
+	padrão, erroRegex := regexp.Compile(texto)
 	if erroRegex != nil {
 		t.Fatal("Erro ao compilar o regex")
 	}
@@ -129,21 +79,23 @@ func TestInserir_duplicadoID(t *testing.T) {
 
 	pessoaTeste.CPF = fmt.Sprintf("%011d", rand.Intn(99999999999))
 
-	erro := bd.Inserir(pessoaTeste)
+	erro := pessoaBD.Inserir(pessoaTeste)
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
 	}
 
 	if !padrão.MatchString(erro.ErroExterno.Error()) {
 		t.Fatalf(
-			"Erro ao inserir a pessoa queria: Duplicate entry for key 'PRIMARY', chegou %s",
+			"Erro ao inserir a pessoa queria: %s, chegou %s",
+			texto,
 			erro.ErroExterno.Error(),
 		)
 	}
 }
 
-func TestInserir_duplicadoCPF(t *testing.T) {
-	padrão, erroRegex := regexp.Compile(`Duplicate entry.*CPF`)
+func TestInserirPessoa_duplicadoCPF(t *testing.T) {
+	texto := `Duplicate entry.*CPF`
+	padrão, erroRegex := regexp.Compile(texto)
 	if erroRegex != nil {
 		t.Fatal("Erro ao compilar o regex")
 	}
@@ -156,7 +108,7 @@ func TestInserir_duplicadoCPF(t *testing.T) {
 
 	pessoaTeste.ID = uuid.New()
 
-	erro := bd.Inserir(pessoaTeste)
+	erro := pessoaBD.Inserir(pessoaTeste)
 
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
@@ -164,13 +116,14 @@ func TestInserir_duplicadoCPF(t *testing.T) {
 
 	if !padrão.MatchString(erro.ErroExterno.Error()) {
 		t.Fatalf(
-			"Erro ao inserir a pessoa queria: Duplicate entry for key 'CPF', chegou %s",
+			"Erro ao inserir a pessoa queria: %s, chegou %s",
+			texto,
 			erro.ErroExterno.Error(),
 		)
 	}
 }
 
-func TestAtualizar(t *testing.T) {
+func TestAtualizarPessoa(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
 	adiconarPessoa(pessoaTeste, t)
@@ -183,12 +136,12 @@ func TestAtualizar(t *testing.T) {
 	pessoaTeste.DataDeNascimento = dataAgora.AddDate(0, 0, 30)
 	pessoaTeste.Senha = "Senha nova"
 
-	erro := bd.Atualizar(pessoaTeste.ID, pessoaTeste)
+	erro := pessoaBD.Atualizar(pessoaTeste.ID, pessoaTeste)
 	if erro != nil {
 		t.Fatalf("Erro ao atualizar a pessoa teste: %s", erro.Error())
 	}
 
-	pessoaSalva, erro := bd.Pegar(pessoaTeste.ID)
+	pessoaSalva, erro := pessoaBD.Pegar(pessoaTeste.ID)
 	if erro != nil {
 		t.Fatalf("Erro ao pegar a pessoa no banco de dados: %s", erro.Error())
 	}
@@ -202,19 +155,20 @@ func TestAtualizar(t *testing.T) {
 	}
 }
 
-func TestAtualizar_duplicadoID(t *testing.T) {
+func TestAtualizarPessoa_duplicadoID(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
 	adiconarPessoa(pessoaTeste, t)
 
-	erro := bd.Atualizar(uuid.New(), pessoaTeste)
+	erro := pessoaBD.Atualizar(uuid.New(), pessoaTeste)
 	if erro != nil {
 		t.Fatalf("Erro ao atualizar a pessoa teste: %s", erro.Error())
 	}
 }
 
-func TestAtualizar_duplicadoCPF(t *testing.T) {
-	padrão, erroRegex := regexp.Compile(`Duplicate entry.*CPF`)
+func TestAtualizarPessoa_duplicadoCPF(t *testing.T) {
+	texto := `Duplicate entry.*CPF`
+	padrão, erroRegex := regexp.Compile(texto)
 	if erroRegex != nil {
 		t.Fatal("Erro ao compilar o regex")
 	}
@@ -227,25 +181,26 @@ func TestAtualizar_duplicadoCPF(t *testing.T) {
 
 	adiconarPessoa(pessoaTeste2, t)
 
-	erro := bd.Atualizar(pessoaTeste1.ID, pessoaTeste2)
+	erro := pessoaBD.Atualizar(pessoaTeste1.ID, pessoaTeste2)
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
 	}
 
 	if !padrão.MatchString(erro.ErroExterno.Error()) {
 		t.Fatalf(
-			"Erro ao inserir a pessoa queria: Duplicate entry for key 'CPF', chegou %s",
+			"Erro ao inserir a pessoa queria: %s, chegou %s",
+			texto,
 			erro.ErroExterno.Error(),
 		)
 	}
 }
 
-func TestPegar(t *testing.T) {
+func TestPegarPessoa(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
 	adiconarPessoa(pessoaTeste, t)
 
-	pessoaSalva, erro := bd.Pegar(pessoaTeste.ID)
+	pessoaSalva, erro := pessoaBD.Pegar(pessoaTeste.ID)
 	if erro != nil {
 		t.Fatalf("Erro ao pegar a pessoa no banco de dados: %s", erro.Error())
 	}
@@ -259,8 +214,8 @@ func TestPegar(t *testing.T) {
 	}
 }
 
-func TestPegar_inválidoID(t *testing.T) {
-	_, erro := bd.Pegar(uuid.New())
+func TestPegarPessoa_inválidoID(t *testing.T) {
+	_, erro := pessoaBD.Pegar(uuid.New())
 
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
@@ -275,14 +230,14 @@ func TestPegar_inválidoID(t *testing.T) {
 	}
 }
 
-func TestPegar_tabelaInválida(t *testing.T) {
+func TestPegarPessoa_tabelaInválida(t *testing.T) {
 	texto := `Table .* doesn't exist`
 	padrão, erroRegex := regexp.Compile(texto)
 	if erroRegex != nil {
 		t.Fatalf("Erro ao compilar o regex: %s", texto)
 	}
 
-	_, erro := bdInválido.Pegar(uuid.New())
+	_, erro := pessoaBDInválido.Pegar(uuid.New())
 
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
@@ -297,7 +252,7 @@ func TestPegar_tabelaInválida(t *testing.T) {
 	}
 }
 
-func TestDeletar(t *testing.T) {
+func TestDeletarPessoa(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
 	adiconarPessoa(pessoaTeste, t)
@@ -305,18 +260,18 @@ func TestDeletar(t *testing.T) {
 	removerPessoaTeste(pessoaTeste.ID, t)
 }
 
-func TestDeletar_invalídoID(t *testing.T) {
+func TestDeletarPessoa_invalídoID(t *testing.T) {
 	removerPessoaTeste(uuid.New(), t)
 }
 
-func TestDeletar_tabelaInválida(t *testing.T) {
+func TestDeletarPessoa_tabelaInválida(t *testing.T) {
 	texto := `Table .* doesn't exist`
 	padrão, erroRegex := regexp.Compile(texto)
 	if erroRegex != nil {
 		t.Fatalf("Erro ao compilar o regex: %s", texto)
 	}
 
-	erro := bdInválido.Deletar(uuid.New())
+	erro := pessoaBDInválido.Deletar(uuid.New())
 
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")

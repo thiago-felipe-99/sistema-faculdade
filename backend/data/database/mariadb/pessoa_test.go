@@ -221,7 +221,7 @@ func TestPegarPessoa_inválidoID(t *testing.T) {
 		t.Fatalf("Não foi enviado erro do sistema")
 	}
 
-	if !erro.IsDefault(errors.PessoaNãoEncontrada) {
+	if !erro.ÉPadrão(errors.PessoaNãoEncontrada) {
 		t.Fatalf(
 			"Erro ao pegar pessoa no banco de dados, queria %v, chegou %v",
 			errors.PessoaNãoEncontrada.Error(),

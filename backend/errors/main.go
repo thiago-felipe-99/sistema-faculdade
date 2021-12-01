@@ -12,7 +12,7 @@ func (err *Aplicação) Error() string {
 	return err.Mensagem
 }
 
-func (err *Aplicação) IsDefault(defaultError *Padrão) bool {
+func (err *Aplicação) ÉPadrão(defaultError *Padrão) bool {
 	return err.Número == defaultError.Número
 }
 

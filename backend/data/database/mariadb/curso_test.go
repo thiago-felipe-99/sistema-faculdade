@@ -133,7 +133,7 @@ func TestInserirCursoMatérias_semTamanhoMínimo(t *testing.T) {
 	matériasVazia := &[]entidades.CursoMatéria{}
 
 	erro := cursoBD.InserirMatérias(matériasVazia)
-	if !erro.IsDefault(errors.InserirCursoMatériasTamanhoMínimo) {
+	if !erro.ÉPadrão(errors.InserirCursoMatériasTamanhoMínimo) {
 		t.Fatalf(
 			"Erro ao inserir as matérias do curso, esperava \"%s\", chegou \"%s\"",
 			errors.InserirCursoMatériasTamanhoMínimo.Mensagem,
@@ -195,6 +195,121 @@ func TestInserirCurso_duplicadoID(t *testing.T) {
 	if !padrão.MatchString(erro.ErroExterno.Error()) {
 		t.Fatalf(
 			"Erro ao inserir o curso queria: %s, chegou %s",
+			texto,
+			erro.ErroExterno.Error(),
+		)
+	}
+}
+
+func TestPegarCursoMatérias(t *testing.T) {
+	cursoTeste := criarCursoAleatório()
+
+	adiconarCurso(cursoTeste, t)
+
+	matériasSalvas, erro := cursoBD.PegarMatérias(cursoTeste.ID)
+	if erro != nil {
+		t.Fatalf("Não deveria retorna um erro, retornou: %s", erro.Error())
+	}
+
+	if !reflect.DeepEqual(&cursoTeste.Matérias, matériasSalvas) {
+		t.Fatalf(
+			"Erro ao salvar as matérias do curso no banco de dados, queria %v, chegou %v",
+			&cursoTeste.Matérias,
+			matériasSalvas,
+		)
+	}
+
+}
+
+func TestPegarCursoMatérias_idInválido(t *testing.T) {
+	matérias, erro := cursoBD.PegarMatérias(uuid.New())
+	if erro != nil {
+		t.Fatalf("Não deveria retornar um erro")
+	}
+
+	if len(*matérias) != 0 {
+		t.Fatalf("Deveria retornar uma lista vazia de curso")
+	}
+}
+
+func TestPegarCurso_bdInválido(t *testing.T) {
+	texto := `Table .* doesn't exist`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatal("Erro ao compilar o regex")
+	}
+
+	_, erro := cursoBDInválido.PegarMatérias(uuid.New())
+	if erro == nil || erro.ErroExterno == nil {
+		t.Fatalf("Deveria ter um erro de tabela inválida")
+	}
+
+	if !padrão.MatchString(erro.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao pegar o curso queria: %s, chegou %s",
+			texto,
+			erro.ErroExterno.Error(),
+		)
+	}
+}
+
+func TestPegarCurso(t *testing.T) {
+	cursoTeste := criarCursoAleatório()
+
+	adiconarCurso(cursoTeste, t)
+}
+
+func TestPegarCurso_idInválido(t *testing.T) {
+	_, erro := cursoBD.Pegar(uuid.New())
+	if erro == nil {
+		t.Fatalf("Deveria ter um erro de curso não encontrado")
+	}
+
+	if !erro.ÉPadrão(errors.CursoNãoEncontrado) {
+		t.Fatalf(
+			"Espera o erro de não encontrar o curso, queria \"%s\", chegou \"%s\"",
+			errors.CursoNãoEncontrado,
+			erro.Mensagem,
+		)
+	}
+}
+
+func TestCurso_tabelaInválida(t *testing.T) {
+	texto := `Table .* doesn't exist`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatal("Erro ao compilar o regex")
+	}
+
+	_, erro := cursoBDInválido.Pegar(uuid.New())
+	if erro == nil || erro.ErroInicial == nil || erro.ErroInicial.ErroExterno == nil {
+		t.Fatalf("Deveria ter um erro de tabela inválida")
+	}
+
+	if !padrão.MatchString(erro.ErroInicial.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao pegar o curso queria: %s, chegou %s",
+			texto,
+			erro.ErroExterno.Error(),
+		)
+	}
+}
+
+func TestCurso_tabelaInválida2(t *testing.T) {
+	texto := `Table .* doesn't exist`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatal("Erro ao compilar o regex")
+	}
+
+	_, erro := cursoBDInválido2.Pegar(uuid.New())
+	if erro == nil || erro.ErroExterno == nil {
+		t.Fatalf("Deveria ter um erro de tabela inválida")
+	}
+
+	if !padrão.MatchString(erro.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao pegar o curso queria: %s, chegou %s",
 			texto,
 			erro.ErroExterno.Error(),
 		)

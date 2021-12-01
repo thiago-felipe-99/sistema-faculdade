@@ -53,7 +53,7 @@ var (
 		Mensagem: "Erro ao atualizar o curso",
 		Número:   AtualizarCursoNúmero,
 	}
-	CursoNãoEncontrada = &Padrão{
+	CursoNãoEncontrado = &Padrão{
 		Mensagem: "Curso não encontrada",
 		Número:   CursoNãoEncontradoNúmero,
 	}
@@ -77,7 +77,7 @@ var (
 		Mensagem: "Erro ao atualizar as matérias do curso",
 		Número:   AtualizarCursoMatériasNúmero,
 	}
-	CursoMatériasNãoEncontrada = &Padrão{
+	CursoMatériasNãoEncontrado = &Padrão{
 		Mensagem: "Matérias do curso não encontradas",
 		Número:   CursoMatériasNãoEncontradoNúmero,
 	}

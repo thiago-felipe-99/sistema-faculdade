@@ -1,6 +1,8 @@
 package mariadb
 
 import (
+	"database/sql"
+
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
@@ -154,7 +156,9 @@ func (bd CursoBD) Pegar(id id) (*entidades.Curso, *errors.Aplicação) {
 	bd.Log.Informação.Println("Pegando Curso com o seguinte ID: " + id.String())
 
 	matérias, erroAplicação := bd.PegarMatérias(id)
-	if erroAplicação != nil {
+	if erroAplicação != nil &&
+		!erroAplicação.ÉPadrão(errors.CursoMatériasNãoEncontrado) {
+
 		bd.Log.Aviso.Println(
 			"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
 			"\nErro: "+erroAplicação.Error(),
@@ -179,6 +183,18 @@ func (bd CursoBD) Pegar(id id) (*entidades.Curso, *errors.Aplicação) {
 	)
 
 	if erro != nil {
+		if erro == sql.ErrNoRows {
+			bd.Log.Aviso.Println(
+				"Não foi encontrada nenhum curso com o seguinte ID: "+id.String(),
+				"\nErro: "+erro.Error(),
+			)
+			return nil, errors.New(errors.CursoNãoEncontrado, nil, erro)
+		}
+
+		bd.Log.Aviso.Println(
+			"Erro ao pegar o curso com o seguinte ID: "+id.String(),
+			"\nErro: "+erro.Error(),
+		)
 		return nil, errors.New(errors.PegarCurso, nil, erro)
 	}
 

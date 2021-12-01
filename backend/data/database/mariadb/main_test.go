@@ -19,6 +19,7 @@ var (
 	pessoaBDInválido *PessoaBD
 	cursoBD          *CursoBD
 	cursoBDInválido  *CursoBD
+	cursoBDInválido2 *CursoBD
 )
 
 var ambiente = env.PegandoVariáveisDeAmbiente()
@@ -87,6 +88,12 @@ func TestMain(m *testing.M) {
 		Conexão:                *NovaConexão(logs.Curso, bd),
 		NomeDaTabela:           "CursoErrado",
 		NomeDaTabelaSecundária: "CursoMatériasErrado",
+	}
+
+	cursoBDInválido2 = &CursoBD{
+		Conexão:                *NovaConexão(logs.Curso, bd),
+		NomeDaTabela:           "CursoErrado",
+		NomeDaTabelaSecundária: "CursoMatérias",
 	}
 
 	código := m.Run()

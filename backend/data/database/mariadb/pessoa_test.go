@@ -258,10 +258,28 @@ func TestDeletarPessoa(t *testing.T) {
 	adiconarPessoa(pessoaTeste, t)
 
 	removerPessoa(pessoaTeste.ID, t)
+
+	_, erro := pessoaBD.Pegar(pessoaTeste.ID)
+	if erro == nil || !erro.ÉPadrão(errors.PessoaNãoEncontrada) {
+		t.Fatalf(
+			"Deveria retonar um erro de pessoa não encontrada, retonou %s",
+			erro,
+		)
+	}
 }
 
 func TestDeletarPessoa_invalídoID(t *testing.T) {
-	removerPessoa(uuid.New(), t)
+	id := uuid.New()
+
+	removerPessoa(id, t)
+
+	_, erro := pessoaBD.Pegar(id)
+	if erro == nil || !erro.ÉPadrão(errors.PessoaNãoEncontrada) {
+		t.Fatalf(
+			"Deveria retonar um erro de pessoa não encontrada, retonou %s",
+			erro,
+		)
+	}
 }
 
 func TestDeletarPessoa_tabelaInválida(t *testing.T) {

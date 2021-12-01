@@ -9,19 +9,19 @@ import (
 
 	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/aleatorio"
-	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 )
 
 const MATÉRIAS_MÁXIMAS = 20
 const TAMANHO_MÁXIMO_PALAVRA = 25
 
-func criarMatériasCursoAleatórios(idCurso id) *[]data.CursoMatéria {
-	matérias := make([]data.CursoMatéria, rand.Intn(MATÉRIAS_MÁXIMAS))
+func criarMatériasCursoAleatórios(idCurso id) *[]entidades.CursoMatéria {
+	matérias := make([]entidades.CursoMatéria, rand.Intn(MATÉRIAS_MÁXIMAS))
 
 	for i := range matérias {
-		matérias[i] = data.CursoMatéria{
-			ID_Curso:   idCurso,
-			ID_Matéria: uuid.New(),
+		matérias[i] = entidades.CursoMatéria{
+			IDCurso:    idCurso,
+			IDMatéria:  uuid.New(),
 			Status:     aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA)),
 			Período:    aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA)),
 			Tipo:       aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA)),
@@ -32,14 +32,14 @@ func criarMatériasCursoAleatórios(idCurso id) *[]data.CursoMatéria {
 	return &matérias
 }
 
-func criarCursoAleatório() *data.Curso {
+func criarCursoAleatório() *entidades.Curso {
 	id := uuid.New()
 
 	dataAgora := time.Now().UTC()
 	dataAgora = dataAgora.Truncate(24 * time.Hour)
 	dataFutura := dataAgora.AddDate(rand.Intn(50), rand.Intn(12), rand.Intn(28))
 
-	return &data.Curso{
+	return &entidades.Curso{
 		ID:                id,
 		Nome:              aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA)),
 		DataDeInício:      dataAgora,
@@ -48,7 +48,7 @@ func criarCursoAleatório() *data.Curso {
 	}
 }
 
-func adiconarCursoTeste(curso *data.Curso, t *testing.T) {
+func adiconarCursoTeste(curso *entidades.Curso, t *testing.T) {
 
 	erro := cursoBD.Inserir(curso)
 	if erro != nil {
@@ -81,7 +81,7 @@ func removerCursoTeste(id id, t *testing.T) {
 }
 
 func TestInserirCursoMatérias(t *testing.T) {
-	var matérias []data.CursoMatéria
+	var matérias []entidades.CursoMatéria
 
 	índiceMáximo := 5
 	for índice := 0; índiceMáximo > índice; índice++ {

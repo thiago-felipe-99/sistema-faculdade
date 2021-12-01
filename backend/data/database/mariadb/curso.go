@@ -1,7 +1,7 @@
 package mariadb
 
 import (
-	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
@@ -14,7 +14,7 @@ type CursoBD struct {
 }
 
 // InserirMatérias inseres as matérias de um curso no banco de dados MariaDB.
-func (bd CursoBD) InserirMatérias(matérias *[]data.CursoMatéria) *errors.Aplicação {
+func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *errors.Aplicação {
 	bd.Log.Informação.Println("Inserindo matérias no Curso")
 
 	if len(*matérias) <= 0 {
@@ -29,8 +29,8 @@ func (bd CursoBD) InserirMatérias(matérias *[]data.CursoMatéria) *errors.Apli
 		query += " (?, ?, ?, ?, ?, ?),"
 		params = append(
 			params,
-			matéria.ID_Curso,
-			matéria.ID_Matéria,
+			matéria.IDCurso,
+			matéria.IDMatéria,
 			matéria.Período,
 			matéria.Tipo,
 			matéria.Status,
@@ -52,7 +52,7 @@ func (bd CursoBD) InserirMatérias(matérias *[]data.CursoMatéria) *errors.Apli
 }
 
 // Inserir é uma função que faz inserção de uma Curso no banco de dados MariaDB.
-func (bd CursoBD) Inserir(curso *data.Curso) *errors.Aplicação {
+func (bd CursoBD) Inserir(curso *entidades.Curso) *errors.Aplicação {
 	bd.Log.Informação.Println("Inserindo Curso com o seguinte ID: " + curso.ID.String())
 
 	query := "INSERT INTO " + bd.NomeDaTabela +
@@ -78,7 +78,7 @@ func (bd CursoBD) Inserir(curso *data.Curso) *errors.Aplicação {
 
 // AtualizarMatérias é uma função que atualiza as matérias dos cursos no banco
 // de dados MariaDB
-func (bd CursoBD) AtualizarMatérias(matérias *[]data.CursoMatéria) *errors.Aplicação {
+func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *errors.Aplicação {
 	bd.Log.Informação.Println("Atualizando matérias no Curso")
 
 	return nil
@@ -86,7 +86,7 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]data.CursoMatéria) *errors.Ap
 
 // Atualizar é uma função que faz a atualização de Curso no banco de dados
 // MariaDB.
-func (bd CursoBD) Atualizar(id id, curso *data.Curso) *errors.Aplicação {
+func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *errors.Aplicação {
 	bd.Log.Informação.Println("Atualizando Curso com o seguinte ID: " + id.String())
 
 	return nil
@@ -94,9 +94,9 @@ func (bd CursoBD) Atualizar(id id, curso *data.Curso) *errors.Aplicação {
 
 // PegarMatérias é uma função que retonar as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
-func (bd CursoBD) PegarMatérias(id id) (*[]data.CursoMatéria, *errors.Aplicação) {
+func (bd CursoBD) PegarMatérias(id id) (*[]entidades.CursoMatéria, *errors.Aplicação) {
 
-	var matérias []data.CursoMatéria
+	var matérias []entidades.CursoMatéria
 
 	query := "SELECT ID_Curso, ID_Matéria, Período, Tipo, Status, Observação FROM " +
 		bd.NomeDaTabelaSecundária + " WHERE ID_Curso = ?"
@@ -113,11 +113,11 @@ func (bd CursoBD) PegarMatérias(id id) (*[]data.CursoMatéria, *errors.Aplicaç
 	defer linhas.Close()
 
 	for linhas.Next() {
-		var matéria data.CursoMatéria
+		var matéria entidades.CursoMatéria
 
 		erro := linhas.Scan(
-			&matéria.ID_Curso,
-			&matéria.ID_Matéria,
+			&matéria.IDCurso,
+			&matéria.IDMatéria,
 			&matéria.Período,
 			&matéria.Tipo,
 			&matéria.Status,
@@ -150,7 +150,7 @@ func (bd CursoBD) PegarMatérias(id id) (*[]data.CursoMatéria, *errors.Aplicaç
 }
 
 // Pegar é uma função que retorna uma Curso do banco de dados MariaDB.
-func (bd CursoBD) Pegar(id id) (*data.Curso, *errors.Aplicação) {
+func (bd CursoBD) Pegar(id id) (*entidades.Curso, *errors.Aplicação) {
 	bd.Log.Informação.Println("Pegando Curso com o seguinte ID: " + id.String())
 
 	matérias, erroAplicação := bd.PegarMatérias(id)
@@ -163,7 +163,7 @@ func (bd CursoBD) Pegar(id id) (*data.Curso, *errors.Aplicação) {
 		return nil, errors.New(errors.PegarCurso, erroAplicação, nil)
 	}
 
-	var curso data.Curso
+	var curso entidades.Curso
 	curso.Matérias = *matérias
 
 	query := "SELECT ID, Nome, Data_De_Início, Data_De_Desativação FROM " +

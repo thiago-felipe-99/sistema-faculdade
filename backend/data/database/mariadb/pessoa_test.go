@@ -9,15 +9,15 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
-func criarPessoaAleatória() *data.Pessoa {
+func criarPessoaAleatória() *entidades.Pessoa {
 	dataAgora := time.Now().UTC()
 	dataAgora = dataAgora.Truncate(24 * time.Hour)
 
-	var pessoa = &data.Pessoa{
+	var pessoa = &entidades.Pessoa{
 		ID:               uuid.New(),
 		Nome:             "Teste Certo",
 		CPF:              fmt.Sprintf("%011d", rand.Intn(99999999999)),
@@ -28,7 +28,7 @@ func criarPessoaAleatória() *data.Pessoa {
 	return pessoa
 }
 
-func adiconarPessoa(pessoa *data.Pessoa, t *testing.T) {
+func adiconarPessoa(pessoa *entidades.Pessoa, t *testing.T) {
 
 	erro := pessoaBD.Inserir(pessoa)
 	if erro != nil {

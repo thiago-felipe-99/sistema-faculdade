@@ -1,7 +1,7 @@
 package mariadb
 
 import (
-	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
@@ -12,7 +12,7 @@ type ProfessorBD struct {
 }
 
 // Inserir é uma função que faz inserção de uma Professor no banco de dados MariaDB.
-func (bd ProfessorBD) Inserir(*data.Professor) *errors.Aplicação {
+func (bd ProfessorBD) Inserir(*entidades.Professor) *errors.Aplicação {
 	bd.Log.Informação.Println("Inserindo Professor")
 
 	return nil
@@ -20,14 +20,14 @@ func (bd ProfessorBD) Inserir(*data.Professor) *errors.Aplicação {
 
 // Atualizar é uma função que faz a atualização de Professor no banco de dados
 // MariaDB.
-func (bd ProfessorBD) Atualizar(id, *data.Professor) *errors.Aplicação {
+func (bd ProfessorBD) Atualizar(id, *entidades.Professor) *errors.Aplicação {
 	bd.Log.Informação.Println("Atualizando Professor")
 
 	return nil
 }
 
 // Pegar é uma função que retorna uma Professor do banco de dados MariaDB.
-func (bd ProfessorBD) Pegar(id) (*data.Professor, *errors.Aplicação) {
+func (bd ProfessorBD) Pegar(id) (*entidades.Professor, *errors.Aplicação) {
 	bd.Log.Informação.Println("Pegando Professor")
 
 	return nil, nil

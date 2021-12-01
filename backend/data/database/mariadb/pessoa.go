@@ -3,7 +3,7 @@ package mariadb
 import (
 	"database/sql"
 
-	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
@@ -15,7 +15,7 @@ type PessoaBD struct {
 }
 
 // Inserir é uma função que faz inserção de uma Pessoa no banco de dados MariaDB.
-func (bd PessoaBD) Inserir(pessoa *data.Pessoa) *errors.Aplicação {
+func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *errors.Aplicação {
 	bd.Log.Informação.Println("Inserindo Pessoa com o seguinte ID: " + pessoa.ID.String())
 
 	query := "INSERT INTO " + bd.NomeDaTabela +
@@ -42,7 +42,7 @@ func (bd PessoaBD) Inserir(pessoa *data.Pessoa) *errors.Aplicação {
 }
 
 // Atualizar é uma função que faz a atualização de Pessoa no banco de dados MariaDB.
-func (bd PessoaBD) Atualizar(id id, pessoa *data.Pessoa) *errors.Aplicação {
+func (bd PessoaBD) Atualizar(id id, pessoa *entidades.Pessoa) *errors.Aplicação {
 	bd.Log.Informação.Println("Atualizando Pessoa com o seguinte ID: " + id.String())
 
 	query := "UPDATE " + bd.NomeDaTabela +
@@ -69,10 +69,10 @@ func (bd PessoaBD) Atualizar(id id, pessoa *data.Pessoa) *errors.Aplicação {
 }
 
 // Pegar é uma função que retorna uma Pessoa do banco de dados MariaDB.
-func (bd PessoaBD) Pegar(id id) (*data.Pessoa, *errors.Aplicação) {
+func (bd PessoaBD) Pegar(id id) (*entidades.Pessoa, *errors.Aplicação) {
 	bd.Log.Informação.Println("Pegando Pessoa com o seguinte ID: " + id.String())
 
-	var pessoa data.Pessoa
+	var pessoa entidades.Pessoa
 
 	query := "SELECT ID, Nome, CPF, Data_De_Nascimento, Senha FROM " +
 		bd.NomeDaTabela + " WHERE ID = ?"

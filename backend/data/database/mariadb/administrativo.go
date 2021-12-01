@@ -1,7 +1,7 @@
 package mariadb
 
 import (
-	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
@@ -13,7 +13,7 @@ type AdministrativoBD struct {
 
 // Inserir é uma função que faz inserção de uma Administrativo no banco de dados
 // MariaDB.
-func (bd AdministrativoBD) Inserir(*data.Administrativo) *errors.Aplicação {
+func (bd AdministrativoBD) Inserir(*entidades.Administrativo) *errors.Aplicação {
 	bd.Log.Informação.Println("Inserindo Administrativo")
 
 	return nil
@@ -21,14 +21,14 @@ func (bd AdministrativoBD) Inserir(*data.Administrativo) *errors.Aplicação {
 
 // Atualizar é uma função que faz a atualização de Administrativo no banco de dados
 // MariaDB.
-func (bd AdministrativoBD) Atualizar(id, *data.Administrativo) *errors.Aplicação {
+func (bd AdministrativoBD) Atualizar(id, *entidades.Administrativo) *errors.Aplicação {
 	bd.Log.Informação.Println("Atualizando Administrativo")
 
 	return nil
 }
 
 // Pegar é uma função que retorna uma Administrativo do banco de dados MariaDB.
-func (bd AdministrativoBD) Pegar(id) (*data.Administrativo, *errors.Aplicação) {
+func (bd AdministrativoBD) Pegar(id) (*entidades.Administrativo, *errors.Aplicação) {
 	bd.Log.Informação.Println("Pegando Administrativo")
 
 	return nil, nil

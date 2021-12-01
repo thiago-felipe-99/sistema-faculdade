@@ -1,7 +1,7 @@
 package mariadb
 
 import (
-	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
@@ -12,21 +12,21 @@ type AlunoBD struct {
 }
 
 // Inserir é uma função que faz inserção de uma Aluno no banco de dados MariaDB.
-func (bd AlunoBD) Inserir(*data.Aluno) *errors.Aplicação {
+func (bd AlunoBD) Inserir(*entidades.Aluno) *errors.Aplicação {
 	bd.Log.Informação.Println("Inserindo Aluno")
 
 	return nil
 }
 
 // Atualizar é uma função que faz a atualização de Aluno no banco de dados MariaDB.
-func (bd AlunoBD) Atualizar(id, *data.Aluno) *errors.Aplicação {
+func (bd AlunoBD) Atualizar(id, *entidades.Aluno) *errors.Aplicação {
 	bd.Log.Informação.Println("Atualizando Aluno")
 
 	return nil
 }
 
 // Pegar é uma função que retorna uma Aluno do banco de dados MariaDB.
-func (bd AlunoBD) Pegar(id) (*data.Aluno, *errors.Aplicação) {
+func (bd AlunoBD) Pegar(id) (*entidades.Aluno, *errors.Aplicação) {
 	bd.Log.Informação.Println("Pegando Aluno")
 
 	return nil, nil

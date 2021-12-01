@@ -15,6 +15,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/data"
 	"thiagofelipe.com.br/sistema-faculdade/data/database/mariadb"
 	"thiagofelipe.com.br/sistema-faculdade/data/database/mongodb"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 )
 
 type logFiles struct {
@@ -182,18 +183,18 @@ func main() {
 		rand.Seed(time.Now().UnixNano())
 		id := uuid.New()
 
-		materias := &[]data.CursoMatéria{
+		materias := &[]entidades.CursoMatéria{
 			{
-				ID_Curso:   id,
-				ID_Matéria: uuid.New(),
+				IDCurso:    id,
+				IDMatéria:  uuid.New(),
 				Período:    "Teste",
 				Tipo:       "Não sei",
 				Status:     "Testando",
 				Observação: "Okay",
 			},
 			{
-				ID_Curso:   id,
-				ID_Matéria: uuid.New(),
+				IDCurso:    id,
+				IDMatéria:  uuid.New(),
 				Período:    "Teste",
 				Tipo:       "Não sei",
 				Status:     "Testando",
@@ -201,7 +202,7 @@ func main() {
 			},
 		}
 
-		curso := &data.Curso{
+		curso := &entidades.Curso{
 			ID:                id,
 			Nome:              "Curso novo",
 			DataDeInício:      time.Now(),

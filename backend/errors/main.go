@@ -12,23 +12,23 @@ func (err *Aplicação) Error() string {
 	return err.Mensagem
 }
 
-func (err *Aplicação) IsDefault(defaultError *Default) bool {
+func (err *Aplicação) IsDefault(defaultError *Padrão) bool {
 	return err.Número == defaultError.Número
 }
 
-// Default representa os erros padões da aplicação.
-type Default struct {
-	Message string
-	Número  int
+// Padrão representa os erros padões da aplicação.
+type Padrão struct {
+	Mensagem string
+	Número   int
 }
 
-func (err *Default) Error() string {
-	return err.Message
+func (err *Padrão) Error() string {
+	return err.Mensagem
 }
 
-func New(err *Default, initial *Aplicação, system error) *Aplicação {
+func New(err *Padrão, initial *Aplicação, system error) *Aplicação {
 	return &Aplicação{
-		Mensagem:    err.Message,
+		Mensagem:    err.Mensagem,
 		Número:      err.Número,
 		ErroInicial: initial,
 		ErroExterno: system,

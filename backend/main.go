@@ -2,11 +2,9 @@ package main
 
 import (
 	"encoding/json"
-	"io"
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -16,92 +14,12 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/data/database/mariadb"
 	"thiagofelipe.com.br/sistema-faculdade/data/database/mongodb"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
+	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
-
-type logFiles struct {
-	pessoa         io.Writer
-	curso          io.Writer
-	aluno          io.Writer
-	professor      io.Writer
-	administrativo io.Writer
-	matéria        io.Writer
-	turma          io.Writer
-}
-
-//nolint:funlen
-func openLogFiles() *logFiles {
-	defaultDir := "./logs/data/"
-
-	pessoa, err := os.OpenFile(
-		defaultDir+"pessoaLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	curso, err := os.OpenFile(
-		defaultDir+"cursoLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	aluno, err := os.OpenFile(
-		defaultDir+"alunoLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	professor, err := os.OpenFile(
-		defaultDir+"professorLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	administrativo, err := os.OpenFile(
-		defaultDir+"administrativoLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	matéria, err := os.OpenFile(
-		defaultDir+"matériaLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	turma, err := os.OpenFile(
-		defaultDir+"turmaLogs.txt",
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return &logFiles{
-		pessoa:         pessoa,
-		curso:          curso,
-		aluno:          aluno,
-		professor:      professor,
-		administrativo: administrativo,
-		matéria:        matéria,
-		turma:          turma,
-	}
-}
 
 //nolint:funlen
 func newData() *data.Data {
-	logFiles := openLogFiles()
+	logFiles := logs.AbrirArquivos("./logs/data/")
 
 	//nolint:exhaustivestruct
 	config := mysql.Config{
@@ -123,34 +41,34 @@ func newData() *data.Data {
 	}
 
 	MariaDBPessoa := mariadb.PessoaBD{
-		Conexão:      *mariadb.NovaConexão(logFiles.pessoa, bd),
+		Conexão:      *mariadb.NovaConexão(logFiles.Pessoa, bd),
 		NomeDaTabela: "Pessoa",
 	}
 
 	MariaDBCurso := mariadb.CursoBD{
-		Conexão:                *mariadb.NovaConexão(logFiles.curso, bd),
+		Conexão:                *mariadb.NovaConexão(logFiles.Curso, bd),
 		NomeDaTabela:           "Curso",
 		NomeDaTabelaSecundária: "CursoMatérias",
 	}
 
 	MariaDBAluno := mariadb.AlunoBD{
-		Conexão: *mariadb.NovaConexão(logFiles.aluno, bd),
+		Conexão: *mariadb.NovaConexão(logFiles.Aluno, bd),
 	}
 
 	MariaDBProfessor := mariadb.ProfessorBD{
-		Conexão: *mariadb.NovaConexão(logFiles.professor, bd),
+		Conexão: *mariadb.NovaConexão(logFiles.Professor, bd),
 	}
 
 	MariaDBAdministrativo := mariadb.AdministrativoBD{
-		Conexão: *mariadb.NovaConexão(logFiles.administrativo, bd),
+		Conexão: *mariadb.NovaConexão(logFiles.Administrativo, bd),
 	}
 
 	MariaDBMatéria := mongodb.MatériaBD{
-		Connexão: *mongodb.NovaConexão(logFiles.matéria),
+		Connexão: *mongodb.NovaConexão(logFiles.Matéria),
 	}
 
 	MariaDBTurma := mongodb.TurmaBD{
-		Connexão: *mongodb.NovaConexão(logFiles.turma),
+		Connexão: *mongodb.NovaConexão(logFiles.Turma),
 	}
 
 	return &data.Data{

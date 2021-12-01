@@ -10,22 +10,23 @@ import (
 	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/aleatorio"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
+	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
 
 const MATÉRIAS_MÁXIMAS = 20
 const TAMANHO_MÁXIMO_PALAVRA = 25
 
 func criarMatériasCursoAleatórios(idCurso id) *[]entidades.CursoMatéria {
-	matérias := make([]entidades.CursoMatéria, rand.Intn(MATÉRIAS_MÁXIMAS))
+	matérias := make([]entidades.CursoMatéria, rand.Intn(MATÉRIAS_MÁXIMAS)+1)
 
 	for i := range matérias {
 		matérias[i] = entidades.CursoMatéria{
 			IDCurso:    idCurso,
 			IDMatéria:  uuid.New(),
-			Status:     aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA)),
-			Período:    aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA)),
-			Tipo:       aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA)),
-			Observação: aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA)),
+			Status:     aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Período:    aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Tipo:       aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Observação: aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
 		}
 	}
 
@@ -41,14 +42,62 @@ func criarCursoAleatório() *entidades.Curso {
 
 	return &entidades.Curso{
 		ID:                id,
-		Nome:              aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA)),
+		Nome:              aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
 		DataDeInício:      dataAgora,
 		DataDeDesativação: dataFutura,
 		Matérias:          *criarMatériasCursoAleatórios(id),
 	}
 }
 
-func adiconarCursoTeste(curso *entidades.Curso, t *testing.T) {
+func adiconarCursoMatérias(matérias *[]entidades.CursoMatéria, t *testing.T) {
+	erro := cursoBD.InserirMatérias(matérias)
+	if erro != nil {
+		t.Fatalf("Erro ao inserir as matérias do curso: %s", erro.Error())
+	}
+
+	chaves := make(map[id]bool)
+	cursoIDs := []id{}
+
+	// filtrando os IDS do curso
+	for _, matéria := range *matérias {
+		if _, valor := chaves[matéria.IDCurso]; !valor {
+			chaves[matéria.IDCurso] = true
+			cursoIDs = append(cursoIDs, matéria.IDCurso)
+		}
+	}
+
+	var matériasSalvas []entidades.CursoMatéria
+	for _, id := range cursoIDs {
+		matériaSalva, erro := cursoBD.PegarMatérias(id)
+		if erro != nil {
+			t.Fatalf("Erro ao pegar as matérias do curso: %s", erro.Error())
+		}
+		matériasSalvas = append(matériasSalvas, *matériaSalva...)
+	}
+
+	if !reflect.DeepEqual(&matérias, &matériasSalvas) {
+		t.Fatalf(
+			"Erro ao salvar a pessoa no banco de dados, queria %v, chegou %v",
+			matérias,
+			matériasSalvas,
+		)
+	}
+
+	t.Cleanup(func() {
+		for _, id := range cursoIDs {
+			removerCursoMatérias(id, t)
+		}
+	})
+}
+
+func removerCursoMatérias(idCurso id, t *testing.T) {
+	erro := cursoBD.DeletarMatérias(idCurso)
+	if erro != nil {
+		t.Fatalf("Erro ao tentar deletar as matérias do: %v", erro.Error())
+	}
+}
+
+func adiconarCurso(curso *entidades.Curso, t *testing.T) {
 
 	erro := cursoBD.Inserir(curso)
 	if erro != nil {
@@ -69,18 +118,37 @@ func adiconarCursoTeste(curso *entidades.Curso, t *testing.T) {
 	}
 
 	t.Cleanup(func() {
-		removerCursoTeste(curso.ID, t)
+		removerCurso(curso.ID, t)
 	})
 }
 
-func removerCursoTeste(id id, t *testing.T) {
+func removerCurso(id id, t *testing.T) {
 	erro := cursoBD.Deletar(id)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o usuário teste: %v", erro.Error())
 	}
 }
 
-func TestInserirCursoMatérias(t *testing.T) {
+func TestInserirCursoMatérias_semTamanhoMínimo(t *testing.T) {
+	matériasVazia := &[]entidades.CursoMatéria{}
+
+	erro := cursoBD.InserirMatérias(matériasVazia)
+	if !erro.IsDefault(errors.InserirCursoMatériasTamanhoMínimo) {
+		t.Fatalf(
+			"Erro ao inserir as matérias do curso, esperava \"%s\", chegou \"%s\"",
+			errors.InserirCursoMatériasTamanhoMínimo.Mensagem,
+			erro.Mensagem,
+		)
+	}
+}
+
+func TestInserirCursoMatérias_semCurso(t *testing.T) {
+	texto := `foreign key constraint fails`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatal("Erro ao compilar o regex")
+	}
+
 	var matérias []entidades.CursoMatéria
 
 	índiceMáximo := 5
@@ -88,12 +156,24 @@ func TestInserirCursoMatérias(t *testing.T) {
 		matérias = append(matérias, *criarMatériasCursoAleatórios(uuid.New())...)
 	}
 
+	erro := cursoBD.InserirMatérias(&matérias)
+	if erro == nil || erro.ErroExterno == nil {
+		t.Fatalf("Deveria ter um erro no sistema")
+	}
+
+	if !padrão.MatchString(erro.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao inserir as matérias do curso queria: \"%s\", chegou \"%s\"",
+			texto,
+			erro.ErroExterno.Error(),
+		)
+	}
 }
 
 func TestInserirCurso(t *testing.T) {
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCursoTeste(cursoTeste, t)
+	adiconarCurso(cursoTeste, t)
 }
 
 func TestInserirCurso_duplicadoID(t *testing.T) {
@@ -105,7 +185,7 @@ func TestInserirCurso_duplicadoID(t *testing.T) {
 
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCursoTeste(cursoTeste, t)
+	adiconarCurso(cursoTeste, t)
 
 	erro := cursoBD.Inserir(cursoTeste)
 	if erro == nil || erro.ErroExterno == nil {

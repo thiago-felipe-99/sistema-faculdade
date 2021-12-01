@@ -49,11 +49,11 @@ func adiconarPessoa(pessoa *entidades.Pessoa, t *testing.T) {
 	}
 
 	t.Cleanup(func() {
-		removerPessoaTeste(pessoa.ID, t)
+		removerPessoa(pessoa.ID, t)
 	})
 }
 
-func removerPessoaTeste(id id, t *testing.T) {
+func removerPessoa(id id, t *testing.T) {
 	erro := pessoaBD.Deletar(id)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o usuário teste: %v", erro.Error())
@@ -104,7 +104,7 @@ func TestInserirPessoa_duplicadoCPF(t *testing.T) {
 
 	adiconarPessoa(pessoaTeste, t)
 
-	defer removerPessoaTeste(pessoaTeste.ID, t)
+	defer removerPessoa(pessoaTeste.ID, t)
 
 	pessoaTeste.ID = uuid.New()
 
@@ -257,11 +257,11 @@ func TestDeletarPessoa(t *testing.T) {
 
 	adiconarPessoa(pessoaTeste, t)
 
-	removerPessoaTeste(pessoaTeste.ID, t)
+	removerPessoa(pessoaTeste.ID, t)
 }
 
 func TestDeletarPessoa_invalídoID(t *testing.T) {
-	removerPessoaTeste(uuid.New(), t)
+	removerPessoa(uuid.New(), t)
 }
 
 func TestDeletarPessoa_tabelaInválida(t *testing.T) {

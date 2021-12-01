@@ -1,6 +1,7 @@
 package mariadb
 
 import (
+	"database/sql"
 	"log"
 	"math/rand"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade/env"
+	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
 
 var (
@@ -21,10 +23,7 @@ var (
 
 var ambiente = env.PegandoVariáveisDeAmbiente()
 
-//nolint:funlen
-func TestMain(m *testing.M) {
-
-	rand.Seed(time.Now().UnixNano())
+func criarConexão(m *testing.M) *sql.DB {
 
 	config := mysql.Config{
 		User:                 "Teste",
@@ -36,45 +35,63 @@ func TestMain(m *testing.M) {
 		ParseTime:            true,
 	}
 
-	connexão, erro := NovoBD(config.FormatDSN())
+	conexão, erro := NovoBD(config.FormatDSN())
 	if erro != nil {
 		log.Fatalf("Erro ao configurar o banco de dados: %s", erro)
 	}
 
-	erroPing := connexão.Ping()
+	erroPing := conexão.Ping()
 	if erroPing != nil {
 		log.Fatalf("Erro ao conectar o banco de dados: %s", erroPing)
 	}
 
+	return conexão
+}
+
+func deletarTabelas(bd *sql.DB) {
+	query := "DELETE FROM CursoMatérias"
+	bd.Exec(query)
+
+	query = "DELETE FROM Curso"
+	bd.Exec(query)
+
+	query = "DELETE FROM Pessoa"
+	bd.Exec(query)
+}
+
+func TestMain(m *testing.M) {
+
+	rand.Seed(time.Now().UnixNano())
+
+	bd := criarConexão(m)
+
+	logs := logs.AbrirArquivos("./logs/")
+
 	pessoaBD = &PessoaBD{
-		Conexão:      *NovaConexão(os.Stderr, connexão),
+		Conexão:      *NovaConexão(logs.Pessoa, bd),
 		NomeDaTabela: "Pessoa",
 	}
 
 	pessoaBDInválido = &PessoaBD{
-		Conexão:      *NovaConexão(os.Stderr, connexão),
+		Conexão:      *NovaConexão(logs.Pessoa, bd),
 		NomeDaTabela: "PessoaErrada",
 	}
 
 	cursoBD = &CursoBD{
-		Conexão:                *NovaConexão(os.Stderr, connexão),
+		Conexão:                *NovaConexão(logs.Curso, bd),
 		NomeDaTabela:           "Curso",
 		NomeDaTabelaSecundária: "CursoMatérias",
 	}
 
 	cursoBDInválido = &CursoBD{
-		Conexão:                *NovaConexão(os.Stderr, connexão),
-		NomeDaTabela:           "CursoMatérias",
+		Conexão:                *NovaConexão(logs.Curso, bd),
+		NomeDaTabela:           "CursoErrado",
 		NomeDaTabelaSecundária: "CursoMatériasErrado",
 	}
 
 	código := m.Run()
 
-	query := "DELETE FROM Curso"
-	connexão.Exec(query)
-
-	query = "DELETE FROM Pessoa"
-	connexão.Exec(query)
+	deletarTabelas(bd)
 
 	os.Exit(código)
 }

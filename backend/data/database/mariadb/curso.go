@@ -188,6 +188,8 @@ func (bd CursoBD) Pegar(id id) (*entidades.Curso, *errors.Aplicação) {
 // DeletarMatérias é uma função que deleta as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
 func (bd CursoBD) DeletarMatérias(id id) *errors.Aplicação {
+	bd.Log.Informação.Print("Deletando as matérias do Curso com o seguinte ID: " + id.String())
+
 	return nil
 }
 
@@ -195,5 +197,5 @@ func (bd CursoBD) DeletarMatérias(id id) *errors.Aplicação {
 func (bd CursoBD) Deletar(id id) *errors.Aplicação {
 	bd.Log.Informação.Print("Deletando Curso com o seguinte ID: " + id.String())
 
-	return nil
+	return bd.DeletarMatérias(id)
 }

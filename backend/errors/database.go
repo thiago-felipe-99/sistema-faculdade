@@ -21,72 +21,72 @@ const (
 )
 
 var (
-	ConfigurarBD = &Default{
-		Message: "Erro ao configurar o banco de dados",
-		Número:  ConfigurarBDNúmero,
+	ConfigurarBD = &Padrão{
+		Mensagem: "Erro ao configurar o banco de dados",
+		Número:   ConfigurarBDNúmero,
 	}
-	InserirPessoa = &Default{
-		Message: "Erro ao inserir a pessoa",
-		Número:  InserirPessoaNúmero,
+	InserirPessoa = &Padrão{
+		Mensagem: "Erro ao inserir a pessoa",
+		Número:   InserirPessoaNúmero,
 	}
-	AtualizarPessoa = &Default{
-		Message: "Erro ao atualizar a pessoa",
-		Número:  AtualizarPessoaNúmero,
+	AtualizarPessoa = &Padrão{
+		Mensagem: "Erro ao atualizar a pessoa",
+		Número:   AtualizarPessoaNúmero,
 	}
-	PessoaNãoEncontrada = &Default{
-		Message: "Pessoa não encontrada",
-		Número:  PessoaNãoEncontradaNúmero,
+	PessoaNãoEncontrada = &Padrão{
+		Mensagem: "Pessoa não encontrada",
+		Número:   PessoaNãoEncontradaNúmero,
 	}
-	PegarPessoa = &Default{
-		Message: "Erro ao pegar a pessoa",
-		Número:  PegarPessoaNúmero,
+	PegarPessoa = &Padrão{
+		Mensagem: "Erro ao pegar a pessoa",
+		Número:   PegarPessoaNúmero,
 	}
-	DeletarPessoa = &Default{
-		Message: "Erro ao deletar a pessoa",
-		Número:  DeletarPessoaNúmero,
+	DeletarPessoa = &Padrão{
+		Mensagem: "Erro ao deletar a pessoa",
+		Número:   DeletarPessoaNúmero,
 	}
-	InserirCurso = &Default{
-		Message: "Erro ao inserir o curso",
-		Número:  InserirCursoNúmero,
+	InserirCurso = &Padrão{
+		Mensagem: "Erro ao inserir o curso",
+		Número:   InserirCursoNúmero,
 	}
-	AtualizarCurso = &Default{
-		Message: "Erro ao atualizar o curso",
-		Número:  AtualizarCursoNúmero,
+	AtualizarCurso = &Padrão{
+		Mensagem: "Erro ao atualizar o curso",
+		Número:   AtualizarCursoNúmero,
 	}
-	CursoNãoEncontrada = &Default{
-		Message: "Curso não encontrada",
-		Número:  CursoNãoEncontradoNúmero,
+	CursoNãoEncontrada = &Padrão{
+		Mensagem: "Curso não encontrada",
+		Número:   CursoNãoEncontradoNúmero,
 	}
-	PegarCurso = &Default{
-		Message: "Erro ao pegar o curso",
-		Número:  PegarCursoNúmero,
+	PegarCurso = &Padrão{
+		Mensagem: "Erro ao pegar o curso",
+		Número:   PegarCursoNúmero,
 	}
-	DeletarCurso = &Default{
-		Message: "Erro ao deletar o curso",
-		Número:  DeletarCursoNúmero,
+	DeletarCurso = &Padrão{
+		Mensagem: "Erro ao deletar o curso",
+		Número:   DeletarCursoNúmero,
 	}
-	InserirCursoMatériasTamanhoMínimo = &Default{
-		Message: "Erro ao inserir as matérias do curso, tem que ter no mínimo uma matéra para inserir",
-		Número:  InserirCursoMatériasTamanhoMínimoNúmero,
+	InserirCursoMatériasTamanhoMínimo = &Padrão{
+		Mensagem: "Erro ao inserir as matérias do curso, tem que ter no mínimo uma matéra para inserir",
+		Número:   InserirCursoMatériasTamanhoMínimoNúmero,
 	}
-	InserirCursoMatérias = &Default{
-		Message: "Erro ao inserir as matérias do curso",
-		Número:  InserirCursoMatériasNúmero,
+	InserirCursoMatérias = &Padrão{
+		Mensagem: "Erro ao inserir as matérias do curso",
+		Número:   InserirCursoMatériasNúmero,
 	}
-	AtualizarCursoMatérias = &Default{
-		Message: "Erro ao atualizar as matérias do curso",
-		Número:  AtualizarCursoMatériasNúmero,
+	AtualizarCursoMatérias = &Padrão{
+		Mensagem: "Erro ao atualizar as matérias do curso",
+		Número:   AtualizarCursoMatériasNúmero,
 	}
-	CursoMatériasNãoEncontrada = &Default{
-		Message: "Matérias do curso não encontradas",
-		Número:  CursoMatériasNãoEncontradoNúmero,
+	CursoMatériasNãoEncontrada = &Padrão{
+		Mensagem: "Matérias do curso não encontradas",
+		Número:   CursoMatériasNãoEncontradoNúmero,
 	}
-	PegarCursoMatérias = &Default{
-		Message: "Erro ao pegar as matérias do curso",
-		Número:  PegarCursoMatériasNúmero,
+	PegarCursoMatérias = &Padrão{
+		Mensagem: "Erro ao pegar as matérias do curso",
+		Número:   PegarCursoMatériasNúmero,
 	}
-	DeletarCursoMatérias = &Default{
-		Message: "Erro ao deletar as matérias do curso",
-		Número:  DeletarCursoMatériasNúmero,
+	DeletarCursoMatérias = &Padrão{
+		Mensagem: "Erro ao deletar as matérias do curso",
+		Número:   DeletarCursoMatériasNúmero,
 	}
 )

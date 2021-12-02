@@ -4,7 +4,7 @@ import (
 	"database/sql"
 
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
-	"thiagofelipe.com.br/sistema-faculdade/errors"
+	"thiagofelipe.com.br/sistema-faculdade/erros"
 )
 
 // CursoBD representa a conexão com o banco de dados MariaDB para fazer
@@ -16,11 +16,12 @@ type CursoBD struct {
 }
 
 // InserirMatérias inseres as matérias de um curso no banco de dados MariaDB.
-func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *errors.Aplicação {
+func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *erros.Aplicação {
 	bd.Log.Informação.Println("Inserindo matérias no Curso")
 
 	if len(*matérias) <= 0 {
-		return errors.New(errors.InserirCursoMatériasTamanhoMínimo, nil, nil)
+		bd.Log.Aviso.Println("Erro ao inserir matérias do curso, não tem a quantidade mínima de matérias")
+		return erros.Novo(erros.InserirCursoMatériasTamanhoMínimo, nil, nil)
 	}
 
 	query := "INSERT INTO " + bd.NomeDaTabelaSecundária +
@@ -45,9 +46,9 @@ func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *errors
 	tx, erroTx := bd.BD.Begin()
 	if erroTx != nil {
 		bd.Log.Aviso.Println(
-			"Erro ao inserir as matérias do curso\nErro: " + erroTx.Error(),
+			"Erro ao inserir as matérias do curso\n" + erros.ErroExterno(erroTx),
 		)
-		return errors.New(errors.InserirCurso, nil, erroTx)
+		return erros.Novo(erros.InserirCurso, nil, erroTx)
 	}
 
 	defer tx.Rollback()
@@ -55,23 +56,23 @@ func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *errors
 	_, erro := tx.Exec(query, params...)
 	if erro != nil {
 		bd.Log.Aviso.Println(
-			"Erro ao inserir as matérias do curso\nErro: " + erro.Error(),
+			"Erro ao inserir as matérias do curso\n" + erros.ErroExterno(erro),
 		)
-		return errors.New(errors.InserirCursoMatérias, nil, erro)
+		return erros.Novo(erros.InserirCursoMatérias, nil, erro)
 	}
 
 	if erroTx = tx.Commit(); erroTx != nil {
 		bd.Log.Aviso.Println(
-			"Erro ao inserir as matérias do curso\nErro: " + erroTx.Error(),
+			"Erro ao inserir as matérias do curso\nErro: " + erros.ErroExterno(erroTx),
 		)
-		return errors.New(errors.InserirCurso, nil, erroTx)
+		return erros.Novo(erros.InserirCurso, nil, erroTx)
 	}
 
 	return nil
 }
 
 // Inserir é uma função que faz inserção de uma Curso no banco de dados MariaDB.
-func (bd CursoBD) Inserir(curso *entidades.Curso) *errors.Aplicação {
+func (bd CursoBD) Inserir(curso *entidades.Curso) *erros.Aplicação {
 	bd.Log.Informação.Println("Inserindo Curso com o seguinte ID: " + curso.ID.String())
 
 	query := "INSERT INTO " + bd.NomeDaTabela +
@@ -87,9 +88,9 @@ func (bd CursoBD) Inserir(curso *entidades.Curso) *errors.Aplicação {
 	if erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao inserir o Curso com o seguinte ID: "+curso.ID.String(),
-			"\nErro: "+erro.Error(),
+			"\n"+erros.ErroExterno(erro),
 		)
-		return errors.New(errors.InserirCurso, nil, erro)
+		return erros.Novo(erros.InserirCurso, nil, erro)
 	}
 
 	return bd.InserirMatérias(&curso.Matérias)
@@ -97,7 +98,7 @@ func (bd CursoBD) Inserir(curso *entidades.Curso) *errors.Aplicação {
 
 // AtualizarMatérias é uma função que atualiza as matérias dos cursos no banco
 // de dados MariaDB
-func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *errors.Aplicação {
+func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erros.Aplicação {
 	bd.Log.Informação.Println("Atualizando matérias no Curso")
 
 	query := "UPDATE " + bd.NomeDaTabelaSecundária +
@@ -107,9 +108,9 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erro
 	tx, erroTx := bd.BD.Begin()
 	if erroTx != nil {
 		bd.Log.Aviso.Println(
-			"Erro ao atualizar as matérias do curso\nErro: " + erroTx.Error(),
+			"Erro ao atualizar as matérias do curso\n" + erros.ErroExterno(erroTx),
 		)
-		return errors.New(errors.InserirCurso, nil, erroTx)
+		return erros.Novo(erros.InserirCurso, nil, erroTx)
 	}
 
 	defer tx.Rollback()
@@ -126,17 +127,17 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erro
 		)
 		if erro != nil {
 			bd.Log.Aviso.Println(
-				"Erro ao atualizar as matérias do curso\nErro: " + erro.Error(),
+				"Erro ao atualizar as matérias do curso\n" + erros.ErroExterno(erro),
 			)
-			return errors.New(errors.InserirCursoMatérias, nil, erro)
+			return erros.Novo(erros.InserirCursoMatérias, nil, erro)
 		}
 	}
 
 	if erroTx = tx.Commit(); erroTx != nil {
 		bd.Log.Aviso.Println(
-			"Erro ao atualizar as matérias do curso\nErro: " + erroTx.Error(),
+			"Erro ao atualizar as matérias do curso\n" + erros.ErroExterno(erroTx),
 		)
-		return errors.New(errors.InserirCurso, nil, erroTx)
+		return erros.Novo(erros.InserirCurso, nil, erroTx)
 	}
 
 	return nil
@@ -144,16 +145,16 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erro
 
 // Atualizar é uma função que faz a atualização de Curso no banco de dados
 // MariaDB.
-func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *errors.Aplicação {
+func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *erros.Aplicação {
 	bd.Log.Informação.Println("Atualizando Curso com o seguinte ID: " + id.String())
 
 	erro := bd.AtualizarMatérias(&curso.Matérias)
 	if erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao atualizar o curso com o seguinte ID: "+id.String(),
-			"\nErro: "+erro.Error(),
+			"\n"+erro.Error(),
 		)
-		return errors.New(errors.AtualizarCurso, erro, nil)
+		return erros.Novo(erros.AtualizarCurso, erro, nil)
 	}
 
 	query := "UPDATE " + bd.NomeDaTabela +
@@ -170,9 +171,9 @@ func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *errors.Aplicação {
 	if erroBD != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao atualizar o curso com o seguinte ID: "+id.String(),
-			"\nErro: "+erroBD.Error(),
+			"\n"+erros.ErroExterno(erroBD),
 		)
-		return errors.New(errors.AtualizarCurso, nil, erroBD)
+		return erros.Novo(erros.AtualizarCurso, nil, erroBD)
 	}
 
 	return nil
@@ -180,7 +181,7 @@ func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *errors.Aplicação {
 
 // PegarMatérias é uma função que retonar as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
-func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *errors.Aplicação) {
+func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *erros.Aplicação) {
 
 	var matérias []entidades.CursoMatéria
 
@@ -191,10 +192,10 @@ func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *error
 	if erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao pegar as matérias do Curso com o seguinte ID: "+idCurso.String(),
-			"\nErro: "+erro.Error(),
+			"\n"+erros.ErroExterno(erro),
 		)
 
-		return nil, errors.New(errors.PegarCursoMatérias, nil, erro)
+		return nil, erros.Novo(erros.PegarCursoMatérias, nil, erro)
 	}
 	defer linhas.Close()
 
@@ -213,10 +214,10 @@ func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *error
 		if erro != nil {
 			bd.Log.Aviso.Println(
 				"Erro ao pegar as matérias do Curso com o seguinte ID: "+idCurso.String(),
-				"\nErro: "+erro.Error(),
+				"\n"+erros.ErroExterno(erro),
 			)
 
-			return nil, errors.New(errors.PegarCursoMatérias, nil, erro)
+			return nil, erros.Novo(erros.PegarCursoMatérias, nil, erro)
 		}
 
 		matérias = append(matérias, matéria)
@@ -226,29 +227,29 @@ func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *error
 	if erro = linhas.Err(); erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao pegar as matérias do Curso com o seguinte ID: "+idCurso.String(),
-			"\nErro: "+erro.Error(),
+			"\n"+erros.ErroExterno(erro),
 		)
 
-		return nil, errors.New(errors.PegarCursoMatérias, nil, erro)
+		return nil, erros.Novo(erros.PegarCursoMatérias, nil, erro)
 	}
 
 	return &matérias, nil
 }
 
 // Pegar é uma função que retorna uma Curso do banco de dados MariaDB.
-func (bd CursoBD) Pegar(id id) (*entidades.Curso, *errors.Aplicação) {
+func (bd CursoBD) Pegar(id id) (*entidades.Curso, *erros.Aplicação) {
 	bd.Log.Informação.Println("Pegando Curso com o seguinte ID: " + id.String())
 
 	matérias, erroAplicação := bd.PegarMatérias(id)
 	if erroAplicação != nil &&
-		!erroAplicação.ÉPadrão(errors.CursoMatériasNãoEncontrado) {
+		!erroAplicação.ÉPadrão(erros.CursoMatériasNãoEncontrado) {
 
 		bd.Log.Aviso.Println(
 			"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
-			"\nErro: "+erroAplicação.Error(),
+			"\n"+erroAplicação.Error(),
 		)
 
-		return nil, errors.New(errors.PegarCurso, erroAplicação, nil)
+		return nil, erros.Novo(erros.PegarCurso, erroAplicação, nil)
 	}
 
 	var curso entidades.Curso
@@ -270,16 +271,16 @@ func (bd CursoBD) Pegar(id id) (*entidades.Curso, *errors.Aplicação) {
 		if erro == sql.ErrNoRows {
 			bd.Log.Aviso.Println(
 				"Não foi encontrada nenhum curso com o seguinte ID: "+id.String(),
-				"\nErro: "+erro.Error(),
+				"\n"+erros.ErroExterno(erro),
 			)
-			return nil, errors.New(errors.CursoNãoEncontrado, nil, erro)
+			return nil, erros.Novo(erros.CursoNãoEncontrado, nil, erro)
 		}
 
 		bd.Log.Aviso.Println(
 			"Erro ao pegar o curso com o seguinte ID: "+id.String(),
-			"\nErro: "+erro.Error(),
+			"\n"+erros.ErroExterno(erro),
 		)
-		return nil, errors.New(errors.PegarCurso, nil, erro)
+		return nil, erros.Novo(erros.PegarCurso, nil, erro)
 	}
 
 	return &curso, nil
@@ -287,32 +288,36 @@ func (bd CursoBD) Pegar(id id) (*entidades.Curso, *errors.Aplicação) {
 
 // DeletarMatérias é uma função que deleta as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
-func (bd CursoBD) DeletarMatérias(idCurso id) *errors.Aplicação {
+func (bd CursoBD) DeletarMatérias(idCurso id) *erros.Aplicação {
 	bd.Log.Informação.Print("Deletando as matérias do Curso com o seguinte ID: " + idCurso.String())
 
 	query := "DELETE FROM " + bd.NomeDaTabelaSecundária + " WHERE ID_Curso = ?"
 
-	_, err := bd.BD.Exec(query, idCurso)
+	_, erro := bd.BD.Exec(query, idCurso)
 
-	if err != nil {
+	if erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao tentar deletar as matérias do curso com o seguinte ID: "+idCurso.String(),
-			"\nErro: "+err.Error(),
+			"\n"+erros.ErroExterno(erro),
 		)
 
-		return errors.New(errors.DeletarCursoMatérias, nil, err)
+		return erros.Novo(erros.DeletarCursoMatérias, nil, erro)
 	}
 
 	return nil
 }
 
 // Deletar é uma função que remove uma Curso do banco de dados MariaDB.
-func (bd CursoBD) Deletar(id id) *errors.Aplicação {
+func (bd CursoBD) Deletar(id id) *erros.Aplicação {
 	bd.Log.Informação.Print("Deletando Curso com o seguinte ID: " + id.String())
 
 	erro := bd.DeletarMatérias(id)
 	if erro != nil {
-		return errors.New(errors.DeletarCurso, erro, nil)
+		bd.Log.Aviso.Println(
+			"Erro ao tentar deletar curso com o seguinte ID: "+id.String(),
+			"\n"+erro.Error(),
+		)
+		return erros.Novo(erros.DeletarCurso, erro, nil)
 	}
 
 	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"
@@ -322,10 +327,10 @@ func (bd CursoBD) Deletar(id id) *errors.Aplicação {
 	if erroBD != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao tentar deletar curso com o seguinte ID: "+id.String(),
-			"\nErro: "+erroBD.Error(),
+			"\n"+erros.ErroExterno(erroBD),
 		)
 
-		return errors.New(errors.DeletarCurso, nil, erroBD)
+		return erros.Novo(erros.DeletarCurso, nil, erroBD)
 	}
 
 	return nil

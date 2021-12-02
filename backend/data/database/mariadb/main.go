@@ -8,7 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade/data"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
-	"thiagofelipe.com.br/sistema-faculdade/errors"
+	"thiagofelipe.com.br/sistema-faculdade/erros"
 	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
 
@@ -20,10 +20,10 @@ type Conexão struct {
 	BD  *sql.DB
 }
 
-func NovoBD(dsn string) (*sql.DB, *errors.Aplicação) {
+func NovoBD(dsn string) (*sql.DB, *erros.Aplicação) {
 	bd, err := sql.Open("mysql", dsn)
 	if err != nil {
-		return nil, errors.New(errors.ConfigurarBD, nil, err)
+		return nil, erros.Novo(erros.ConfigurarBD, nil, err)
 	}
 
 	return bd, nil

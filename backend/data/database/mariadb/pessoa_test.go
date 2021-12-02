@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
-	"thiagofelipe.com.br/sistema-faculdade/errors"
+	"thiagofelipe.com.br/sistema-faculdade/erros"
 )
 
 func criarPessoaAleatória() *entidades.Pessoa {
@@ -220,10 +220,10 @@ func TestPegarPessoa_inválidoID(t *testing.T) {
 		t.Fatalf("Não foi enviado erro do sistema")
 	}
 
-	if !erro.ÉPadrão(errors.PessoaNãoEncontrada) {
+	if !erro.ÉPadrão(erros.PessoaNãoEncontrada) {
 		t.Fatalf(
 			"Erro ao pegar pessoa no banco de dados, queria %v, chegou %v",
-			errors.PessoaNãoEncontrada.Error(),
+			erros.PessoaNãoEncontrada.Error(),
 			erro.Error(),
 		)
 	}
@@ -259,7 +259,7 @@ func TestDeletarPessoa(t *testing.T) {
 	removerPessoa(pessoaTeste.ID, t)
 
 	_, erro := pessoaBD.Pegar(pessoaTeste.ID)
-	if erro == nil || !erro.ÉPadrão(errors.PessoaNãoEncontrada) {
+	if erro == nil || !erro.ÉPadrão(erros.PessoaNãoEncontrada) {
 		t.Fatalf(
 			"Deveria retonar um erro de pessoa não encontrada, retonou %s",
 			erro,
@@ -273,7 +273,7 @@ func TestDeletarPessoa_invalídoID(t *testing.T) {
 	removerPessoa(id, t)
 
 	_, erro := pessoaBD.Pegar(id)
-	if erro == nil || !erro.ÉPadrão(errors.PessoaNãoEncontrada) {
+	if erro == nil || !erro.ÉPadrão(erros.PessoaNãoEncontrada) {
 		t.Fatalf(
 			"Deveria retonar um erro de pessoa não encontrada, retonou %s",
 			erro,

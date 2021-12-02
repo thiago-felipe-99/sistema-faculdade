@@ -1,4 +1,4 @@
-package errors
+package erros
 
 const (
 	ConfigurarBDNúmero = iota + 1

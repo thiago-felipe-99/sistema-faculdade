@@ -26,7 +26,6 @@ Tipo De Atributos Criadas
     Período: CARACTERES
   }
 
-
 Tabela Pessoa
 - Entidade: Pessoa
 - Database: Banco De Dados Administrativo

@@ -201,6 +201,163 @@ func TestInserirCurso_duplicadoID(t *testing.T) {
 	}
 }
 
+func TestAtualizarCursoMáterias(t *testing.T) {
+	cursoTeste := criarCursoAleatório()
+
+	adiconarCurso(cursoTeste, t)
+
+	for índice := range cursoTeste.Matérias {
+		cursoTeste.Matérias[índice].Observação =
+			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+		cursoTeste.Matérias[índice].Período =
+			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+		cursoTeste.Matérias[índice].Status =
+			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+		cursoTeste.Matérias[índice].Tipo =
+			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+	}
+
+	erro := cursoBD.AtualizarMatérias(&cursoTeste.Matérias)
+	if erro != nil {
+		t.Fatalf("Erro ao atualizar as matérias do cursos: %s", erro.Error())
+	}
+
+	matériasSalvas, erro := cursoBD.PegarMatérias(cursoTeste.ID)
+	if erro != nil {
+		t.Fatalf("Erro ao pegar as matérias do curso no banco de dados: %s", erro.Error())
+	}
+
+	if !reflect.DeepEqual(&cursoTeste.Matérias, matériasSalvas) {
+		t.Fatalf(
+			"Erro ao salvar a pessoa no banco de dados, queria %v, chegou %v",
+			&cursoTeste.Matérias,
+			matériasSalvas,
+		)
+	}
+}
+
+func TestAtualizarCursoMáterias_tabelaInválida(t *testing.T) {
+	texto := `Table .* doesn't exist`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatalf("Erro ao compilar o regex: %s", texto)
+	}
+
+	cursoTeste := criarCursoAleatório()
+
+	adiconarCurso(cursoTeste, t)
+
+	for índice := range cursoTeste.Matérias {
+		cursoTeste.Matérias[índice].Observação =
+			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+
+		cursoTeste.Matérias[índice].Período =
+			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+
+		cursoTeste.Matérias[índice].Status =
+			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+
+		cursoTeste.Matérias[índice].Tipo =
+			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+	}
+
+	erro := cursoBDInválido.AtualizarMatérias(&cursoTeste.Matérias)
+	if erro == nil || erro.ErroExterno == nil {
+		t.Fatalf("Não foi enviado erro do sistema")
+	}
+
+	if !padrão.MatchString(erro.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao atualizar as matérias do cursos no banco de dados, queria %v, chegou %v",
+			texto,
+			erro.ErroExterno.Error(),
+		)
+	}
+}
+
+func TestAtualizarCurso(t *testing.T) {
+	cursoTeste := criarCursoAleatório()
+
+	adiconarCurso(cursoTeste, t)
+
+	dataAgora := time.Now().UTC()
+	dataAgora = dataAgora.Truncate(24 * time.Hour)
+	dataFutura1 := dataAgora.AddDate(rand.Intn(50), rand.Intn(12), rand.Intn(28))
+	dataFutura2 := dataAgora.AddDate(rand.Intn(50), rand.Intn(12), rand.Intn(28))
+
+	cursoTeste.Nome = "Novo Nome"
+	cursoTeste.DataDeDesativação = dataFutura1
+	cursoTeste.DataDeInício = dataFutura2
+
+	erro := cursoBD.Atualizar(cursoTeste.ID, cursoTeste)
+	if erro != nil {
+		t.Fatalf("Erro ao atualizar o curso teste: %s", erro.Error())
+	}
+
+	cursoSalvo, erro := cursoBD.Pegar(cursoTeste.ID)
+	if erro != nil {
+		t.Fatalf("Erro ao pegar o curso no banco de dados: %s", erro.Error())
+	}
+
+	if !reflect.DeepEqual(cursoTeste, cursoSalvo) {
+		t.Fatalf(
+			"Erro ao salvar o curso no banco de dados, queria %v, chegou %v",
+			cursoTeste,
+			cursoSalvo,
+		)
+	}
+}
+
+func TestAtualizarCurso_tabelaInválida(t *testing.T) {
+	texto := `Table .* doesn't exist`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatal("Erro ao compilar o regex")
+	}
+
+	cursoTeste := criarCursoAleatório()
+
+	adiconarCurso(cursoTeste, t)
+
+	erro := cursoBDInválido.Atualizar(cursoTeste.ID, cursoTeste)
+	if erro == nil || erro.ErroInicial == nil || erro.ErroInicial.ErroExterno == nil {
+		t.Fatalf("Não foi enviado erro do sistema")
+	}
+
+	if !padrão.MatchString(erro.ErroInicial.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao atualizar o curso queria: %s, chegou %s",
+			texto,
+			erro.ErroInicial.ErroExterno.Error(),
+		)
+	}
+}
+
+func TestAtualizarCurso_tabelaInválida2(t *testing.T) {
+	texto := `Table .* doesn't exist`
+	padrão, erroRegex := regexp.Compile(texto)
+	if erroRegex != nil {
+		t.Fatal("Erro ao compilar o regex")
+	}
+
+	cursoTeste := criarCursoAleatório()
+
+	adiconarCurso(cursoTeste, t)
+
+	erro := cursoBDInválido2.Atualizar(cursoTeste.ID, cursoTeste)
+	if erro == nil || erro.ErroExterno == nil {
+		t.Fatalf("Não foi enviado erro do sistema")
+	}
+
+	if !padrão.MatchString(erro.ErroExterno.Error()) {
+		t.Fatalf(
+			"Erro ao atualizar o curso queria: %s, chegou %s",
+			texto,
+			erro.ErroExterno.Error(),
+		)
+	}
+}
+
 func TestPegarCursoMatérias(t *testing.T) {
 	cursoTeste := criarCursoAleatório()
 

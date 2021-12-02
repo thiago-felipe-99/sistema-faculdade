@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/aleatorio"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
@@ -22,7 +21,7 @@ func criarMatériasCursoAleatórios(idCurso id) *[]entidades.CursoMatéria {
 	for i := range matérias {
 		matérias[i] = entidades.CursoMatéria{
 			IDCurso:    idCurso,
-			IDMatéria:  uuid.New(),
+			IDMatéria:  entidades.NovoID(),
 			Status:     aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
 			Período:    aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
 			Tipo:       aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
@@ -34,7 +33,7 @@ func criarMatériasCursoAleatórios(idCurso id) *[]entidades.CursoMatéria {
 }
 
 func criarCursoAleatório() *entidades.Curso {
-	id := uuid.New()
+	id := entidades.NovoID()
 
 	dataAgora := time.Now().UTC()
 	dataAgora = dataAgora.Truncate(24 * time.Hour)
@@ -153,7 +152,7 @@ func TestInserirCursoMatérias_semCurso(t *testing.T) {
 
 	índiceMáximo := 5
 	for índice := 0; índiceMáximo > índice; índice++ {
-		matérias = append(matérias, *criarMatériasCursoAleatórios(uuid.New())...)
+		matérias = append(matérias, *criarMatériasCursoAleatórios(entidades.NovoID())...)
 	}
 
 	erro := cursoBD.InserirMatérias(&matérias)
@@ -379,7 +378,7 @@ func TestPegarCursoMatérias(t *testing.T) {
 }
 
 func TestPegarCursoMatérias_idInválido(t *testing.T) {
-	matérias, erro := cursoBD.PegarMatérias(uuid.New())
+	matérias, erro := cursoBD.PegarMatérias(entidades.NovoID())
 	if erro != nil {
 		t.Fatalf("Não deveria retornar um erro")
 	}
@@ -396,7 +395,7 @@ func TestPegarCurso_bdInválido(t *testing.T) {
 		t.Fatal("Erro ao compilar o regex")
 	}
 
-	_, erro := cursoBDInválido.PegarMatérias(uuid.New())
+	_, erro := cursoBDInválido.PegarMatérias(entidades.NovoID())
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Deveria ter um erro de tabela inválida")
 	}
@@ -417,7 +416,7 @@ func TestPegarCurso(t *testing.T) {
 }
 
 func TestPegarCurso_idInválido(t *testing.T) {
-	_, erro := cursoBD.Pegar(uuid.New())
+	_, erro := cursoBD.Pegar(entidades.NovoID())
 	if erro == nil {
 		t.Fatalf("Deveria ter um erro de curso não encontrado")
 	}
@@ -438,7 +437,7 @@ func TestCurso_tabelaInválida(t *testing.T) {
 		t.Fatal("Erro ao compilar o regex")
 	}
 
-	_, erro := cursoBDInválido.Pegar(uuid.New())
+	_, erro := cursoBDInválido.Pegar(entidades.NovoID())
 	if erro == nil || erro.ErroInicial == nil || erro.ErroInicial.ErroExterno == nil {
 		t.Fatalf("Deveria ter um erro de tabela inválida")
 	}
@@ -459,7 +458,7 @@ func TestCurso_tabelaInválida2(t *testing.T) {
 		t.Fatal("Erro ao compilar o regex")
 	}
 
-	_, erro := cursoBDInválido2.Pegar(uuid.New())
+	_, erro := cursoBDInválido2.Pegar(entidades.NovoID())
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Deveria ter um erro de tabela inválida")
 	}
@@ -490,7 +489,7 @@ func TestDeletarCurso(t *testing.T) {
 }
 
 func TestDeletarCurso_invalídoID(t *testing.T) {
-	id := uuid.New()
+	id := entidades.NovoID()
 
 	removerCurso(id, t)
 
@@ -510,7 +509,7 @@ func TestDeletarCurso_tabelaInválida(t *testing.T) {
 		t.Fatalf("Erro ao compilar o regex: %s", texto)
 	}
 
-	erro := cursoBDInválido.Deletar(uuid.New())
+	erro := cursoBDInválido.Deletar(entidades.NovoID())
 
 	if erro == nil || erro.ErroInicial == nil || erro.ErroInicial.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
@@ -532,7 +531,7 @@ func TestDeletarCurso_tabelaInválida2(t *testing.T) {
 		t.Fatalf("Erro ao compilar o regex: %s", texto)
 	}
 
-	erro := cursoBDInválido2.Deletar(uuid.New())
+	erro := cursoBDInválido2.Deletar(entidades.NovoID())
 
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
@@ -564,7 +563,7 @@ func TestDeletarCursoMatérias(t *testing.T) {
 }
 
 func TestDeletarCursoMatérias_invalídoID(t *testing.T) {
-	id := uuid.New()
+	id := entidades.NovoID()
 
 	removerCursoMatérias(id, t)
 
@@ -584,7 +583,7 @@ func TestDeletarCursoMatérias_tabelaInválida(t *testing.T) {
 		t.Fatalf("Erro ao compilar o regex: %s", texto)
 	}
 
-	erro := cursoBDInválido.DeletarMatérias(uuid.New())
+	erro := cursoBDInválido.DeletarMatérias(entidades.NovoID())
 
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")

@@ -3,8 +3,8 @@ package mongodb
 import (
 	"io"
 
-	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
 
@@ -17,7 +17,7 @@ type Connexão struct {
 
 func NovaConexão(arquivolog io.Writer) *Connexão {
 	return &Connexão{
-		ID:  uuid.New(),
+		ID:  entidades.NovoID(),
 		Log: logs.NovoLog(arquivolog),
 	}
 }

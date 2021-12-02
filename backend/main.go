@@ -9,13 +9,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
-	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/data"
 	"thiagofelipe.com.br/sistema-faculdade/data/database/mariadb"
 	"thiagofelipe.com.br/sistema-faculdade/data/database/mongodb"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
+
+type id = entidades.ID
 
 //nolint:funlen
 func newData() *data.Data {
@@ -99,12 +100,12 @@ func main() {
 
 	r.GET("/ping", func(c *gin.Context) {
 		rand.Seed(time.Now().UnixNano())
-		id := uuid.New()
+		id := entidades.NovoID()
 
 		materias := &[]entidades.CursoMatéria{
 			{
 				IDCurso:    id,
-				IDMatéria:  uuid.New(),
+				IDMatéria:  entidades.NovoID(),
 				Período:    "Teste",
 				Tipo:       "Não sei",
 				Status:     "Testando",
@@ -112,7 +113,7 @@ func main() {
 			},
 			{
 				IDCurso:    id,
-				IDMatéria:  uuid.New(),
+				IDMatéria:  entidades.NovoID(),
 				Período:    "Teste",
 				Tipo:       "Não sei",
 				Status:     "Testando",

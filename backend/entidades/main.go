@@ -15,6 +15,10 @@ type Senha = string
 // ID representa o indificador único da entidades.
 type ID = uuid.UUID
 
+func NovoID() ID {
+	return uuid.New()
+}
+
 // CursosOfertado, quando uma turma é ofericido para um certo curso.
 type CursosOfertado struct {
 	ID

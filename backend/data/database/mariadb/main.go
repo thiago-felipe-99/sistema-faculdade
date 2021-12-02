@@ -6,8 +6,8 @@ import (
 
 	// Driver para funcionar o mariadb.
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/data"
+	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
@@ -31,7 +31,7 @@ func NovoBD(dsn string) (*sql.DB, *errors.Aplicação) {
 
 func NovaConexão(arquivolog io.Writer, bd *sql.DB) *Conexão {
 	return &Conexão{
-		ID:  uuid.New(),
+		ID:  entidades.NovoID(),
 		Log: logs.NovoLog(arquivolog),
 		BD:  bd,
 	}

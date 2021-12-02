@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/errors"
 )
@@ -18,7 +17,7 @@ func criarPessoaAleatória() *entidades.Pessoa {
 	dataAgora = dataAgora.Truncate(24 * time.Hour)
 
 	var pessoa = &entidades.Pessoa{
-		ID:               uuid.New(),
+		ID:               entidades.NovoID(),
 		Nome:             "Teste Certo",
 		CPF:              fmt.Sprintf("%011d", rand.Intn(99999999999)),
 		DataDeNascimento: dataAgora,
@@ -106,7 +105,7 @@ func TestInserirPessoa_duplicadoCPF(t *testing.T) {
 
 	defer removerPessoa(pessoaTeste.ID, t)
 
-	pessoaTeste.ID = uuid.New()
+	pessoaTeste.ID = entidades.NovoID()
 
 	erro := pessoaBD.Inserir(pessoaTeste)
 
@@ -160,7 +159,7 @@ func TestAtualizarPessoa_duplicadoID(t *testing.T) {
 
 	adiconarPessoa(pessoaTeste, t)
 
-	erro := pessoaBD.Atualizar(uuid.New(), pessoaTeste)
+	erro := pessoaBD.Atualizar(entidades.NovoID(), pessoaTeste)
 	if erro != nil {
 		t.Fatalf("Erro ao atualizar a pessoa teste: %s", erro.Error())
 	}
@@ -215,7 +214,7 @@ func TestPegarPessoa(t *testing.T) {
 }
 
 func TestPegarPessoa_inválidoID(t *testing.T) {
-	_, erro := pessoaBD.Pegar(uuid.New())
+	_, erro := pessoaBD.Pegar(entidades.NovoID())
 
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
@@ -237,7 +236,7 @@ func TestPegarPessoa_tabelaInválida(t *testing.T) {
 		t.Fatalf("Erro ao compilar o regex: %s", texto)
 	}
 
-	_, erro := pessoaBDInválido.Pegar(uuid.New())
+	_, erro := pessoaBDInválido.Pegar(entidades.NovoID())
 
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")
@@ -269,7 +268,7 @@ func TestDeletarPessoa(t *testing.T) {
 }
 
 func TestDeletarPessoa_invalídoID(t *testing.T) {
-	id := uuid.New()
+	id := entidades.NovoID()
 
 	removerPessoa(id, t)
 
@@ -289,7 +288,7 @@ func TestDeletarPessoa_tabelaInválida(t *testing.T) {
 		t.Fatalf("Erro ao compilar o regex: %s", texto)
 	}
 
-	erro := pessoaBDInválido.Deletar(uuid.New())
+	erro := pessoaBDInválido.Deletar(entidades.NovoID())
 
 	if erro == nil || erro.ErroExterno == nil {
 		t.Fatalf("Não foi enviado erro do sistema")

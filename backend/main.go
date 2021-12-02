@@ -91,7 +91,7 @@ func prettyStruct(s ...interface{}) string {
 	return string(sJSON)
 }
 
-//nolint:funlen
+//nolint: funlen, cyclop
 func main() {
 	r := gin.Default()
 
@@ -137,6 +137,30 @@ func main() {
 		}
 
 		cursoSalvo, err := Data.Curso.Pegar(curso.ID)
+		if err != nil {
+			log.Println(err.Error())
+			if err.ErroExterno != nil {
+				log.Panicln(err.ErroExterno.Error())
+			}
+		}
+
+		log.Println(prettyStruct(cursoSalvo))
+
+		curso.Nome = "Nome Velho"
+		curso.Matérias[0].Observação = "Observação1 "
+		curso.Matérias[1].Observação = "Observação 2"
+		curso.Matérias[0].Status = "Status NOveo "
+		curso.Matérias[1].Status = "Novo status"
+
+		err = Data.Curso.Atualizar(curso.ID, curso)
+		if err != nil {
+			log.Println(err.Error())
+			if err.ErroExterno != nil {
+				log.Panicln(err.ErroExterno.Error())
+			}
+		}
+
+		cursoSalvo, err = Data.Curso.Pegar(curso.ID)
 		if err != nil {
 			log.Println(err.Error())
 			if err.ErroExterno != nil {

@@ -65,6 +65,7 @@ func (bd PessoaBD) Atualizar(id id, pessoa *entidades.Pessoa) *errors.Aplicaçã
 		)
 		return errors.New(errors.AtualizarPessoa, nil, erro)
 	}
+
 	return nil
 }
 

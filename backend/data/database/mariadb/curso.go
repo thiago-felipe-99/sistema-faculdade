@@ -42,12 +42,29 @@ func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *errors
 
 	query = query[:len(query)-1]
 
-	_, erro := bd.BD.Exec(query, params...)
+	tx, erroTx := bd.BD.Begin()
+	if erroTx != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao inserir as matérias do curso\nErro: " + erroTx.Error(),
+		)
+		return errors.New(errors.InserirCurso, nil, erroTx)
+	}
+
+	defer tx.Rollback()
+
+	_, erro := tx.Exec(query, params...)
 	if erro != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao inserir as matérias do curso\nErro: " + erro.Error(),
 		)
 		return errors.New(errors.InserirCursoMatérias, nil, erro)
+	}
+
+	if erroTx = tx.Commit(); erroTx != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao inserir as matérias do curso\nErro: " + erroTx.Error(),
+		)
+		return errors.New(errors.InserirCurso, nil, erroTx)
 	}
 
 	return nil
@@ -83,6 +100,45 @@ func (bd CursoBD) Inserir(curso *entidades.Curso) *errors.Aplicação {
 func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *errors.Aplicação {
 	bd.Log.Informação.Println("Atualizando matérias no Curso")
 
+	query := "UPDATE " + bd.NomeDaTabelaSecundária +
+		" SET Período = ?, Tipo = ?, Status = ?, Observação = ? " +
+		" WHERE ID_Curso = ? AND ID_Matéria = ?"
+
+	tx, erroTx := bd.BD.Begin()
+	if erroTx != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao atualizar as matérias do curso\nErro: " + erroTx.Error(),
+		)
+		return errors.New(errors.InserirCurso, nil, erroTx)
+	}
+
+	defer tx.Rollback()
+
+	for _, matéria := range *matérias {
+		_, erro := tx.Exec(
+			query,
+			matéria.Período,
+			matéria.Tipo,
+			matéria.Status,
+			matéria.Observação,
+			matéria.IDCurso,
+			matéria.IDMatéria,
+		)
+		if erro != nil {
+			bd.Log.Aviso.Println(
+				"Erro ao atualizar as matérias do curso\nErro: " + erro.Error(),
+			)
+			return errors.New(errors.InserirCursoMatérias, nil, erro)
+		}
+	}
+
+	if erroTx = tx.Commit(); erroTx != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao atualizar as matérias do curso\nErro: " + erroTx.Error(),
+		)
+		return errors.New(errors.InserirCurso, nil, erroTx)
+	}
+
 	return nil
 }
 
@@ -90,6 +146,34 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erro
 // MariaDB.
 func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *errors.Aplicação {
 	bd.Log.Informação.Println("Atualizando Curso com o seguinte ID: " + id.String())
+
+	erro := bd.AtualizarMatérias(&curso.Matérias)
+	if erro != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao atualizar o curso com o seguinte ID: "+id.String(),
+			"\nErro: "+erro.Error(),
+		)
+		return errors.New(errors.AtualizarCurso, erro, nil)
+	}
+
+	query := "UPDATE " + bd.NomeDaTabela +
+		" SET Nome = ?, Data_De_Início = ?, Data_De_Desativação = ? WHERE ID = ?"
+
+	_, erroBD := bd.BD.Exec(
+		query,
+		curso.Nome,
+		curso.DataDeInício,
+		curso.DataDeDesativação,
+		id,
+	)
+
+	if erroBD != nil {
+		bd.Log.Aviso.Println(
+			"Erro ao atualizar o curso com o seguinte ID: "+id.String(),
+			"\nErro: "+erroBD.Error(),
+		)
+		return errors.New(errors.AtualizarCurso, nil, erroBD)
+	}
 
 	return nil
 }

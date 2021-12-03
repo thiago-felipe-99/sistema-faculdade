@@ -48,7 +48,7 @@ func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *erros.
 		bd.Log.Aviso.Println(
 			"Erro ao inserir as matérias do curso\n" + erros.ErroExterno(erroTx),
 		)
-		return erros.Novo(erros.InserirCurso, nil, erroTx)
+		return erros.Novo(erros.InserirCursoMatérias, nil, erroTx)
 	}
 
 	defer tx.Rollback()
@@ -65,7 +65,7 @@ func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *erros.
 		bd.Log.Aviso.Println(
 			"Erro ao inserir as matérias do curso\nErro: " + erros.ErroExterno(erroTx),
 		)
-		return erros.Novo(erros.InserirCurso, nil, erroTx)
+		return erros.Novo(erros.InserirCursoMatérias, nil, erroTx)
 	}
 
 	return nil
@@ -182,6 +182,7 @@ func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *erros.Aplicação {
 // PegarMatérias é uma função que retonar as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
 func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *erros.Aplicação) {
+	bd.Log.Informação.Println("Pegando as matérias do Curso com o seguinte ID: " + idCurso.String())
 
 	var matérias []entidades.CursoMatéria
 

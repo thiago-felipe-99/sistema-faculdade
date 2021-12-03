@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `Aluno` (
 CREATE TABLE IF NOT EXISTS `AlunoTurma` (
   `ID_Aluno` $UUID NOT NULL,
   `ID_Turma` $UUID NOT NULL,
-  `Status` $UUID NOT NULL,
+  `Status` $STRING NOT NULL,
   FOREIGN KEY(ID_Aluno) REFERENCES Aluno(ID)
 );
 

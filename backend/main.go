@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -15,8 +16,6 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
-
-type id = entidades.ID
 
 //nolint:funlen
 func newData() *data.Data {
@@ -53,7 +52,9 @@ func newData() *data.Data {
 	}
 
 	MariaDBAluno := mariadb.AlunoBD{
-		Conexão: *mariadb.NovaConexão(logFiles.Aluno, bd),
+		Conexão:                *mariadb.NovaConexão(logFiles.Aluno, bd),
+		NomeDaTabela:           "Aluno",
+		NomeDaTabelaSecundária: "AlunoTurma",
 	}
 
 	MariaDBProfessor := mariadb.ProfessorBD{
@@ -92,7 +93,7 @@ func prettyStruct(s ...interface{}) string {
 	return string(sJSON)
 }
 
-//nolint: funlen, cyclop
+//nolint: funlen
 func main() {
 	r := gin.Default()
 
@@ -100,11 +101,24 @@ func main() {
 
 	r.GET("/ping", func(c *gin.Context) {
 		rand.Seed(time.Now().UnixNano())
-		id := entidades.NovoID()
+		pessoa := &entidades.Pessoa{
+			ID:               entidades.NovoID(),
+			Nome:             "Nome da PEssoa",
+			CPF:              fmt.Sprintf("%011d", rand.Intn(99999999999)), //nolint:gosec,gomnd,lll
+			DataDeNascimento: time.Now(),
+			Senha:            "Senha errada",
+		}
+
+		err := Data.Pessoa.Inserir(pessoa)
+		if err != nil {
+			log.Panicln(err.Error())
+		}
+
+		idCurso := entidades.NovoID()
 
 		materias := &[]entidades.CursoMatéria{
 			{
-				IDCurso:    id,
+				IDCurso:    idCurso,
 				IDMatéria:  entidades.NovoID(),
 				Período:    "Teste",
 				Tipo:       "Não sei",
@@ -112,7 +126,7 @@ func main() {
 				Observação: "Okay",
 			},
 			{
-				IDCurso:    id,
+				IDCurso:    idCurso,
 				IDMatéria:  entidades.NovoID(),
 				Período:    "Teste",
 				Tipo:       "Não sei",
@@ -122,62 +136,86 @@ func main() {
 		}
 
 		curso := &entidades.Curso{
-			ID:                id,
+			ID:                idCurso,
 			Nome:              "Curso novo",
 			DataDeInício:      time.Now(),
 			DataDeDesativação: time.Now(),
 			Matérias:          *materias,
 		}
 
-		err := Data.Curso.Inserir(curso)
+		err = Data.Curso.Inserir(curso)
 		if err != nil {
 			log.Println(err.Error())
-			if err.ErroExterno != nil {
-				log.Println(err.ErroExterno.Error())
-			}
 		}
 
 		cursoSalvo, err := Data.Curso.Pegar(curso.ID)
 		if err != nil {
 			log.Println(err.Error())
-			if err.ErroExterno != nil {
-				log.Panicln(err.ErroExterno.Error())
-			}
 		}
 
 		log.Println(prettyStruct(cursoSalvo))
 
-		curso.Nome = "Nome Velho"
-		curso.Matérias[0].Observação = "Observação1 "
-		curso.Matérias[1].Observação = "Observação 2"
-		curso.Matérias[0].Status = "Status NOveo "
-		curso.Matérias[1].Status = "Novo status"
+		idAluno := entidades.NovoID()
 
-		err = Data.Curso.Atualizar(curso.ID, curso)
-		if err != nil {
-			log.Println(err.Error())
-			if err.ErroExterno != nil {
-				log.Panicln(err.ErroExterno.Error())
-			}
+		turmas := &[]entidades.TurmaAluno{
+			{
+				IDAluno: idAluno,
+				IDTurma: entidades.NovoID(),
+				Status:  "Testando",
+			},
+			{
+				IDAluno: idAluno,
+				IDTurma: entidades.NovoID(),
+				Status:  "Testando",
+			},
 		}
 
-		cursoSalvo, err = Data.Curso.Pegar(curso.ID)
-		if err != nil {
-			log.Println(err.Error())
-			if err.ErroExterno != nil {
-				log.Panicln(err.ErroExterno.Error())
-			}
+		aluno := &entidades.Aluno{
+			ID:             idAluno,
+			Pessoa:         pessoa.ID,
+			DataDeIngresso: time.Now(),
+			DataDeSaída:    time.Now(),
+			Turmas:         *turmas,
+			Matrícula:      fmt.Sprintf("%011d", rand.Intn(99999999999)), //nolint:gosec,gomnd,lll
+			Curso:          curso.ID,
+			Período:        "2022",
+			Status:         "Okay",
 		}
 
-		log.Println(prettyStruct(cursoSalvo))
-
-		err = Data.Curso.Deletar(curso.ID)
+		err = Data.Aluno.Inserir(aluno)
 		if err != nil {
-			log.Println(err.Error())
-			if err.ErroExterno != nil {
-				log.Panicln(err.ErroExterno.Error())
-			}
+			log.Panicln(err.Error())
 		}
+
+		alunoSalvo, err := Data.Aluno.Pegar(aluno.ID)
+		if err != nil {
+			log.Panicln(err.Error())
+		}
+
+		log.Println(prettyStruct(alunoSalvo))
+
+		// aluno.Nome = "Nome Velho"
+		// aluno.Matérias[0].Observação = "Observação1 "
+		// aluno.Matérias[1].Observação = "Observação 2"
+		// aluno.Matérias[0].Status = "Status NOveo "
+		// aluno.Matérias[1].Status = "Novo status"
+
+		// err = Data.Curso.Atualizar(aluno.ID, aluno)
+		// if err != nil {
+		// 	log.Println(err.Error())
+		// }
+
+		// cursoSalvo, err = Data.Curso.Pegar(aluno.ID)
+		// if err != nil {
+		// 	log.Println(err.Error())
+		// }
+
+		// log.Println(prettyStruct(cursoSalvo))
+
+		// err = Data.Curso.Deletar(aluno.ID)
+		// if err != nil {
+		// 	log.Println(err.Error())
+		// }
 
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",

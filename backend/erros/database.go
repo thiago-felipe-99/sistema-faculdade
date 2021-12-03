@@ -18,6 +18,16 @@ const (
 	CursoMatériasNãoEncontradoNúmero
 	PegarCursoMatériasNúmero
 	DeletarCursoMatériasNúmero
+	InserirAlunoNúmero
+	AtualizarAlunoNúmero
+	AlunoNãoEncontradoNúmero
+	PegarAlunoNúmero
+	DeletarAlunoNúmero
+	InserirAlunoTurmaNúmero
+	AtualizarAlunoTurmaNúmero
+	AlunoTurmaNãoEncontradoNúmero
+	PegarAlunoTurmaNúmero
+	DeletarAlunoTurmaNúmero
 )
 
 var (
@@ -88,5 +98,45 @@ var (
 	DeletarCursoMatérias = &Padrão{
 		Mensagem: "Erro ao deletar as matérias do curso",
 		Número:   DeletarCursoMatériasNúmero,
+	}
+	InserirAluno = &Padrão{
+		Mensagem: "Erro ao inserir o aluno",
+		Número:   InserirAlunoNúmero,
+	}
+	AtualizarAluno = &Padrão{
+		Mensagem: "Erro ao atualizar o aluno",
+		Número:   AtualizarAlunoNúmero,
+	}
+	AlunoNãoEncontrado = &Padrão{
+		Mensagem: "Aluno não encontrada",
+		Número:   AlunoNãoEncontradoNúmero,
+	}
+	PegarAluno = &Padrão{
+		Mensagem: "Erro ao pegar o aluno",
+		Número:   PegarAlunoNúmero,
+	}
+	DeletarAluno = &Padrão{
+		Mensagem: "Erro ao deletar o aluno",
+		Número:   DeletarAlunoNúmero,
+	}
+	InserirAlunoTurma = &Padrão{
+		Mensagem: "Erro ao inserir as turmas do aluno",
+		Número:   InserirAlunoTurmaNúmero,
+	}
+	AtualizarAlunoTurma = &Padrão{
+		Mensagem: "Erro ao atualizar as turmas do aluno",
+		Número:   AtualizarAlunoTurmaNúmero,
+	}
+	AlunoTurmaNãoEncontrado = &Padrão{
+		Mensagem: "Turmas do aluno não encontradas",
+		Número:   AlunoTurmaNãoEncontradoNúmero,
+	}
+	PegarAlunoTurma = &Padrão{
+		Mensagem: "Erro ao pegar as turmas do aluno",
+		Número:   PegarAlunoTurmaNúmero,
+	}
+	DeletarAlunoTurma = &Padrão{
+		Mensagem: "Erro ao deletar as turmas do aluno",
+		Número:   DeletarAlunoTurmaNúmero,
 	}
 )

@@ -54,8 +54,9 @@ type CursoMatéria struct {
 
 // TurmaAluno representa as turmas do aluno.
 type TurmaAluno struct {
-	ID     ID
-	Status string
+	IDTurma ID
+	IDAluno ID
+	Status  string
 }
 
 // Pessoa representa a entidade Pessoa.
@@ -79,7 +80,7 @@ type Curso struct {
 // Aluno representa a entidade Aluno.
 type Aluno struct {
 	ID
-	Pessoa
+	Pessoa         ID
 	Matrícula      string
 	Curso          ID
 	DataDeIngresso time.Time
@@ -92,7 +93,7 @@ type Aluno struct {
 // Professor representa a entidade Professor.
 type Professor struct {
 	ID
-	Pessoa
+	Pessoa              ID
 	Matrícula           string
 	DataDeIngresso      time.Time
 	DataDeSaída         time.Time
@@ -106,7 +107,7 @@ type Professor struct {
 // Administrativo representa a entidade Administrativo.
 type Administrativo struct {
 	ID
-	Pessoa
+	Pessoa              ID
 	Matrícula           string
 	DataDeIngresso      time.Time
 	DataDeSaída         time.Time

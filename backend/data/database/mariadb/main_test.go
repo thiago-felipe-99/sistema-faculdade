@@ -14,12 +14,21 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
 
+const (
+	MATÉRIAS_MÁXIMAS         = 20
+	TAMANHO_MÁXIMO_PALAVRA   = 25
+	TAMANHO_MÁXIMO_MATRÍCULA = 11
+)
+
 var (
 	pessoaBD         *PessoaBD
 	pessoaBDInválido *PessoaBD
 	cursoBD          *CursoBD
 	cursoBDInválido  *CursoBD
 	cursoBDInválido2 *CursoBD
+	alunoBD          *AlunoBD
+	alunoBDInválido  *AlunoBD
+	alunoBDInválido2 *AlunoBD
 )
 
 var ambiente = env.PegandoVariáveisDeAmbiente()
@@ -34,6 +43,7 @@ func criarConexão(m *testing.M) *sql.DB {
 		DBName:               "Teste",
 		AllowNativePasswords: true,
 		ParseTime:            true,
+		MultiStatements:      true,
 	}
 
 	conexão, erro := NovoBD(config.FormatDSN())
@@ -49,22 +59,7 @@ func criarConexão(m *testing.M) *sql.DB {
 	return conexão
 }
 
-func deletarTabelas(bd *sql.DB) {
-	query := "DELETE FROM CursoMatérias"
-	bd.Exec(query)
-
-	query = "DELETE FROM Curso"
-	bd.Exec(query)
-
-	query = "DELETE FROM Pessoa"
-	bd.Exec(query)
-}
-
-func TestMain(m *testing.M) {
-
-	rand.Seed(time.Now().UnixNano())
-
-	bd := criarConexão(m)
+func criandoConexõesComAsTabelas(m *testing.M, bd *sql.DB) {
 
 	logs := logs.AbrirArquivos("./logs/")
 
@@ -95,6 +90,50 @@ func TestMain(m *testing.M) {
 		NomeDaTabela:           "CursoErrado",
 		NomeDaTabelaSecundária: "CursoMatérias",
 	}
+
+	alunoBD = &AlunoBD{
+		Conexão:                *NovaConexão(logs.Aluno, bd),
+		NomeDaTabela:           "Aluno",
+		NomeDaTabelaSecundária: "AlunoTurma",
+	}
+
+	alunoBDInválido = &AlunoBD{
+		Conexão:                *NovaConexão(logs.Aluno, bd),
+		NomeDaTabela:           "AlunoErrado",
+		NomeDaTabelaSecundária: "AlunoTurmaErrado",
+	}
+
+	alunoBDInválido2 = &AlunoBD{
+		Conexão:                *NovaConexão(logs.Aluno, bd),
+		NomeDaTabela:           "AlunoErrado",
+		NomeDaTabelaSecundária: "AlunoTurma",
+	}
+
+}
+
+func deletarTabelas(bd *sql.DB) {
+
+	query := ""
+
+	query += "DELETE FROM AlunoTurma;"
+	query += "DELETE FROM Aluno;"
+	query += "DELETE FROM CursoMatérias;"
+	query += "DELETE FROM Curso;"
+	query += "DELETE FROM Pessoa;"
+
+	_, erro := bd.Exec(query)
+	if erro != nil {
+		log.Fatalf("Erro ao deletar os valores das tabelas: %s", erro.Error())
+	}
+}
+
+func TestMain(m *testing.M) {
+
+	rand.Seed(time.Now().UnixNano())
+
+	bd := criarConexão(m)
+
+	criandoConexõesComAsTabelas(m, bd)
 
 	código := m.Run()
 

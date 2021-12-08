@@ -12,9 +12,6 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/erros"
 )
 
-const MATÉRIAS_MÁXIMAS = 20
-const TAMANHO_MÁXIMO_PALAVRA = 25
-
 func criarMatériasCursoAleatórios(idCurso id) *[]entidades.CursoMatéria {
 	matérias := make([]entidades.CursoMatéria, rand.Intn(MATÉRIAS_MÁXIMAS)+1)
 
@@ -97,7 +94,6 @@ func removerCursoMatérias(idCurso id, t *testing.T) {
 }
 
 func adiconarCurso(curso *entidades.Curso, t *testing.T) {
-
 	erro := cursoBD.Inserir(curso)
 	if erro != nil {
 		t.Fatalf("Erro ao inserir o curso no banco de dados: %s", erro.Error())
@@ -124,7 +120,7 @@ func adiconarCurso(curso *entidades.Curso, t *testing.T) {
 func removerCurso(id id, t *testing.T) {
 	erro := cursoBD.Deletar(id)
 	if erro != nil {
-		t.Fatalf("Erro ao tentar deletar o usuário teste: %v", erro.Error())
+		t.Fatalf("Erro ao tentar deletar o curso teste: %v", erro.Error())
 	}
 }
 

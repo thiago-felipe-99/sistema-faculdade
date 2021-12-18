@@ -8,6 +8,7 @@ const (
 	atualizarPessoa
 	pessoaNãoEncontrada
 	pegarPessoa
+	pegarPessoaCPF
 	DeletarPessoa
 	inserirCurso
 	atualizarCurso
@@ -52,6 +53,10 @@ var (
 	ErroPegarPessoa = &erros.Padrão{
 		Mensagem: "Erro ao pegar a pessoa",
 		Número:   pegarPessoa,
+	}
+	ErroPegarPessoaPorCPF = &erros.Padrão{
+		Mensagem: "Erro ao pegar a pessoa pelo CPF",
+		Número:   pegarPessoaCPF,
 	}
 	ErroDeletarPessoa = &erros.Padrão{
 		Mensagem: "Erro ao deletar a pessoa",

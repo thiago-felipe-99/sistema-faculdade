@@ -110,6 +110,46 @@ func (bd PessoaBD) Pegar(id id) (*entidades.Pessoa, *erros.Aplicação) {
 	return &pessoa, nil
 }
 
+func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Aplicação) {
+	bd.Log.Informação.Println("Pegando Pessoa com o seguinte CPF: " + cpf)
+
+	var pessoa entidades.Pessoa
+
+	query := "SELECT ID, Nome, CPF, Data_De_Nascimento, Senha FROM " +
+		bd.NomeDaTabela + " WHERE CPF = ?"
+
+	row := bd.BD.QueryRow(query, cpf)
+
+	erro := row.Scan(
+		&pessoa.ID,
+		&pessoa.Nome,
+		&pessoa.CPF,
+		&pessoa.DataDeNascimento,
+		&pessoa.Senha,
+	)
+
+	if erro != nil {
+
+		if erro == sql.ErrNoRows {
+			bd.Log.Aviso.Println(
+				"Não foi encontrada nenhuma a pessoa com o seguinte CPF: "+cpf,
+				"\n"+erros.ErroExterno(erro),
+			)
+			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, erro)
+		}
+
+		bd.Log.Aviso.Println(
+			"Erro ao tentar econtrar a pessoa com o seguinte CPF: "+cpf,
+			"\n"+erros.ErroExterno(erro),
+		)
+		return nil, erros.Novo(ErroPegarPessoaPorCPF, nil, erro)
+
+	}
+
+	return &pessoa, nil
+
+}
+
 // Deletar é uma função que remove uma Pessoa do banco de dados MariaDB.
 func (bd PessoaBD) Deletar(id id) *erros.Aplicação {
 	bd.Log.Informação.Print("Deletando Pessoa com o seguinte ID: " + id.String())

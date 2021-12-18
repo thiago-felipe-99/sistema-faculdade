@@ -16,7 +16,7 @@ type Pessoa struct {
 }
 
 func (p *Pessoa) ExisteCPF(cpf entidades.CPF) (bool, *erros.Aplicação) {
-	pessoas, erro := p.data.BuscarPorCPF(cpf)
+	pessoas, erro := p.data.PegarPorCPF(cpf)
 	if erro != nil {
 		return true, erros.Novo(ErroAoVerificarCPF, erro, nil)
 	}

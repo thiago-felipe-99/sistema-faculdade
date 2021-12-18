@@ -13,7 +13,7 @@ type Pessoa interface {
 	Inserir(*entidades.Pessoa) *erros.Aplicação
 	Atualizar(ID, *entidades.Pessoa) *erros.Aplicação
 	Pegar(ID) (*entidades.Pessoa, *erros.Aplicação)
-	BuscarPorCPF(cpf entidades.CPF) (*[]entidades.Pessoa, *erros.Aplicação)
+	PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Aplicação)
 	Deletar(ID) *erros.Aplicação
 }
 

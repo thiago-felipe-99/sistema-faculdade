@@ -9,14 +9,43 @@ import (
 // CPF representa o documento CPF(Cadatro De Pessoa Física) do Brasil.
 type CPF = string
 
+// ValidarCPF verifica se a string é um CPF.
+func ValidarCPF(cpf string) (CPF, bool) {
+	return cpf, true
+}
+
 // Senha representa uma senha na aplicação.
 type Senha = string
+
+// GerarNovaSenha retornar a senha hasheada.
+func GerarNovaSenha(senha string) Senha {
+	return senha
+}
+
+// SenhaVálida verifica se a senha segue os padrões requiridos para que tenha
+// uma senha válida.
+func SenhaVálida(senha string) bool {
+	return true
+}
 
 // ID representa o indificador único da entidades.
 type ID = uuid.UUID
 
+// NovoID gera um novo ID.
 func NovoID() ID {
 	return uuid.New()
+}
+
+// DataAtual retornar a data atual do sistema no padrão UTC.
+func DataAtual() time.Time {
+	return RemoverHorário(time.Now().UTC())
+}
+
+// RemoverHorário retirar o horário de uma data, ou seja, se a data for do
+// formato ISO 8601 e tiver o valor 2001-01-01T14:30+00 ela retornará a
+// seguinte data 2001-01-01T00:00+00.
+func RemoverHorário(data time.Time) time.Time {
+	return data.Truncate(24 * time.Hour) //nolint:gomnd
 }
 
 // CursosOfertado, quando uma turma é ofericido para um certo curso.

@@ -3,6 +3,7 @@ package mariadb
 import (
 	"database/sql"
 
+	. "thiagofelipe.com.br/sistema-faculdade/data/erros"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/erros"
 )
@@ -35,7 +36,7 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 			"Erro ao inserir a Pessoa com o seguinte ID: "+pessoa.ID.String(),
 			"\n"+erros.ErroExterno(erro),
 		)
-		return erros.Novo(erros.InserirPessoa, nil, erro)
+		return erros.Novo(ErroInserirPessoa, nil, erro)
 	}
 
 	return nil
@@ -63,7 +64,7 @@ func (bd PessoaBD) Atualizar(id id, pessoa *entidades.Pessoa) *erros.Aplicação
 			"Erro ao atualizar a Pessoa com o seguinte ID: "+id.String(),
 			"\n"+erros.ErroExterno(erro),
 		)
-		return erros.Novo(erros.AtualizarPessoa, nil, erro)
+		return erros.Novo(ErroAtualizarPessoa, nil, erro)
 	}
 
 	return nil
@@ -95,14 +96,14 @@ func (bd PessoaBD) Pegar(id id) (*entidades.Pessoa, *erros.Aplicação) {
 				"Não foi encontrada nenhuma a pessoa com o seguinte ID: "+id.String(),
 				"\n"+erros.ErroExterno(erro),
 			)
-			return nil, erros.Novo(erros.PessoaNãoEncontrada, nil, erro)
+			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, erro)
 		}
 
 		bd.Log.Aviso.Println(
 			"Erro ao tentar econtrar a pessoa com o seguinte ID: "+id.String(),
 			"\n"+erros.ErroExterno(erro),
 		)
-		return nil, erros.Novo(erros.PegarPessoa, nil, erro)
+		return nil, erros.Novo(ErroPegarPessoa, nil, erro)
 
 	}
 
@@ -123,7 +124,7 @@ func (bd PessoaBD) Deletar(id id) *erros.Aplicação {
 			"\n"+erros.ErroExterno(erro),
 		)
 
-		return erros.Novo(erros.DeletarPessoa, nil, erro)
+		return erros.Novo(ErroDeletarPessoa, nil, erro)
 	}
 
 	return nil

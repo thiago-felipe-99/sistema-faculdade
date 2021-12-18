@@ -3,6 +3,7 @@ package mariadb
 import (
 	"database/sql"
 
+	. "thiagofelipe.com.br/sistema-faculdade/data/erros"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/erros"
 )
@@ -45,7 +46,7 @@ func (bd AlunoBD) InserirTurmas(turmas *[]entidades.TurmaAluno) *erros.Aplicaç�
 		bd.Log.Aviso.Println(
 			"Erro ao inserir as turmas de um Aluno\n" + erros.ErroExterno(erroTx),
 		)
-		return erros.Novo(erros.InserirAlunoTurma, nil, erroTx)
+		return erros.Novo(ErroInserirAluno, nil, erroTx)
 	}
 
 	defer tx.Rollback()
@@ -55,14 +56,14 @@ func (bd AlunoBD) InserirTurmas(turmas *[]entidades.TurmaAluno) *erros.Aplicaç�
 		bd.Log.Aviso.Println(
 			"Erro ao inserir as turmas de um Aluno\n" + erros.ErroExterno(erro),
 		)
-		return erros.Novo(erros.InserirAlunoTurma, nil, erro)
+		return erros.Novo(ErroInserirAlunoTurma, nil, erro)
 	}
 
 	if erroTx = tx.Commit(); erroTx != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao inserir as turmas de um Aluno\nErro: " + erros.ErroExterno(erroTx),
 		)
-		return erros.Novo(erros.InserirAlunoTurma, nil, erroTx)
+		return erros.Novo(ErroInserirAlunoTurma, nil, erroTx)
 	}
 
 	return nil
@@ -92,7 +93,7 @@ func (bd AlunoBD) Inserir(aluno *entidades.Aluno) *erros.Aplicação {
 			"Erro ao inserir o Aluno com o seguinte ID: "+aluno.ID.String(),
 			"\n"+erros.ErroExterno(erro),
 		)
-		return erros.Novo(erros.InserirAluno, nil, erro)
+		return erros.Novo(ErroInserirAluno, nil, erro)
 	}
 
 	return bd.InserirTurmas(&aluno.Turmas)
@@ -122,7 +123,7 @@ func (bd AlunoBD) PegarTurmas(idAluno id) (*[]entidades.TurmaAluno, *erros.Aplic
 			"\n"+erros.ErroExterno(erro),
 		)
 
-		return nil, erros.Novo(erros.PegarAlunoTurma, nil, erro)
+		return nil, erros.Novo(ErroPegarAlunoTurma, nil, erro)
 	}
 	defer linhas.Close()
 
@@ -136,7 +137,7 @@ func (bd AlunoBD) PegarTurmas(idAluno id) (*[]entidades.TurmaAluno, *erros.Aplic
 				"\n"+erros.ErroExterno(erro),
 			)
 
-			return nil, erros.Novo(erros.PegarAlunoTurma, nil, erro)
+			return nil, erros.Novo(ErroPegarAlunoTurma, nil, erro)
 		}
 
 		turmas = append(turmas, turma)
@@ -147,7 +148,7 @@ func (bd AlunoBD) PegarTurmas(idAluno id) (*[]entidades.TurmaAluno, *erros.Aplic
 			"\n"+erros.ErroExterno(erro),
 		)
 
-		return nil, erros.Novo(erros.PegarAlunoTurma, nil, erro)
+		return nil, erros.Novo(ErroPegarAlunoTurma, nil, erro)
 	}
 
 	return &turmas, nil
@@ -159,7 +160,7 @@ func (bd AlunoBD) Pegar(id id) (*entidades.Aluno, *erros.Aplicação) {
 
 	turmas, erroAplicação := bd.PegarTurmas(id)
 	if erroAplicação != nil &&
-		!erroAplicação.ÉPadrão(erros.AlunoTurmaNãoEncontrado) {
+		!erroAplicação.ÉPadrão(ErroAlunoTurmaNãoEncontrado) {
 		bd.Log.Aviso.Println(
 			"Erro ao pegar as turmas do Aluno com o seguinte ID: "+id.String(),
 			"\n"+erroAplicação.Error(),
@@ -191,14 +192,14 @@ func (bd AlunoBD) Pegar(id id) (*entidades.Aluno, *erros.Aplicação) {
 				"Não foi encontrada nenhum Aluno com o seguinte ID: "+id.String(),
 				"\n"+erros.ErroExterno(erro),
 			)
-			return nil, erros.Novo(erros.AlunoNãoEncontrado, nil, erro)
+			return nil, erros.Novo(ErroAlunoNãoEncontrado, nil, erro)
 		}
 
 		bd.Log.Aviso.Println(
 			"Erro ao pegar o Aluno com o seguinte ID: "+id.String(),
 			"\n"+erros.ErroExterno(erro),
 		)
-		return nil, erros.Novo(erros.PegarAluno, nil, erro)
+		return nil, erros.Novo(ErroPegarAluno, nil, erro)
 	}
 
 	return &aluno, nil

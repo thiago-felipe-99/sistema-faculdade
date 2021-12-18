@@ -3,6 +3,7 @@ package mariadb
 import (
 	"database/sql"
 
+	. "thiagofelipe.com.br/sistema-faculdade/data/erros"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/erros"
 )
@@ -21,7 +22,7 @@ func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *erros.
 
 	if len(*matérias) <= 0 {
 		bd.Log.Aviso.Println("Erro ao inserir matérias do curso, não tem a quantidade mínima de matérias")
-		return erros.Novo(erros.InserirCursoMatériasTamanhoMínimo, nil, nil)
+		return erros.Novo(ErroInserirCursoMatériasTamanhoMínimo, nil, nil)
 	}
 
 	query := "INSERT INTO " + bd.NomeDaTabelaSecundária +
@@ -48,7 +49,7 @@ func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *erros.
 		bd.Log.Aviso.Println(
 			"Erro ao inserir as matérias do curso\n" + erros.ErroExterno(erroTx),
 		)
-		return erros.Novo(erros.InserirCursoMatérias, nil, erroTx)
+		return erros.Novo(ErroInserirCursoMatérias, nil, erroTx)
 	}
 
 	defer tx.Rollback()
@@ -58,14 +59,14 @@ func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *erros.
 		bd.Log.Aviso.Println(
 			"Erro ao inserir as matérias do curso\n" + erros.ErroExterno(erro),
 		)
-		return erros.Novo(erros.InserirCursoMatérias, nil, erro)
+		return erros.Novo(ErroInserirCursoMatérias, nil, erro)
 	}
 
 	if erroTx = tx.Commit(); erroTx != nil {
 		bd.Log.Aviso.Println(
 			"Erro ao inserir as matérias do curso\nErro: " + erros.ErroExterno(erroTx),
 		)
-		return erros.Novo(erros.InserirCursoMatérias, nil, erroTx)
+		return erros.Novo(ErroInserirCursoMatérias, nil, erroTx)
 	}
 
 	return nil
@@ -90,7 +91,7 @@ func (bd CursoBD) Inserir(curso *entidades.Curso) *erros.Aplicação {
 			"Erro ao inserir o Curso com o seguinte ID: "+curso.ID.String(),
 			"\n"+erros.ErroExterno(erro),
 		)
-		return erros.Novo(erros.InserirCurso, nil, erro)
+		return erros.Novo(ErroInserirCurso, nil, erro)
 	}
 
 	return bd.InserirMatérias(&curso.Matérias)
@@ -110,7 +111,7 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erro
 		bd.Log.Aviso.Println(
 			"Erro ao atualizar as matérias do curso\n" + erros.ErroExterno(erroTx),
 		)
-		return erros.Novo(erros.InserirCurso, nil, erroTx)
+		return erros.Novo(ErroInserirCurso, nil, erroTx)
 	}
 
 	defer tx.Rollback()
@@ -129,7 +130,7 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erro
 			bd.Log.Aviso.Println(
 				"Erro ao atualizar as matérias do curso\n" + erros.ErroExterno(erro),
 			)
-			return erros.Novo(erros.InserirCursoMatérias, nil, erro)
+			return erros.Novo(ErroInserirCursoMatérias, nil, erro)
 		}
 	}
 
@@ -137,7 +138,7 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erro
 		bd.Log.Aviso.Println(
 			"Erro ao atualizar as matérias do curso\n" + erros.ErroExterno(erroTx),
 		)
-		return erros.Novo(erros.InserirCurso, nil, erroTx)
+		return erros.Novo(ErroInserirCurso, nil, erroTx)
 	}
 
 	return nil
@@ -154,7 +155,7 @@ func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *erros.Aplicação {
 			"Erro ao atualizar o curso com o seguinte ID: "+id.String(),
 			"\n"+erro.Error(),
 		)
-		return erros.Novo(erros.AtualizarCurso, erro, nil)
+		return erros.Novo(ErroAtualizarCurso, erro, nil)
 	}
 
 	query := "UPDATE " + bd.NomeDaTabela +
@@ -173,7 +174,7 @@ func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *erros.Aplicação {
 			"Erro ao atualizar o curso com o seguinte ID: "+id.String(),
 			"\n"+erros.ErroExterno(erroBD),
 		)
-		return erros.Novo(erros.AtualizarCurso, nil, erroBD)
+		return erros.Novo(ErroAtualizarCurso, nil, erroBD)
 	}
 
 	return nil
@@ -196,7 +197,7 @@ func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *erros
 			"\n"+erros.ErroExterno(erro),
 		)
 
-		return nil, erros.Novo(erros.PegarCursoMatérias, nil, erro)
+		return nil, erros.Novo(ErroPegarCursoMatérias, nil, erro)
 	}
 	defer linhas.Close()
 
@@ -218,7 +219,7 @@ func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *erros
 				"\n"+erros.ErroExterno(erro),
 			)
 
-			return nil, erros.Novo(erros.PegarCursoMatérias, nil, erro)
+			return nil, erros.Novo(ErroPegarCursoMatérias, nil, erro)
 		}
 
 		matérias = append(matérias, matéria)
@@ -231,7 +232,7 @@ func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *erros
 			"\n"+erros.ErroExterno(erro),
 		)
 
-		return nil, erros.Novo(erros.PegarCursoMatérias, nil, erro)
+		return nil, erros.Novo(ErroPegarCursoMatérias, nil, erro)
 	}
 
 	return &matérias, nil
@@ -243,14 +244,14 @@ func (bd CursoBD) Pegar(id id) (*entidades.Curso, *erros.Aplicação) {
 
 	matérias, erroAplicação := bd.PegarMatérias(id)
 	if erroAplicação != nil &&
-		!erroAplicação.ÉPadrão(erros.CursoMatériasNãoEncontrado) {
+		!erroAplicação.ÉPadrão(ErroCursoMatériasNãoEncontrado) {
 
 		bd.Log.Aviso.Println(
 			"Erro ao pegar as matérias do Curso com o seguinte ID: "+id.String(),
 			"\n"+erroAplicação.Error(),
 		)
 
-		return nil, erros.Novo(erros.PegarCurso, erroAplicação, nil)
+		return nil, erros.Novo(ErroPegarCurso, erroAplicação, nil)
 	}
 
 	var curso entidades.Curso
@@ -274,14 +275,14 @@ func (bd CursoBD) Pegar(id id) (*entidades.Curso, *erros.Aplicação) {
 				"Não foi encontrada nenhum curso com o seguinte ID: "+id.String(),
 				"\n"+erros.ErroExterno(erro),
 			)
-			return nil, erros.Novo(erros.CursoNãoEncontrado, nil, erro)
+			return nil, erros.Novo(ErroCursoNãoEncontrado, nil, erro)
 		}
 
 		bd.Log.Aviso.Println(
 			"Erro ao pegar o curso com o seguinte ID: "+id.String(),
 			"\n"+erros.ErroExterno(erro),
 		)
-		return nil, erros.Novo(erros.PegarCurso, nil, erro)
+		return nil, erros.Novo(ErroPegarCurso, nil, erro)
 	}
 
 	return &curso, nil
@@ -302,7 +303,7 @@ func (bd CursoBD) DeletarMatérias(idCurso id) *erros.Aplicação {
 			"\n"+erros.ErroExterno(erro),
 		)
 
-		return erros.Novo(erros.DeletarCursoMatérias, nil, erro)
+		return erros.Novo(ErroDeletarCursoMatérias, nil, erro)
 	}
 
 	return nil
@@ -318,7 +319,7 @@ func (bd CursoBD) Deletar(id id) *erros.Aplicação {
 			"Erro ao tentar deletar curso com o seguinte ID: "+id.String(),
 			"\n"+erro.Error(),
 		)
-		return erros.Novo(erros.DeletarCurso, erro, nil)
+		return erros.Novo(ErroDeletarCurso, erro, nil)
 	}
 
 	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"
@@ -331,7 +332,7 @@ func (bd CursoBD) Deletar(id id) *erros.Aplicação {
 			"\n"+erros.ErroExterno(erroBD),
 		)
 
-		return erros.Novo(erros.DeletarCurso, nil, erroBD)
+		return erros.Novo(ErroDeletarCurso, nil, erroBD)
 	}
 
 	return nil

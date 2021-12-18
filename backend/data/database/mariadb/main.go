@@ -7,6 +7,9 @@ import (
 	// Driver para funcionar o mariadb.
 	_ "github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade/data"
+
+	//nolint:revive,stylecheck
+	. "thiagofelipe.com.br/sistema-faculdade/data/erros"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/erros"
 	"thiagofelipe.com.br/sistema-faculdade/logs"
@@ -23,7 +26,7 @@ type Conexão struct {
 func NovoBD(dsn string) (*sql.DB, *erros.Aplicação) {
 	bd, err := sql.Open("mysql", dsn)
 	if err != nil {
-		return nil, erros.Novo(erros.ConfigurarBD, nil, err)
+		return nil, erros.Novo(ErroConfigurarBD, nil, err)
 	}
 
 	return bd, nil

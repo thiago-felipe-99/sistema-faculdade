@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"thiagofelipe.com.br/sistema-faculdade/aleatorio"
+	. "thiagofelipe.com.br/sistema-faculdade/data/erros"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
-	"thiagofelipe.com.br/sistema-faculdade/erros"
 )
 
 func criarMatériasCursoAleatórios(idCurso id) *[]entidades.CursoMatéria {
@@ -128,10 +128,10 @@ func TestInserirCursoMatérias_semTamanhoMínimo(t *testing.T) {
 	matériasVazia := &[]entidades.CursoMatéria{}
 
 	erro := cursoBD.InserirMatérias(matériasVazia)
-	if !erro.ÉPadrão(erros.InserirCursoMatériasTamanhoMínimo) {
+	if !erro.ÉPadrão(ErroInserirCursoMatériasTamanhoMínimo) {
 		t.Fatalf(
 			"Erro ao inserir as matérias do curso, esperava \"%s\", chegou \"%s\"",
-			erros.InserirCursoMatériasTamanhoMínimo.Mensagem,
+			ErroInserirCursoMatériasTamanhoMínimo.Mensagem,
 			erro.Mensagem,
 		)
 	}
@@ -417,10 +417,10 @@ func TestPegarCurso_idInválido(t *testing.T) {
 		t.Fatalf("Deveria ter um erro de curso não encontrado")
 	}
 
-	if !erro.ÉPadrão(erros.CursoNãoEncontrado) {
+	if !erro.ÉPadrão(ErroCursoNãoEncontrado) {
 		t.Fatalf(
 			"Espera o erro de não encontrar o curso, queria \"%s\", chegou \"%s\"",
-			erros.CursoNãoEncontrado,
+			ErroCursoNãoEncontrado,
 			erro.Mensagem,
 		)
 	}
@@ -476,7 +476,7 @@ func TestDeletarCurso(t *testing.T) {
 	removerCurso(cursoTeste.ID, t)
 
 	_, erro := cursoBD.Pegar(cursoTeste.ID)
-	if erro == nil || !erro.ÉPadrão(erros.CursoNãoEncontrado) {
+	if erro == nil || !erro.ÉPadrão(ErroCursoNãoEncontrado) {
 		t.Fatalf(
 			"Deveria retonar um erro de curso não encontrado, retonou %s",
 			erro,
@@ -490,7 +490,7 @@ func TestDeletarCurso_invalídoID(t *testing.T) {
 	removerCurso(id, t)
 
 	_, erro := cursoBD.Pegar(id)
-	if erro == nil || !erro.ÉPadrão(erros.CursoNãoEncontrado) {
+	if erro == nil || !erro.ÉPadrão(ErroCursoNãoEncontrado) {
 		t.Fatalf(
 			"Deveria retonar um erro de curso não encontrado, retonou %s",
 			erro,

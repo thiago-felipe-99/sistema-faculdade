@@ -1,6 +1,10 @@
 package erros
 
-import "thiagofelipe.com.br/sistema-faculdade/erros"
+import (
+	"fmt"
+
+	"thiagofelipe.com.br/sistema-faculdade/erros"
+)
 
 const (
 	verificarCPF = iota + 1
@@ -14,26 +18,26 @@ const (
 var (
 	ErroAoVerificarCPF = &erros.Padrão{
 		Mensagem: "Erro ao verificar o CPF",
-		Número:   verificarCPF,
+		Código:   fmt.Sprintf("LÓGICA-[%d]", verificarCPF),
 	}
 	ErroCPFExiste = &erros.Padrão{
 		Mensagem: "Já existe uma pessoa com esse CPF",
-		Número:   cpfExiste,
+		Código:   fmt.Sprintf("LÓGICA-[%d]", cpfExiste),
 	}
 	ErroCPFInválido = &erros.Padrão{
 		Mensagem: "CPF Inválido",
-		Número:   cpfInválido,
+		Código:   fmt.Sprintf("LÓGICA-[%d]", cpfInválido),
 	}
 	ErroDataDeNascimentoInválido = &erros.Padrão{
 		Mensagem: "Data de nascimento é inválido",
-		Número:   dataDeNascimentoInválido,
+		Código:   fmt.Sprintf("LÓGICA-[%d]", dataDeNascimentoInválido),
 	}
 	ErroSenhaInválida = &erros.Padrão{
 		Mensagem: "A senha não está dentro dos padrões de uma senha valida",
-		Número:   senhaInválida,
+		Código:   fmt.Sprintf("LÓGICA-[%d]", senhaInválida),
 	}
 	ErroCriarPessoa = &erros.Padrão{
 		Mensagem: "Erro Ao Criar A Pessoa",
-		Número:   criarPessoa,
+		Código:   fmt.Sprintf("LÓGICA-[%d]", criarPessoa),
 	}
 )

@@ -1,6 +1,10 @@
 package erros
 
-import "thiagofelipe.com.br/sistema-faculdade/erros"
+import (
+	"fmt"
+
+	"thiagofelipe.com.br/sistema-faculdade/erros"
+)
 
 const (
 	configurarBD = iota + 1
@@ -36,114 +40,115 @@ const (
 var (
 	ErroConfigurarBD = &erros.Padrão{
 		Mensagem: "Erro ao configurar o banco de dados",
-		Número:   configurarBD,
+		Código:   fmt.Sprintf("DATA-[%d]", configurarBD),
 	}
 	ErroInserirPessoa = &erros.Padrão{
 		Mensagem: "Erro ao inserir a pessoa",
-		Número:   inserirPessoa,
+		Código:   fmt.Sprintf("DATA-[%d]", inserirPessoa),
 	}
 	ErroAtualizarPessoa = &erros.Padrão{
 		Mensagem: "Erro ao atualizar a pessoa",
-		Número:   atualizarPessoa,
+		Código:   fmt.Sprintf("DATA-[%d]", atualizarPessoa),
 	}
 	ErroPessoaNãoEncontrada = &erros.Padrão{
 		Mensagem: "Pessoa não encontrada",
-		Número:   pessoaNãoEncontrada,
+		Código:   fmt.Sprintf("DATA-[%d]", pessoaNãoEncontrada),
 	}
 	ErroPegarPessoa = &erros.Padrão{
 		Mensagem: "Erro ao pegar a pessoa",
-		Número:   pegarPessoa,
+		Código:   fmt.Sprintf("DATA-[%d]", pegarPessoa),
 	}
 	ErroPegarPessoaPorCPF = &erros.Padrão{
 		Mensagem: "Erro ao pegar a pessoa pelo CPF",
-		Número:   pegarPessoaCPF,
+		Código:   fmt.Sprintf("DATA-[%d]", pegarPessoaCPF),
 	}
 	ErroDeletarPessoa = &erros.Padrão{
 		Mensagem: "Erro ao deletar a pessoa",
-		Número:   DeletarPessoa,
+		Código:   fmt.Sprintf("DATA-[%d]", DeletarPessoa),
 	}
 	ErroInserirCurso = &erros.Padrão{
 		Mensagem: "Erro ao inserir o curso",
-		Número:   inserirCurso,
+		Código:   fmt.Sprintf("DATA-[%d]", inserirCurso),
 	}
 	ErroAtualizarCurso = &erros.Padrão{
 		Mensagem: "Erro ao atualizar o curso",
-		Número:   atualizarCurso,
+		Código:   fmt.Sprintf("DATA-[%d]", atualizarCurso),
 	}
 	ErroCursoNãoEncontrado = &erros.Padrão{
 		Mensagem: "Curso não encontrada",
-		Número:   cursoNãoEncontrado,
+		Código:   fmt.Sprintf("DATA-[%d]", cursoNãoEncontrado),
 	}
 	ErroPegarCurso = &erros.Padrão{
 		Mensagem: "Erro ao pegar o curso",
-		Número:   pegarCurso,
+		Código:   fmt.Sprintf("DATA-[%d]", pegarCurso),
 	}
 	ErroDeletarCurso = &erros.Padrão{
 		Mensagem: "Erro ao deletar o curso",
-		Número:   deletarCurso,
+		Código:   fmt.Sprintf("DATA-[%d]", deletarCurso),
 	}
 	ErroInserirCursoMatériasTamanhoMínimo = &erros.Padrão{
+		//nolint:lll
 		Mensagem: "Erro ao inserir as matérias do curso, tem que ter no mínimo uma matéra para inserir",
-		Número:   inserirCursoMatériasTamanhoMínimo,
+		Código:   fmt.Sprintf("DATA-[%d]", inserirCursoMatériasTamanhoMínimo),
 	}
 	ErroInserirCursoMatérias = &erros.Padrão{
 		Mensagem: "Erro ao inserir as matérias do curso",
-		Número:   inserirCursoMatérias,
+		Código:   fmt.Sprintf("DATA-[%d]", inserirCursoMatérias),
 	}
 	ErroAtualizarCursoMatérias = &erros.Padrão{
 		Mensagem: "Erro ao atualizar as matérias do curso",
-		Número:   atualizarCursoMatérias,
+		Código:   fmt.Sprintf("DATA-[%d]", atualizarCursoMatérias),
 	}
 	ErroCursoMatériasNãoEncontrado = &erros.Padrão{
 		Mensagem: "Matérias do curso não encontradas",
-		Número:   cursoMatériasNãoEncontrado,
+		Código:   fmt.Sprintf("DATA-[%d]", cursoMatériasNãoEncontrado),
 	}
 	ErroPegarCursoMatérias = &erros.Padrão{
 		Mensagem: "Erro ao pegar as matérias do curso",
-		Número:   pegarCursoMatérias,
+		Código:   fmt.Sprintf("DATA-[%d]", pegarCursoMatérias),
 	}
 	ErroDeletarCursoMatérias = &erros.Padrão{
 		Mensagem: "Erro ao deletar as matérias do curso",
-		Número:   deletarCursoMatérias,
+		Código:   fmt.Sprintf("DATA-[%d]", deletarCursoMatérias),
 	}
 	ErroInserirAluno = &erros.Padrão{
 		Mensagem: "Erro ao inserir o aluno",
-		Número:   inserirAluno,
+		Código:   fmt.Sprintf("DATA-[%d]", inserirAluno),
 	}
 	ErroAtualizarAluno = &erros.Padrão{
 		Mensagem: "Erro ao atualizar o aluno",
-		Número:   atualizarAluno,
+		Código:   fmt.Sprintf("DATA-[%d]", atualizarAluno),
 	}
 	ErroAlunoNãoEncontrado = &erros.Padrão{
 		Mensagem: "Aluno não encontrada",
-		Número:   alunoNãoEncontrado,
+		Código:   fmt.Sprintf("DATA-[%d]", alunoNãoEncontrado),
 	}
 	ErroPegarAluno = &erros.Padrão{
 		Mensagem: "Erro ao pegar o aluno",
-		Número:   pegarAluno,
+		Código:   fmt.Sprintf("DATA-[%d]", pegarAluno),
 	}
 	ErroDeletarAluno = &erros.Padrão{
 		Mensagem: "Erro ao deletar o aluno",
-		Número:   deletarAluno,
+		Código:   fmt.Sprintf("DATA-[%d]", deletarAluno),
 	}
 	ErroInserirAlunoTurma = &erros.Padrão{
 		Mensagem: "Erro ao inserir as turmas do aluno",
-		Número:   inserirAlunoTurma,
+		Código:   fmt.Sprintf("DATA-[%d]", inserirAlunoTurma),
 	}
 	ErroAtualizarAlunoTurma = &erros.Padrão{
 		Mensagem: "Erro ao atualizar as turmas do aluno",
-		Número:   atualizarAlunoTurma,
+		Código:   fmt.Sprintf("DATA-[%d]", atualizarAlunoTurma),
 	}
 	ErroAlunoTurmaNãoEncontrado = &erros.Padrão{
 		Mensagem: "Turmas do aluno não encontradas",
-		Número:   alunoTurmaNãoEncontrado,
+		Código:   fmt.Sprintf("DATA-[%d]", alunoTurmaNãoEncontrado),
 	}
 	ErroPegarAlunoTurma = &erros.Padrão{
 		Mensagem: "Erro ao pegar as turmas do aluno",
-		Número:   pegarAlunoTurma,
+		Código:   fmt.Sprintf("DATA-[%d]", pegarAlunoTurma),
 	}
 	ErroDeletarAlunoTurma = &erros.Padrão{
 		Mensagem: "Erro ao deletar as turmas do aluno",
-		Número:   deletarAlunoTurma,
+		Código:   fmt.Sprintf("DATA-[%d]", deletarAlunoTurma),
 	}
 )

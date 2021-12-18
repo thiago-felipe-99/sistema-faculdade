@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"thiagofelipe.com.br/sistema-faculdade/data"
+	dataErros "thiagofelipe.com.br/sistema-faculdade/data/erros"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/erros"
 
@@ -16,12 +17,16 @@ type Pessoa struct {
 }
 
 func (p *Pessoa) ExisteCPF(cpf entidades.CPF) (bool, *erros.Aplicação) {
-	pessoas, erro := p.data.PegarPorCPF(cpf)
+	_, erro := p.data.PegarPorCPF(cpf)
 	if erro != nil {
+		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+			return false, nil
+		}
+
 		return true, erros.Novo(ErroAoVerificarCPF, erro, nil)
 	}
 
-	return len(*pessoas) != 0, nil
+	return true, nil
 }
 
 func (p *Pessoa) Criar(

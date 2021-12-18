@@ -7,11 +7,11 @@ type Aplicação struct {
 	Mensagem    string
 	ErroInicial *Aplicação
 	ErroExterno error
-	Número      int
+	Código      string
 }
 
 func (erro *Aplicação) Traçado() string {
-	mensagem := fmt.Sprintf("Erro Da Aplicação[%d]: %s", erro.Número, erro.Mensagem)
+	mensagem := fmt.Sprintf("Erro Da Aplicação[%s]: %s", erro.Código, erro.Mensagem)
 
 	if erro.ErroExterno != nil {
 		mensagem += fmt.Sprintf("\nErro Externo: %s", erro.ErroExterno.Error())
@@ -29,23 +29,23 @@ func (erro *Aplicação) Error() string {
 }
 
 func (erro *Aplicação) ÉPadrão(defaultError *Padrão) bool {
-	return erro.Número == defaultError.Número
+	return erro.Código == defaultError.Código
 }
 
 // Padrão representa os erros padrões da aplicação.
 type Padrão struct {
 	Mensagem string
-	Número   int
+	Código   string
 }
 
 func (erro *Padrão) Error() string {
-	return fmt.Sprintf("Erro[%d]: %s", erro.Número, erro.Mensagem)
+	return fmt.Sprintf("Erro[%s]: %s", erro.Código, erro.Mensagem)
 }
 
 func Novo(err *Padrão, initial *Aplicação, system error) *Aplicação {
 	return &Aplicação{
 		Mensagem:    err.Mensagem,
-		Número:      err.Número,
+		Código:      err.Código,
 		ErroInicial: initial,
 		ErroExterno: system,
 	}

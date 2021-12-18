@@ -146,7 +146,7 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erro
 
 // Atualizar é uma função que faz a atualização de Curso no banco de dados
 // MariaDB.
-func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *erros.Aplicação {
+func (bd CursoBD) Atualizar(id entidades.ID, curso *entidades.Curso) *erros.Aplicação {
 	bd.Log.Informação.Println("Atualizando Curso com o seguinte ID: " + id.String())
 
 	erro := bd.AtualizarMatérias(&curso.Matérias)
@@ -182,7 +182,7 @@ func (bd CursoBD) Atualizar(id id, curso *entidades.Curso) *erros.Aplicação {
 
 // PegarMatérias é uma função que retonar as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
-func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *erros.Aplicação) {
+func (bd CursoBD) PegarMatérias(idCurso entidades.ID) (*[]entidades.CursoMatéria, *erros.Aplicação) {
 	bd.Log.Informação.Println("Pegando as matérias do Curso com o seguinte ID: " + idCurso.String())
 
 	var matérias []entidades.CursoMatéria
@@ -239,7 +239,7 @@ func (bd CursoBD) PegarMatérias(idCurso id) (*[]entidades.CursoMatéria, *erros
 }
 
 // Pegar é uma função que retorna uma Curso do banco de dados MariaDB.
-func (bd CursoBD) Pegar(id id) (*entidades.Curso, *erros.Aplicação) {
+func (bd CursoBD) Pegar(id entidades.ID) (*entidades.Curso, *erros.Aplicação) {
 	bd.Log.Informação.Println("Pegando Curso com o seguinte ID: " + id.String())
 
 	matérias, erroAplicação := bd.PegarMatérias(id)
@@ -290,7 +290,7 @@ func (bd CursoBD) Pegar(id id) (*entidades.Curso, *erros.Aplicação) {
 
 // DeletarMatérias é uma função que deleta as matérias de um Curso que está salvo
 // no banco de dados MariaDB.
-func (bd CursoBD) DeletarMatérias(idCurso id) *erros.Aplicação {
+func (bd CursoBD) DeletarMatérias(idCurso entidades.ID) *erros.Aplicação {
 	bd.Log.Informação.Print("Deletando as matérias do Curso com o seguinte ID: " + idCurso.String())
 
 	query := "DELETE FROM " + bd.NomeDaTabelaSecundária + " WHERE ID_Curso = ?"
@@ -310,7 +310,7 @@ func (bd CursoBD) DeletarMatérias(idCurso id) *erros.Aplicação {
 }
 
 // Deletar é uma função que remove uma Curso do banco de dados MariaDB.
-func (bd CursoBD) Deletar(id id) *erros.Aplicação {
+func (bd CursoBD) Deletar(id entidades.ID) *erros.Aplicação {
 	bd.Log.Informação.Print("Deletando Curso com o seguinte ID: " + id.String())
 
 	erro := bd.DeletarMatérias(id)

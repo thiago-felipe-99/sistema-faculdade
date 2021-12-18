@@ -6,7 +6,6 @@ import (
 
 	// Driver para funcionar o mariadb.
 	_ "github.com/go-sql-driver/mysql"
-	"thiagofelipe.com.br/sistema-faculdade/data"
 
 	//nolint:revive,stylecheck
 	. "thiagofelipe.com.br/sistema-faculdade/data/erros"
@@ -15,10 +14,8 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
 
-type id = data.ID
-
 type Conexão struct {
-	ID  id
+	ID  entidades.ID
 	Log *logs.Log
 	BD  *sql.DB
 }

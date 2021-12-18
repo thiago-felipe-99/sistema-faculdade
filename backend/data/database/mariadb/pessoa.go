@@ -43,7 +43,7 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 }
 
 // Atualizar é uma função que faz a atualização de Pessoa no banco de dados MariaDB.
-func (bd PessoaBD) Atualizar(id id, pessoa *entidades.Pessoa) *erros.Aplicação {
+func (bd PessoaBD) Atualizar(id entidades.ID, pessoa *entidades.Pessoa) *erros.Aplicação {
 	bd.Log.Informação.Println("Atualizando Pessoa com o seguinte ID: " + id.String())
 
 	query := "UPDATE " + bd.NomeDaTabela +
@@ -71,7 +71,7 @@ func (bd PessoaBD) Atualizar(id id, pessoa *entidades.Pessoa) *erros.Aplicação
 }
 
 // Pegar é uma função que retorna uma Pessoa do banco de dados MariaDB.
-func (bd PessoaBD) Pegar(id id) (*entidades.Pessoa, *erros.Aplicação) {
+func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação) {
 	bd.Log.Informação.Println("Pegando Pessoa com o seguinte ID: " + id.String())
 
 	var pessoa entidades.Pessoa
@@ -151,7 +151,7 @@ func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Apl
 }
 
 // Deletar é uma função que remove uma Pessoa do banco de dados MariaDB.
-func (bd PessoaBD) Deletar(id id) *erros.Aplicação {
+func (bd PessoaBD) Deletar(id entidades.ID) *erros.Aplicação {
 	bd.Log.Informação.Print("Deletando Pessoa com o seguinte ID: " + id.String())
 
 	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"

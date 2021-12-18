@@ -10,7 +10,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 )
 
-func criarTurmasAlunoAleatório(idAluno id) *[]entidades.TurmaAluno {
+func criarTurmasAlunoAleatório(idAluno entidades.ID) *[]entidades.TurmaAluno {
 	turmas := make([]entidades.TurmaAluno, rand.Intn(MATÉRIAS_MÁXIMAS)+1)
 
 	for i := range turmas {
@@ -74,7 +74,7 @@ func adicionarAluno(aluno *entidades.Aluno, t *testing.T) {
 	})
 }
 
-func removerAluno(id id, t *testing.T) {
+func removerAluno(id entidades.ID, t *testing.T) {
 	_, erro := alunoBD.BD.Exec("DELETE FROM AlunoTurma;")
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o aluno teste: %v", erro.Error())

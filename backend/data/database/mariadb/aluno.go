@@ -100,7 +100,7 @@ func (bd AlunoBD) Inserir(aluno *entidades.Aluno) *erros.Aplicação {
 }
 
 // Atualizar é um método que faz a atualização de Aluno no banco de dados MariaDB.
-func (bd AlunoBD) Atualizar(id, *entidades.Aluno) *erros.Aplicação {
+func (bd AlunoBD) Atualizar(entidades.ID, *entidades.Aluno) *erros.Aplicação {
 	bd.Log.Informação.Println("Atualizando Aluno")
 
 	return nil
@@ -108,7 +108,7 @@ func (bd AlunoBD) Atualizar(id, *entidades.Aluno) *erros.Aplicação {
 
 // PegarTurmas é um método que pega as turmas de um Aluno no banco de dados
 // MariaDB.
-func (bd AlunoBD) PegarTurmas(idAluno id) (*[]entidades.TurmaAluno, *erros.Aplicação) {
+func (bd AlunoBD) PegarTurmas(idAluno entidades.ID) (*[]entidades.TurmaAluno, *erros.Aplicação) {
 	bd.Log.Informação.Println("Pegando as turmas do aluno com seguinte ID: " + idAluno.String())
 
 	var turmas []entidades.TurmaAluno
@@ -155,7 +155,7 @@ func (bd AlunoBD) PegarTurmas(idAluno id) (*[]entidades.TurmaAluno, *erros.Aplic
 }
 
 // Pegar é uma função que retorna uma Aluno do banco de dados MariaDB.
-func (bd AlunoBD) Pegar(id id) (*entidades.Aluno, *erros.Aplicação) {
+func (bd AlunoBD) Pegar(id entidades.ID) (*entidades.Aluno, *erros.Aplicação) {
 	bd.Log.Informação.Println("Pegando Aluno com o seguinte ID: " + id.String())
 
 	turmas, erroAplicação := bd.PegarTurmas(id)
@@ -206,7 +206,7 @@ func (bd AlunoBD) Pegar(id id) (*entidades.Aluno, *erros.Aplicação) {
 }
 
 // Deletar é uma função que remove uma Aluno do banco de dados MariaDB.
-func (bd AlunoBD) Deletar(id) *erros.Aplicação {
+func (bd AlunoBD) Deletar(entidades.ID) *erros.Aplicação {
 	bd.Log.Informação.Print("Deletando Aluno")
 
 	return nil

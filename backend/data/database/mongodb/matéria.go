@@ -19,21 +19,21 @@ func (bd MatériaBD) Inserir(*entidades.Matéria) *erros.Aplicação {
 }
 
 // Atualizar é uma função que faz a atualização de Matéria no banco de dados MariaDB.
-func (bd MatériaBD) Atualizar(id, *entidades.Matéria) *erros.Aplicação {
+func (bd MatériaBD) Atualizar(entidades.ID, *entidades.Matéria) *erros.Aplicação {
 	bd.Log.Informação.Println("Atualizando Matéria")
 
 	return nil
 }
 
 // Pegar é uma função que retorna uma Matéria do banco de dados MariaDB.
-func (bd MatériaBD) Pegar(id) (*entidades.Matéria, *erros.Aplicação) {
+func (bd MatériaBD) Pegar(entidades.ID) (*entidades.Matéria, *erros.Aplicação) {
 	bd.Log.Informação.Println("Pegando Matéria")
 
 	return nil, nil
 }
 
 // Deletar é uma função que remove uma Matéria do banco de dados MariaDB.
-func (bd MatériaBD) Deletar(id) *erros.Aplicação {
+func (bd MatériaBD) Deletar(entidades.ID) *erros.Aplicação {
 	bd.Log.Informação.Print("Deletando Matéria")
 
 	return nil

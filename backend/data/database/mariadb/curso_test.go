@@ -12,7 +12,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 )
 
-func criarMatériasCursoAleatórios(idCurso id) *[]entidades.CursoMatéria {
+func criarMatériasCursoAleatórios(idCurso entidades.ID) *[]entidades.CursoMatéria {
 	matérias := make([]entidades.CursoMatéria, rand.Intn(MATÉRIAS_MÁXIMAS)+1)
 
 	for i := range matérias {
@@ -51,8 +51,8 @@ func adiconarCursoMatérias(matérias *[]entidades.CursoMatéria, t *testing.T) 
 		t.Fatalf("Erro ao inserir as matérias do curso: %s", erro.Error())
 	}
 
-	chaves := make(map[id]bool)
-	cursoIDs := []id{}
+	chaves := make(map[entidades.ID]bool)
+	cursoIDs := []entidades.ID{}
 
 	// filtrando os IDS do curso
 	for _, matéria := range *matérias {
@@ -86,7 +86,7 @@ func adiconarCursoMatérias(matérias *[]entidades.CursoMatéria, t *testing.T) 
 	})
 }
 
-func removerCursoMatérias(idCurso id, t *testing.T) {
+func removerCursoMatérias(idCurso entidades.ID, t *testing.T) {
 	erro := cursoBD.DeletarMatérias(idCurso)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar as matérias do: %v", erro.Error())
@@ -117,7 +117,7 @@ func adiconarCurso(curso *entidades.Curso, t *testing.T) {
 	})
 }
 
-func removerCurso(id id, t *testing.T) {
+func removerCurso(id entidades.ID, t *testing.T) {
 	erro := cursoBD.Deletar(id)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o curso teste: %v", erro.Error())

@@ -20,21 +20,21 @@ func (bd ProfessorBD) Inserir(*entidades.Professor) *erros.Aplicação {
 
 // Atualizar é uma função que faz a atualização de Professor no banco de dados
 // MariaDB.
-func (bd ProfessorBD) Atualizar(id, *entidades.Professor) *erros.Aplicação {
+func (bd ProfessorBD) Atualizar(entidades.ID, *entidades.Professor) *erros.Aplicação {
 	bd.Log.Informação.Println("Atualizando Professor")
 
 	return nil
 }
 
 // Pegar é uma função que retorna uma Professor do banco de dados MariaDB.
-func (bd ProfessorBD) Pegar(id) (*entidades.Professor, *erros.Aplicação) {
+func (bd ProfessorBD) Pegar(entidades.ID) (*entidades.Professor, *erros.Aplicação) {
 	bd.Log.Informação.Println("Pegando Professor")
 
 	return nil, nil
 }
 
 // Deletar é uma função que remove uma Professor do banco de dados MariaDB.
-func (bd ProfessorBD) Deletar(id) *erros.Aplicação {
+func (bd ProfessorBD) Deletar(entidades.ID) *erros.Aplicação {
 	bd.Log.Informação.Print("Deletando Professor")
 
 	return nil

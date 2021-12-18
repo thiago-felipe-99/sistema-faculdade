@@ -3,15 +3,12 @@ package mongodb
 import (
 	"io"
 
-	"thiagofelipe.com.br/sistema-faculdade/data"
 	"thiagofelipe.com.br/sistema-faculdade/entidades"
 	"thiagofelipe.com.br/sistema-faculdade/logs"
 )
 
-type id = data.ID
-
 type Connexão struct {
-	ID  id
+	ID  entidades.ID
 	Log *logs.Log
 }
 

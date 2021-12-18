@@ -16,8 +16,8 @@ type Pessoa struct {
 	data data.Pessoa
 }
 
-func (p *Pessoa) ExisteCPF(cpf entidades.CPF) (bool, *erros.Aplicação) {
-	_, erro := p.data.PegarPorCPF(cpf)
+func (lógica *Pessoa) ExisteCPF(cpf entidades.CPF) (bool, *erros.Aplicação) {
+	_, erro := lógica.data.PegarPorCPF(cpf)
 	if erro != nil {
 		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
 			return false, nil
@@ -29,7 +29,7 @@ func (p *Pessoa) ExisteCPF(cpf entidades.CPF) (bool, *erros.Aplicação) {
 	return true, nil
 }
 
-func (p *Pessoa) Criar(
+func (lógica *Pessoa) Criar(
 	nome string,
 	cpf string,
 	dataDeNascimento time.Time,
@@ -40,7 +40,7 @@ func (p *Pessoa) Criar(
 		return nil, erros.Novo(ErroCPFInválido, nil, nil)
 	}
 
-	cpfExiste, erro := p.ExisteCPF(cpf)
+	cpfExiste, erro := lógica.ExisteCPF(cpf)
 	if erro != nil {
 		return nil, erros.Novo(ErroCriarPessoa, erro, nil)
 	}
@@ -67,7 +67,7 @@ func (p *Pessoa) Criar(
 		Senha:            entidades.GerarNovaSenha(senha),
 	}
 
-	erro = p.data.Inserir(pessoaNova)
+	erro = lógica.data.Inserir(pessoaNova)
 	if erro != nil {
 		return nil, erros.Novo(ErroCriarPessoa, erro, nil)
 	}

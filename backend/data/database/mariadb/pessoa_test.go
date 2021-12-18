@@ -52,7 +52,7 @@ func adiconarPessoa(pessoa *entidades.Pessoa, t *testing.T) {
 	})
 }
 
-func removerPessoa(id id, t *testing.T) {
+func removerPessoa(id entidades.ID, t *testing.T) {
 	erro := pessoaBD.Deletar(id)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o usuário teste: %v", erro.Error())

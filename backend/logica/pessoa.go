@@ -74,3 +74,16 @@ func (lógica *Pessoa) Criar(
 
 	return pessoaNova, nil
 }
+
+func (lógica *Pessoa) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação) {
+	pessoa, erro := lógica.data.Pegar(id)
+	if erro != nil {
+		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+		}
+
+		return nil, erros.Novo(ErroPegarPessoa, erro, nil)
+	}
+
+	return pessoa, nil
+}

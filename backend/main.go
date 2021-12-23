@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"reflect"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -98,7 +99,7 @@ func main() {
 	lógica := logica.NovaLógica(*data)
 
 	r.GET("/ping", func(c *gin.Context) {
-		pessoa, erro := lógica.Pessoa.Criar(
+		pessoaCriar, erro := lógica.Pessoa.Criar(
 			"Thiago Felipe",
 			"00000000000",
 			time.Date(1999, 12, 8, 0, 0, 0, 0, time.UTC),
@@ -110,11 +111,28 @@ func main() {
 			return
 		}
 
-		log.Println(prettyStruct(pessoa))
+		pessoaPegar, erro := lógica.Pessoa.Pegar(pessoaCriar.ID)
+		if erro != nil {
+			log.Println(erro.Traçado())
+
+			return
+		}
+
+		if !reflect.DeepEqual(pessoaCriar, pessoaPegar) {
+			log.Printf(
+				"Devia chegar %s chegou %s\n",
+				prettyStruct(pessoaCriar),
+				prettyStruct(pessoaPegar),
+			)
+
+			return
+		}
+
+		log.Println(prettyStruct(pessoaPegar))
 
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
-			"pessoa":  pessoa,
+			"pessoa":  pessoaPegar,
 		})
 	})
 

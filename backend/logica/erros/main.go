@@ -13,31 +13,48 @@ const (
 	dataDeNascimentoInválido
 	senhaInválida
 	criarPessoa
+	pessoaNãoEncontrada
+	pegarPessoa
 )
 
+func criarErroPadrão(mensagem string, códigoNúmero int) *erros.Padrão {
+	return &erros.Padrão{
+		Mensagem: mensagem,
+		Código:   fmt.Sprintf("LÓGICA-[%d]", códigoNúmero),
+	}
+}
+
 var (
-	ErroAoVerificarCPF = &erros.Padrão{
-		Mensagem: "Erro ao verificar o CPF",
-		Código:   fmt.Sprintf("LÓGICA-[%d]", verificarCPF),
-	}
-	ErroCPFExiste = &erros.Padrão{
-		Mensagem: "Já existe uma pessoa com esse CPF",
-		Código:   fmt.Sprintf("LÓGICA-[%d]", cpfExiste),
-	}
-	ErroCPFInválido = &erros.Padrão{
-		Mensagem: "CPF Inválido",
-		Código:   fmt.Sprintf("LÓGICA-[%d]", cpfInválido),
-	}
-	ErroDataDeNascimentoInválido = &erros.Padrão{
-		Mensagem: "Data de nascimento é inválido",
-		Código:   fmt.Sprintf("LÓGICA-[%d]", dataDeNascimentoInválido),
-	}
-	ErroSenhaInválida = &erros.Padrão{
-		Mensagem: "A senha não está dentro dos padrões de uma senha valida",
-		Código:   fmt.Sprintf("LÓGICA-[%d]", senhaInválida),
-	}
-	ErroCriarPessoa = &erros.Padrão{
-		Mensagem: "Erro Ao Criar A Pessoa",
-		Código:   fmt.Sprintf("LÓGICA-[%d]", criarPessoa),
-	}
+	ErroAoVerificarCPF = criarErroPadrão(
+		"Erro ao verificar o CPF",
+		verificarCPF,
+	)
+	ErroCPFExiste = criarErroPadrão(
+		"Já existe uma pessoa com esse CPF",
+		cpfExiste,
+	)
+	ErroCPFInválido = criarErroPadrão(
+		"CPF Inválido",
+		cpfInválido,
+	)
+	ErroDataDeNascimentoInválido = criarErroPadrão(
+		"Data de nascimento é inválido",
+		dataDeNascimentoInválido,
+	)
+	ErroSenhaInválida = criarErroPadrão(
+		"A senha não está dentro dos padrões de uma senha valida",
+		senhaInválida,
+	)
+	ErroCriarPessoa = criarErroPadrão(
+		"Erro Ao Criar A Pessoa",
+		criarPessoa,
+	)
+	ErroPessoaNãoEncontrada = criarErroPadrão(
+		"Pessoa não econtrada",
+		pessoaNãoEncontrada,
+	)
+	ErroPegarPessoa = criarErroPadrão(
+		"Erro ao pegar a pessoa",
+		pegarPessoa,
+	)
 )

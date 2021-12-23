@@ -8,10 +8,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	//nolint:revive,stylecheck
-	. "thiagofelipe.com.br/sistema-faculdade/data/erros"
-	"thiagofelipe.com.br/sistema-faculdade/entidades"
-	"thiagofelipe.com.br/sistema-faculdade/erros"
-	"thiagofelipe.com.br/sistema-faculdade/logs"
+	. "thiagofelipe.com.br/sistema-faculdade-backend/data/erros"
+	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
+	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
+	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
 type Conexão struct {

@@ -1,8 +1,8 @@
 package mariadb
 
 import (
-	"thiagofelipe.com.br/sistema-faculdade/entidades"
-	"thiagofelipe.com.br/sistema-faculdade/erros"
+	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
+	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
 // ProfessorBD representa a conexão com o banco de dados MariaDB para fazer

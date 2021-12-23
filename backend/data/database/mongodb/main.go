@@ -3,8 +3,8 @@ package mongodb
 import (
 	"io"
 
-	"thiagofelipe.com.br/sistema-faculdade/entidades"
-	"thiagofelipe.com.br/sistema-faculdade/logs"
+	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
+	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
 type Connexão struct {

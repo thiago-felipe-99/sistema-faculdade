@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"thiagofelipe.com.br/sistema-faculdade/env"
-	"thiagofelipe.com.br/sistema-faculdade/logs"
+	"thiagofelipe.com.br/sistema-faculdade-backend/env"
+	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
 const (

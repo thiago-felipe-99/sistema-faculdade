@@ -1,8 +1,8 @@
 package data
 
 import (
-	"thiagofelipe.com.br/sistema-faculdade/entidades"
-	"thiagofelipe.com.br/sistema-faculdade/erros"
+	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
+	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
 // Pessoa representa quais são as opereçãoes necessárias para salvar e

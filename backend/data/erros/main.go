@@ -3,7 +3,7 @@ package erros
 import (
 	"fmt"
 
-	"thiagofelipe.com.br/sistema-faculdade/erros"
+	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
 const (

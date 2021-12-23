@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	. "thiagofelipe.com.br/sistema-faculdade/data/erros"
-	"thiagofelipe.com.br/sistema-faculdade/entidades"
+	. "thiagofelipe.com.br/sistema-faculdade-backend/data/erros"
+	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
 func criarPessoaAleatória() *entidades.Pessoa {

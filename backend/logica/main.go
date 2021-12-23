@@ -1,6 +1,6 @@
 package logica
 
-import "thiagofelipe.com.br/sistema-faculdade/data"
+import "thiagofelipe.com.br/sistema-faculdade-backend/data"
 
 type Lógica struct {
 	Pessoa

@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"thiagofelipe.com.br/sistema-faculdade/aleatorio"
-	"thiagofelipe.com.br/sistema-faculdade/entidades"
+	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
+	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
 func criarTurmasAlunoAleatório(idAluno entidades.ID) *[]entidades.TurmaAluno {

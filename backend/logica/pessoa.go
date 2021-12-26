@@ -161,3 +161,21 @@ func (lógica *Pessoa) Atualizar(
 
 	return pessoaNova, nil
 }
+
+func (lógica *Pessoa) Deletar(id entidades.ID) *erros.Aplicação {
+	_, erro := lógica.data.Pegar(id)
+	if erro != nil {
+		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+			return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+		}
+
+		return erros.Novo(ErroDeletarPessoa, erro, nil)
+	}
+
+	erro = lógica.data.Deletar(id)
+	if erro != nil {
+		return erros.Novo(ErroDeletarPessoa, erro, nil)
+	}
+
+	return nil
+}

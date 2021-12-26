@@ -103,3 +103,61 @@ func (lógica *Pessoa) VerificarSenha(
 
 	return entidades.VerificarSenha(senha, pessoa.Senha), nil
 }
+
+func (lógica *Pessoa) Atualizar(
+	id entidades.ID,
+	nome string,
+	cpf string,
+	dataDeNascimento time.Time,
+	senha string,
+) (*entidades.Pessoa, *erros.Aplicação) {
+	pessoa, erro := lógica.data.Pegar(id)
+	if erro != nil {
+		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+		}
+
+		return nil, erros.Novo(ErroAtualizarPessoa, erro, nil)
+	}
+
+	cpf, cpfVálido := entidades.ValidarCPF(cpf)
+	if !cpfVálido {
+		return nil, erros.Novo(ErroCPFInválido, nil, nil)
+	}
+
+	if cpf != pessoa.CPF {
+		cpfExiste, erro := lógica.ExisteCPF(cpf)
+		if erro != nil {
+			return nil, erros.Novo(ErroAtualizarPessoa, erro, nil)
+		}
+
+		if cpfExiste {
+			return nil, erros.Novo(ErroCPFExiste, nil, nil)
+		}
+	}
+
+	dataDeNascimento = entidades.RemoverHorário(dataDeNascimento.UTC())
+
+	if dataDeNascimento.After(entidades.DataAtual()) {
+		return nil, erros.Novo(ErroDataDeNascimentoInválido, nil, nil)
+	}
+
+	if !entidades.SenhaVálida(senha) {
+		return nil, erros.Novo(ErroSenhaInválida, nil, nil)
+	}
+
+	pessoaNova := &entidades.Pessoa{
+		ID:               id,
+		Nome:             nome,
+		CPF:              cpf,
+		DataDeNascimento: dataDeNascimento,
+		Senha:            entidades.GerarNovaSenha(senha),
+	}
+
+	erro = lógica.data.Atualizar(id, pessoaNova)
+	if erro != nil {
+		return nil, erros.Novo(ErroAtualizarPessoa, erro, nil)
+	}
+
+	return pessoaNova, nil
+}

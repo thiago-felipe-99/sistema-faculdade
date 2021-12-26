@@ -15,6 +15,8 @@ const (
 	criarPessoa
 	pessoaNãoEncontrada
 	pegarPessoa
+	verificarSenha
+	atualizarPessoa
 )
 
 func criarErroPadrão(mensagem string, códigoNúmero int) *erros.Padrão {
@@ -56,5 +58,13 @@ var (
 	ErroPegarPessoa = criarErroPadrão(
 		"Erro ao pegar a pessoa",
 		pegarPessoa,
+	)
+	ErroVerificarSenha = criarErroPadrão(
+		"Erro ao verificar a senha",
+		verificarSenha,
+	)
+	ErroAtualizarPessoa = criarErroPadrão(
+		"Erro ao atualizar a pessoa",
+		atualizarPessoa,
 	)
 )

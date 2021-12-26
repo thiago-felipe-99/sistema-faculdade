@@ -28,6 +28,10 @@ func SenhaVálida(senha string) bool {
 	return true
 }
 
+func VerificarSenha(senha string, hash Senha) bool {
+	return senha == hash
+}
+
 // ID representa o indificador único da entidades.
 type ID = uuid.UUID
 

@@ -87,3 +87,19 @@ func (lógica *Pessoa) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplica�
 
 	return pessoa, nil
 }
+
+func (lógica *Pessoa) VerificarSenha(
+	senha string,
+	id entidades.ID,
+) (bool, *erros.Aplicação) {
+	pessoa, erro := lógica.data.Pegar(id)
+	if erro != nil {
+		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+			return false, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+		}
+
+		return false, erros.Novo(ErroPegarPessoa, erro, nil)
+	}
+
+	return entidades.VerificarSenha(senha, pessoa.Senha), nil
+}

@@ -1,8 +1,13 @@
 package data
 
 import (
+	"database/sql"
+
+	"thiagofelipe.com.br/sistema-faculdade-backend/data/database/mariadb"
+	"thiagofelipe.com.br/sistema-faculdade-backend/data/database/mongodb"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
+	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
 // Pessoa representa quais são as opereçãoes necessárias para salvar e
@@ -83,4 +88,49 @@ type Data struct {
 	Administrativo
 	Matéria
 	Turma
+}
+
+func DataPadrão(log *logs.Arquivos, bdSQL *sql.DB) *Data {
+	MariaDBPessoa := mariadb.PessoaBD{
+		Conexão:      *mariadb.NovaConexão(log.Pessoa, bdSQL),
+		NomeDaTabela: "Pessoa",
+	}
+
+	MariaDBCurso := mariadb.CursoBD{
+		Conexão:                *mariadb.NovaConexão(log.Curso, bdSQL),
+		NomeDaTabela:           "Curso",
+		NomeDaTabelaSecundária: "CursoMatérias",
+	}
+
+	MariaDBAluno := mariadb.AlunoBD{
+		Conexão:                *mariadb.NovaConexão(log.Aluno, bdSQL),
+		NomeDaTabela:           "Aluno",
+		NomeDaTabelaSecundária: "AlunoTurma",
+	}
+
+	MariaDBProfessor := mariadb.ProfessorBD{
+		Conexão: *mariadb.NovaConexão(log.Professor, bdSQL),
+	}
+
+	MariaDBAdministrativo := mariadb.AdministrativoBD{
+		Conexão: *mariadb.NovaConexão(log.Administrativo, bdSQL),
+	}
+
+	MariaDBMatéria := mongodb.MatériaBD{
+		Connexão: *mongodb.NovaConexão(log.Matéria),
+	}
+
+	MariaDBTurma := mongodb.TurmaBD{
+		Connexão: *mongodb.NovaConexão(log.Turma),
+	}
+
+	return &Data{
+		Pessoa:         MariaDBPessoa,
+		Curso:          MariaDBCurso,
+		Aluno:          MariaDBAluno,
+		Professor:      MariaDBProfessor,
+		Administrativo: MariaDBAdministrativo,
+		Matéria:        MariaDBMatéria,
+		Turma:          MariaDBTurma,
+	}
 }

@@ -26,7 +26,7 @@ func criarTurmasAlunoAleatório(idAluno entidades.ID) *[]entidades.TurmaAluno {
 
 func criarAlunoAleatório(t *testing.T) *entidades.Aluno {
 	pessoa := criarPessoaAleatória()
-	adiconarPessoa(pessoa, t)
+	adicionarPessoa(pessoa, t)
 
 	curso := criarCursoAleatório()
 	adiconarCurso(curso, t)

@@ -1,6 +1,11 @@
 package aleatorio
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+
+	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
+)
 
 // Palavra criar uma Palavra aleatório de um tamnaho fixo.
 func Palavra(tamanho int) string {
@@ -12,4 +17,11 @@ func Palavra(tamanho int) string {
 	}
 
 	return string(s)
+}
+
+// CPF cria um CPF aleatório.
+func CPF() entidades.CPF {
+	maxCPF := 99999999999
+
+	return fmt.Sprintf("%011d", rand.Intn(maxCPF)) //nolint: GoSec
 }

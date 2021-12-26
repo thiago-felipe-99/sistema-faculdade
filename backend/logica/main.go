@@ -6,8 +6,8 @@ type Lógica struct {
 	Pessoa
 }
 
-func NovaLógica(data data.Data) Lógica {
-	return Lógica{
+func NovaLógica(data *data.Data) *Lógica {
+	return &Lógica{
 		Pessoa: Pessoa{data: data.Pessoa},
 	}
 }

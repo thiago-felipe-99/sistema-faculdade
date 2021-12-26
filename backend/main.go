@@ -11,12 +11,10 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/database/mariadb"
-	"thiagofelipe.com.br/sistema-faculdade-backend/data/database/mongodb"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logica"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
-//nolint:funlen
 func newData() *data.Data {
 	logFiles := logs.AbrirArquivos("./logs/data/")
 
@@ -39,48 +37,7 @@ func newData() *data.Data {
 		log.Panicln(err.Mensagem)
 	}
 
-	MariaDBPessoa := mariadb.PessoaBD{
-		Conexão:      *mariadb.NovaConexão(logFiles.Pessoa, bd),
-		NomeDaTabela: "Pessoa",
-	}
-
-	MariaDBCurso := mariadb.CursoBD{
-		Conexão:                *mariadb.NovaConexão(logFiles.Curso, bd),
-		NomeDaTabela:           "Curso",
-		NomeDaTabelaSecundária: "CursoMatérias",
-	}
-
-	MariaDBAluno := mariadb.AlunoBD{
-		Conexão:                *mariadb.NovaConexão(logFiles.Aluno, bd),
-		NomeDaTabela:           "Aluno",
-		NomeDaTabelaSecundária: "AlunoTurma",
-	}
-
-	MariaDBProfessor := mariadb.ProfessorBD{
-		Conexão: *mariadb.NovaConexão(logFiles.Professor, bd),
-	}
-
-	MariaDBAdministrativo := mariadb.AdministrativoBD{
-		Conexão: *mariadb.NovaConexão(logFiles.Administrativo, bd),
-	}
-
-	MariaDBMatéria := mongodb.MatériaBD{
-		Connexão: *mongodb.NovaConexão(logFiles.Matéria),
-	}
-
-	MariaDBTurma := mongodb.TurmaBD{
-		Connexão: *mongodb.NovaConexão(logFiles.Turma),
-	}
-
-	return &data.Data{
-		Pessoa:         MariaDBPessoa,
-		Curso:          MariaDBCurso,
-		Aluno:          MariaDBAluno,
-		Professor:      MariaDBProfessor,
-		Administrativo: MariaDBAdministrativo,
-		Matéria:        MariaDBMatéria,
-		Turma:          MariaDBTurma,
-	}
+	return data.DataPadrão(logFiles, bd)
 }
 
 func prettyStruct(s ...interface{}) string {

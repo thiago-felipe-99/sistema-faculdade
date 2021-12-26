@@ -27,7 +27,7 @@ func criarPessoaAleatória() *entidades.Pessoa {
 	return pessoa
 }
 
-func adiconarPessoa(pessoa *entidades.Pessoa, t *testing.T) {
+func adicionarPessoa(pessoa *entidades.Pessoa, t *testing.T) {
 
 	erro := pessoaBD.Inserir(pessoa)
 	if erro != nil {
@@ -62,7 +62,7 @@ func removerPessoa(id entidades.ID, t *testing.T) {
 func TestInserirPessoa(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, t)
+	adicionarPessoa(pessoaTeste, t)
 }
 
 func TestInserirPessoa_duplicadoID(t *testing.T) {
@@ -74,7 +74,7 @@ func TestInserirPessoa_duplicadoID(t *testing.T) {
 
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, t)
+	adicionarPessoa(pessoaTeste, t)
 
 	pessoaTeste.CPF = fmt.Sprintf("%011d", rand.Intn(99999999999))
 
@@ -101,7 +101,7 @@ func TestInserirPessoa_duplicadoCPF(t *testing.T) {
 
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, t)
+	adicionarPessoa(pessoaTeste, t)
 
 	defer removerPessoa(pessoaTeste.ID, t)
 
@@ -125,7 +125,7 @@ func TestInserirPessoa_duplicadoCPF(t *testing.T) {
 func TestAtualizarPessoa(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, t)
+	adicionarPessoa(pessoaTeste, t)
 
 	dataAgora := time.Now().UTC()
 	dataAgora = dataAgora.Truncate(24 * time.Hour)
@@ -157,7 +157,7 @@ func TestAtualizarPessoa(t *testing.T) {
 func TestAtualizarPessoa_duplicadoID(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, t)
+	adicionarPessoa(pessoaTeste, t)
 
 	erro := pessoaBD.Atualizar(entidades.NovoID(), pessoaTeste)
 	if erro != nil {
@@ -174,11 +174,11 @@ func TestAtualizarPessoa_duplicadoCPF(t *testing.T) {
 
 	pessoaTeste1 := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste1, t)
+	adicionarPessoa(pessoaTeste1, t)
 
 	pessoaTeste2 := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste2, t)
+	adicionarPessoa(pessoaTeste2, t)
 
 	erro := pessoaBD.Atualizar(pessoaTeste1.ID, pessoaTeste2)
 	if erro == nil || erro.ErroExterno == nil {
@@ -197,7 +197,7 @@ func TestAtualizarPessoa_duplicadoCPF(t *testing.T) {
 func TestPegarPessoa(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, t)
+	adicionarPessoa(pessoaTeste, t)
 
 	pessoaSalva, erro := pessoaBD.Pegar(pessoaTeste.ID)
 	if erro != nil {
@@ -254,7 +254,7 @@ func TestPegarPessoa_tabelaInválida(t *testing.T) {
 func TestDeletarPessoa(t *testing.T) {
 	pessoaTeste := criarPessoaAleatória()
 
-	adiconarPessoa(pessoaTeste, t)
+	adicionarPessoa(pessoaTeste, t)
 
 	removerPessoa(pessoaTeste.ID, t)
 

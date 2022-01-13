@@ -2,7 +2,11 @@ package entidades
 
 import (
 	"fmt"
+	"math/rand"
 	"testing"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 func TestParseCPF(t *testing.T) {
@@ -94,6 +98,58 @@ func TestValidarCPF(t *testing.T) {
 			}
 			if cpf != teste.cpfParse {
 				t.Errorf("Queria %s, chegou %s", teste.cpfParse, cpf)
+			}
+		})
+	}
+}
+
+func TestNovoID(t *testing.T) {
+	for i := 0; i < 100; i++ {
+		id := NovoID()
+		nomeTeste := fmt.Sprintf("%s", id.String())
+		t.Run(nomeTeste, func(t *testing.T) {
+			if _, err := uuid.Parse(id.String()); err != nil {
+				t.Errorf("Esperava %v, chegou %v", nil, err)
+			}
+		})
+	}
+}
+
+func TestDataAtual(t *testing.T) {
+	dataAtual := DataAtual().String()
+	dataNow := time.Now().UTC()
+	ano := dataNow.UTC().Year()
+	mes := dataNow.UTC().Month()
+	dia := dataNow.UTC().Day()
+	dataString := fmt.Sprintf("%04d-%02d-%02d 00:00:00 +0000 UTC", ano, mes, dia)
+
+	if dataAtual != dataString {
+		t.Errorf("Queria %s, chegou %s", dataString, dataAtual)
+	}
+}
+
+func TestRemoverHorário(t *testing.T) {
+	rand.Seed(time.Now().UnixNano())
+	var testes = []struct {
+		ano, mes, dia int
+	}{
+		{2000, 4, 7},
+		{2030, 11, 30},
+		{2040, 12, 31},
+		{1900, 1, 1},
+		{1900, 6, 20},
+		{980, 12, 4},
+	}
+
+	for _, teste := range testes {
+		nomeTeste := fmt.Sprintf("%d-%d-%d", teste.ano, teste.mes, teste.dia)
+		t.Run(nomeTeste, func(t *testing.T) {
+			data := time.Date(teste.ano, time.Month(teste.mes), teste.dia,
+				rand.Intn(23), rand.Intn(59), rand.Intn(59), rand.Intn(59), time.Local)
+			teste := time.Date(teste.ano, time.Month(teste.mes), teste.dia, 0, 0, 0, 0, time.UTC)
+			horárioRemovido := RemoverHorário(data)
+			if !teste.Equal(horárioRemovido) {
+				t.Errorf("Queria %s, chegou %s", teste.UTC(), horárioRemovido.UTC())
 			}
 		})
 	}

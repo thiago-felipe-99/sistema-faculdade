@@ -16,13 +16,13 @@ func parseCPF(cpf string) (CPF, bool) {
 
 	cpfRegra := regexp.
 		MustCompile(`^([0-9]{3}\.[0-9]{3}\.[0-9]{3}-[0-9]{2}|[0-9]{11})$`)
-	cpfPontos := regexp.MustCompile(`\.|-`)
 
 	cpfs := cpfRegra.FindAllString(cpf, -1)
 	if cpfs == nil || len(cpfs) != 1 {
 		return cpfVálido, false
 	}
 
+	cpfPontos := regexp.MustCompile(`\.|-`)
 	cpfVálido = cpfPontos.ReplaceAllString(cpfs[0], "")
 
 	return cpfVálido, true
@@ -113,7 +113,7 @@ func DataAtual() time.Time {
 // formato ISO 8601 e tiver o valor 2001-01-01T14:30+00 ela retornará a
 // seguinte data 2001-01-01T00:00+00.
 func RemoverHorário(data time.Time) time.Time {
-	return data.Truncate(24 * time.Hour) //nolint:gomnd
+	return time.Date(data.Year(), data.Month(), data.Day(), 0, 0, 0, 0, time.UTC)
 }
 
 // CursosOfertado, quando uma turma é ofericido para um certo curso.

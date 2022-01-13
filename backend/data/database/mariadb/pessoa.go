@@ -17,7 +17,7 @@ type PessoaBD struct {
 
 // Inserir é uma função que faz inserção de uma Pessoa no banco de dados MariaDB.
 func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
-	bd.Log.Informação.Println("Inserindo Pessoa com o seguinte ID: " + pessoa.ID.String())
+	bd.Log.Informação("Inserindo Pessoa com o seguinte ID: " + pessoa.ID.String())
 
 	query := "INSERT INTO " + bd.NomeDaTabela +
 		" (ID, Nome, CPF, Data_De_Nascimento, Senha) VALUES (?, ?, ?, ?, ?)"
@@ -32,9 +32,9 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 	)
 
 	if erro != nil {
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao inserir a Pessoa com o seguinte ID: "+pessoa.ID.String(),
-			"\n"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(erro),
 		)
 		return erros.Novo(ErroInserirPessoa, nil, erro)
 	}
@@ -44,7 +44,7 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 
 // Atualizar é uma função que faz a atualização de Pessoa no banco de dados MariaDB.
 func (bd PessoaBD) Atualizar(id entidades.ID, pessoa *entidades.Pessoa) *erros.Aplicação {
-	bd.Log.Informação.Println("Atualizando Pessoa com o seguinte ID: " + id.String())
+	bd.Log.Informação("Atualizando Pessoa com o seguinte ID: " + id.String())
 
 	query := "UPDATE " + bd.NomeDaTabela +
 		" SET Nome = ?, CPF = ?, Data_De_Nascimento = ?, Senha = ?" +
@@ -60,9 +60,9 @@ func (bd PessoaBD) Atualizar(id entidades.ID, pessoa *entidades.Pessoa) *erros.A
 	)
 
 	if erro != nil {
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao atualizar a Pessoa com o seguinte ID: "+id.String(),
-			"\n"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(erro),
 		)
 		return erros.Novo(ErroAtualizarPessoa, nil, erro)
 	}
@@ -72,7 +72,7 @@ func (bd PessoaBD) Atualizar(id entidades.ID, pessoa *entidades.Pessoa) *erros.A
 
 // Pegar é uma função que retorna uma Pessoa do banco de dados MariaDB.
 func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação) {
-	bd.Log.Informação.Println("Pegando Pessoa com o seguinte ID: " + id.String())
+	bd.Log.Informação("Pegando Pessoa com o seguinte ID: " + id.String())
 
 	var pessoa entidades.Pessoa
 
@@ -92,16 +92,16 @@ func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação
 	if erro != nil {
 
 		if erro == sql.ErrNoRows {
-			bd.Log.Aviso.Println(
+			bd.Log.Aviso(
 				"Não foi encontrada nenhuma a pessoa com o seguinte ID: "+id.String(),
-				"\n"+erros.ErroExterno(erro),
+				"\n\t"+erros.ErroExterno(erro),
 			)
 			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, erro)
 		}
 
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao tentar econtrar a pessoa com o seguinte ID: "+id.String(),
-			"\n"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(erro),
 		)
 		return nil, erros.Novo(ErroPegarPessoa, nil, erro)
 
@@ -111,7 +111,7 @@ func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação
 }
 
 func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Aplicação) {
-	bd.Log.Informação.Println("Pegando Pessoa com o seguinte CPF: " + cpf)
+	bd.Log.Informação("Pegando Pessoa com o seguinte CPF: " + cpf)
 
 	var pessoa entidades.Pessoa
 
@@ -131,16 +131,16 @@ func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Apl
 	if erro != nil {
 
 		if erro == sql.ErrNoRows {
-			bd.Log.Aviso.Println(
+			bd.Log.Aviso(
 				"Não foi encontrada nenhuma a pessoa com o seguinte CPF: "+cpf,
-				"\n"+erros.ErroExterno(erro),
+				"\n\t"+erros.ErroExterno(erro),
 			)
 			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, erro)
 		}
 
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao tentar econtrar a pessoa com o seguinte CPF: "+cpf,
-			"\n"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(erro),
 		)
 		return nil, erros.Novo(ErroPegarPessoaPorCPF, nil, erro)
 
@@ -152,16 +152,16 @@ func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Apl
 
 // Deletar é uma função que remove uma Pessoa do banco de dados MariaDB.
 func (bd PessoaBD) Deletar(id entidades.ID) *erros.Aplicação {
-	bd.Log.Informação.Print("Deletando Pessoa com o seguinte ID: " + id.String())
+	bd.Log.Informação("Deletando Pessoa com o seguinte ID: " + id.String())
 
 	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"
 
 	_, erro := bd.BD.Exec(query, id)
 
 	if erro != nil {
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao tentar deletar a pessoa com o seguinte ID: "+id.String(),
-			"\n"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(erro),
 		)
 
 		return erros.Novo(ErroDeletarPessoa, nil, erro)

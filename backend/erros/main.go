@@ -14,11 +14,11 @@ func (erro *Aplicação) Traçado() string {
 	mensagem := fmt.Sprintf("Erro Da Aplicação[%s]: %s", erro.Código, erro.Mensagem)
 
 	if erro.ErroExterno != nil {
-		mensagem += fmt.Sprintf("\nErro Externo: %s", erro.ErroExterno.Error())
+		mensagem += fmt.Sprintf("\n\tErro Externo: %s", erro.ErroExterno.Error())
 	}
 
 	if erro.ErroInicial != nil {
-		mensagem += "\n" + erro.ErroInicial.Traçado()
+		mensagem += "\n\t" + erro.ErroInicial.Traçado()
 	}
 
 	return mensagem

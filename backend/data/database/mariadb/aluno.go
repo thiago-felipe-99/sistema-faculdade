@@ -19,7 +19,7 @@ type AlunoBD struct {
 // InserirTurmas é um método que faz a inserção das turmas de um Aluno no banco
 // de dados MariaDB.
 func (bd AlunoBD) InserirTurmas(turmas *[]entidades.TurmaAluno) *erros.Aplicação {
-	bd.Log.Informação.Println("Inserindo turmas de um Aluno")
+	bd.Log.Informação("Inserindo turmas")
 
 	if len(*turmas) <= 0 {
 		return nil
@@ -43,8 +43,8 @@ func (bd AlunoBD) InserirTurmas(turmas *[]entidades.TurmaAluno) *erros.Aplicaç�
 
 	tx, erroTx := bd.BD.Begin()
 	if erroTx != nil {
-		bd.Log.Aviso.Println(
-			"Erro ao inserir as turmas de um Aluno\n" + erros.ErroExterno(erroTx),
+		bd.Log.Aviso(
+			"Erro ao inserir as turmas\n\t" + erros.ErroExterno(erroTx),
 		)
 		return erros.Novo(ErroInserirAluno, nil, erroTx)
 	}
@@ -53,15 +53,15 @@ func (bd AlunoBD) InserirTurmas(turmas *[]entidades.TurmaAluno) *erros.Aplicaç�
 
 	_, erro := tx.Exec(query, params...)
 	if erro != nil {
-		bd.Log.Aviso.Println(
-			"Erro ao inserir as turmas de um Aluno\n" + erros.ErroExterno(erro),
+		bd.Log.Aviso(
+			"Erro ao inserir as turmas\n\t" + erros.ErroExterno(erro),
 		)
 		return erros.Novo(ErroInserirAlunoTurma, nil, erro)
 	}
 
 	if erroTx = tx.Commit(); erroTx != nil {
-		bd.Log.Aviso.Println(
-			"Erro ao inserir as turmas de um Aluno\nErro: " + erros.ErroExterno(erroTx),
+		bd.Log.Aviso(
+			"Erro ao inserir as turmas\n\tErro: " + erros.ErroExterno(erroTx),
 		)
 		return erros.Novo(ErroInserirAlunoTurma, nil, erroTx)
 	}
@@ -71,7 +71,7 @@ func (bd AlunoBD) InserirTurmas(turmas *[]entidades.TurmaAluno) *erros.Aplicaç�
 
 // Inserir é um método que faz inserção de uma Aluno no banco de dados MariaDB.
 func (bd AlunoBD) Inserir(aluno *entidades.Aluno) *erros.Aplicação {
-	bd.Log.Informação.Println("Inserindo Aluno com o seguinte ID: " + aluno.ID.String())
+	bd.Log.Informação("Inserindo Aluno com o seguinte ID: " + aluno.ID.String())
 
 	query := "INSERT INTO " + bd.NomeDaTabela +
 		"(ID, ID_Pessoa, ID_Curso, Matrícula, Data_De_Ingresso, Data_De_Saída," +
@@ -89,9 +89,9 @@ func (bd AlunoBD) Inserir(aluno *entidades.Aluno) *erros.Aplicação {
 		aluno.Status,
 	)
 	if erro != nil {
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao inserir o Aluno com o seguinte ID: "+aluno.ID.String(),
-			"\n"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(erro),
 		)
 		return erros.Novo(ErroInserirAluno, nil, erro)
 	}
@@ -101,7 +101,7 @@ func (bd AlunoBD) Inserir(aluno *entidades.Aluno) *erros.Aplicação {
 
 // Atualizar é um método que faz a atualização de Aluno no banco de dados MariaDB.
 func (bd AlunoBD) Atualizar(entidades.ID, *entidades.Aluno) *erros.Aplicação {
-	bd.Log.Informação.Println("Atualizando Aluno")
+	bd.Log.Informação("Atualizando Aluno")
 
 	return nil
 }
@@ -109,7 +109,7 @@ func (bd AlunoBD) Atualizar(entidades.ID, *entidades.Aluno) *erros.Aplicação {
 // PegarTurmas é um método que pega as turmas de um Aluno no banco de dados
 // MariaDB.
 func (bd AlunoBD) PegarTurmas(idAluno entidades.ID) (*[]entidades.TurmaAluno, *erros.Aplicação) {
-	bd.Log.Informação.Println("Pegando as turmas do aluno com seguinte ID: " + idAluno.String())
+	bd.Log.Informação("Pegando as turmas do aluno com seguinte ID: " + idAluno.String())
 
 	var turmas []entidades.TurmaAluno
 
@@ -118,9 +118,9 @@ func (bd AlunoBD) PegarTurmas(idAluno entidades.ID) (*[]entidades.TurmaAluno, *e
 
 	linhas, erro := bd.BD.Query(query, idAluno)
 	if erro != nil {
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao pegar as turmas do Aluno com o seguinte ID: "+idAluno.String(),
-			"\n"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(erro),
 		)
 
 		return nil, erros.Novo(ErroPegarAlunoTurma, nil, erro)
@@ -132,9 +132,9 @@ func (bd AlunoBD) PegarTurmas(idAluno entidades.ID) (*[]entidades.TurmaAluno, *e
 
 		erro := linhas.Scan(&turma.IDAluno, &turma.IDTurma, &turma.Status)
 		if erro != nil {
-			bd.Log.Aviso.Println(
+			bd.Log.Aviso(
 				"Erro ao pegar as turmas do aluno com o seguinte ID: "+idAluno.String(),
-				"\n"+erros.ErroExterno(erro),
+				"\n\t"+erros.ErroExterno(erro),
 			)
 
 			return nil, erros.Novo(ErroPegarAlunoTurma, nil, erro)
@@ -143,9 +143,9 @@ func (bd AlunoBD) PegarTurmas(idAluno entidades.ID) (*[]entidades.TurmaAluno, *e
 		turmas = append(turmas, turma)
 	}
 	if erro = linhas.Err(); erro != nil {
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao pegar as turmas do Curso com o seguinte ID: "+idAluno.String(),
-			"\n"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(erro),
 		)
 
 		return nil, erros.Novo(ErroPegarAlunoTurma, nil, erro)
@@ -156,14 +156,14 @@ func (bd AlunoBD) PegarTurmas(idAluno entidades.ID) (*[]entidades.TurmaAluno, *e
 
 // Pegar é uma função que retorna uma Aluno do banco de dados MariaDB.
 func (bd AlunoBD) Pegar(id entidades.ID) (*entidades.Aluno, *erros.Aplicação) {
-	bd.Log.Informação.Println("Pegando Aluno com o seguinte ID: " + id.String())
+	bd.Log.Informação("Pegando Aluno com o seguinte ID: " + id.String())
 
 	turmas, erroAplicação := bd.PegarTurmas(id)
 	if erroAplicação != nil &&
 		!erroAplicação.ÉPadrão(ErroAlunoTurmaNãoEncontrado) {
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao pegar as turmas do Aluno com o seguinte ID: "+id.String(),
-			"\n"+erroAplicação.Error(),
+			"\n\t"+erroAplicação.Error(),
 		)
 	}
 
@@ -188,16 +188,16 @@ func (bd AlunoBD) Pegar(id entidades.ID) (*entidades.Aluno, *erros.Aplicação) 
 
 	if erro != nil {
 		if erro == sql.ErrNoRows {
-			bd.Log.Aviso.Println(
+			bd.Log.Aviso(
 				"Não foi encontrada nenhum Aluno com o seguinte ID: "+id.String(),
-				"\n"+erros.ErroExterno(erro),
+				"\n\t"+erros.ErroExterno(erro),
 			)
 			return nil, erros.Novo(ErroAlunoNãoEncontrado, nil, erro)
 		}
 
-		bd.Log.Aviso.Println(
+		bd.Log.Aviso(
 			"Erro ao pegar o Aluno com o seguinte ID: "+id.String(),
-			"\n"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(erro),
 		)
 		return nil, erros.Novo(ErroPegarAluno, nil, erro)
 	}
@@ -207,7 +207,7 @@ func (bd AlunoBD) Pegar(id entidades.ID) (*entidades.Aluno, *erros.Aplicação) 
 
 // Deletar é uma função que remove uma Aluno do banco de dados MariaDB.
 func (bd AlunoBD) Deletar(entidades.ID) *erros.Aplicação {
-	bd.Log.Informação.Print("Deletando Aluno")
+	bd.Log.Informação("Deletando Aluno")
 
 	return nil
 }

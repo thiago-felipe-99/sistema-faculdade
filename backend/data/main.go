@@ -90,7 +90,7 @@ type Data struct {
 	Turma
 }
 
-func DataPadrão(log *logs.Arquivos, bdSQL *sql.DB) *Data {
+func DataPadrão(log *logs.Entidades, bdSQL *sql.DB) *Data {
 	MariaDBPessoa := mariadb.PessoaBD{
 		Conexão:      *mariadb.NovaConexão(log.Pessoa, bdSQL),
 		NomeDaTabela: "Pessoa",

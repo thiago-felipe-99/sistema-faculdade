@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 	bd := criarConexãoMariaDB()
 	logData := logs.AbrirArquivos("./logs/data/")
 
-	Data := data.DataPadrão(logData, bd)
+	Data := data.DataPadrão(logs.NovoLogEntidades(logData, logs.NívelDebug), bd)
 
 	logica = NovaLógica(Data)
 

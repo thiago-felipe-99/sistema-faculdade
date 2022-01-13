@@ -13,7 +13,7 @@ type ProfessorBD struct {
 
 // Inserir é uma função que faz inserção de uma Professor no banco de dados MariaDB.
 func (bd ProfessorBD) Inserir(*entidades.Professor) *erros.Aplicação {
-	bd.Log.Informação.Println("Inserindo Professor")
+	bd.Log.Informação("Inserindo Professor")
 
 	return nil
 }
@@ -21,21 +21,21 @@ func (bd ProfessorBD) Inserir(*entidades.Professor) *erros.Aplicação {
 // Atualizar é uma função que faz a atualização de Professor no banco de dados
 // MariaDB.
 func (bd ProfessorBD) Atualizar(entidades.ID, *entidades.Professor) *erros.Aplicação {
-	bd.Log.Informação.Println("Atualizando Professor")
+	bd.Log.Informação("Atualizando Professor")
 
 	return nil
 }
 
 // Pegar é uma função que retorna uma Professor do banco de dados MariaDB.
 func (bd ProfessorBD) Pegar(entidades.ID) (*entidades.Professor, *erros.Aplicação) {
-	bd.Log.Informação.Println("Pegando Professor")
+	bd.Log.Informação("Pegando Professor")
 
 	return nil, nil
 }
 
 // Deletar é uma função que remove uma Professor do banco de dados MariaDB.
 func (bd ProfessorBD) Deletar(entidades.ID) *erros.Aplicação {
-	bd.Log.Informação.Print("Deletando Professor")
+	bd.Log.Informação("Deletando Professor")
 
 	return nil
 }

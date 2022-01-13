@@ -14,7 +14,7 @@ type AdministrativoBD struct {
 // Inserir é uma função que faz inserção de uma Administrativo no banco de dados
 // MariaDB.
 func (bd AdministrativoBD) Inserir(*entidades.Administrativo) *erros.Aplicação {
-	bd.Log.Informação.Println("Inserindo Administrativo")
+	bd.Log.Informação("Inserindo Administrativo")
 
 	return nil
 }
@@ -22,21 +22,21 @@ func (bd AdministrativoBD) Inserir(*entidades.Administrativo) *erros.Aplicação
 // Atualizar é uma função que faz a atualização de Administrativo no banco de dados
 // MariaDB.
 func (bd AdministrativoBD) Atualizar(entidades.ID, *entidades.Administrativo) *erros.Aplicação {
-	bd.Log.Informação.Println("Atualizando Administrativo")
+	bd.Log.Informação("Atualizando Administrativo")
 
 	return nil
 }
 
 // Pegar é uma função que retorna uma Administrativo do banco de dados MariaDB.
 func (bd AdministrativoBD) Pegar(entidades.ID) (*entidades.Administrativo, *erros.Aplicação) {
-	bd.Log.Informação.Println("Pegando Administrativo")
+	bd.Log.Informação("Pegando Administrativo")
 
 	return nil, nil
 }
 
 // Deletar é uma função que remove uma Administrativo do banco de dados MariaDB.
 func (bd AdministrativoBD) Deletar(entidades.ID) *erros.Aplicação {
-	bd.Log.Informação.Print("Deletando Administrativo")
+	bd.Log.Informação("Deletando Administrativo")
 
 	return nil
 }

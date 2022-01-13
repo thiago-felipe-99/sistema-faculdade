@@ -37,7 +37,7 @@ func newData() *data.Data {
 		log.Panicln(err.Mensagem)
 	}
 
-	return data.DataPadrão(logFiles, bd)
+	return data.DataPadrão(logs.NovoLogEntidades(logFiles, logs.NívelDebug), bd)
 }
 
 func prettyStruct(s ...interface{}) string {
@@ -53,7 +53,7 @@ func main() {
 	r := gin.Default()
 
 	data := newData()
-	lógica := logica.NovaLógica(*data)
+	lógica := logica.NovaLógica(data)
 
 	r.GET("/ping", func(c *gin.Context) {
 		pessoaCriar, erro := lógica.Pessoa.Criar(

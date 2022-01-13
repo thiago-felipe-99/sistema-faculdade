@@ -61,50 +61,64 @@ func criarConexão(m *testing.M) *sql.DB {
 
 func criandoConexõesComAsTabelas(m *testing.M, bd *sql.DB) {
 
-	logs := logs.AbrirArquivos("./logs/")
+	arquivos := logs.AbrirArquivos("./logs/")
+	logPessoa, err := logs.NovoLog(arquivos.Pessoa, logs.NívelDebug)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	logCurso, err := logs.NovoLog(arquivos.Curso, logs.NívelDebug)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	logAluno, err := logs.NovoLog(arquivos.Aluno, logs.NívelDebug)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	pessoaBD = &PessoaBD{
-		Conexão:      *NovaConexão(logs.Pessoa, bd),
+		Conexão:      *NovaConexão(logPessoa, bd),
 		NomeDaTabela: "Pessoa",
 	}
 
 	pessoaBDInválido = &PessoaBD{
-		Conexão:      *NovaConexão(logs.Pessoa, bd),
+		Conexão:      *NovaConexão(logPessoa, bd),
 		NomeDaTabela: "PessoaErrada",
 	}
 
 	cursoBD = &CursoBD{
-		Conexão:                *NovaConexão(logs.Curso, bd),
+		Conexão:                *NovaConexão(logCurso, bd),
 		NomeDaTabela:           "Curso",
 		NomeDaTabelaSecundária: "CursoMatérias",
 	}
 
 	cursoBDInválido = &CursoBD{
-		Conexão:                *NovaConexão(logs.Curso, bd),
+		Conexão:                *NovaConexão(logCurso, bd),
 		NomeDaTabela:           "CursoErrado",
 		NomeDaTabelaSecundária: "CursoMatériasErrado",
 	}
 
 	cursoBDInválido2 = &CursoBD{
-		Conexão:                *NovaConexão(logs.Curso, bd),
+		Conexão:                *NovaConexão(logCurso, bd),
 		NomeDaTabela:           "CursoErrado",
 		NomeDaTabelaSecundária: "CursoMatérias",
 	}
 
 	alunoBD = &AlunoBD{
-		Conexão:                *NovaConexão(logs.Aluno, bd),
+		Conexão:                *NovaConexão(logAluno, bd),
 		NomeDaTabela:           "Aluno",
 		NomeDaTabelaSecundária: "AlunoTurma",
 	}
 
 	alunoBDInválido = &AlunoBD{
-		Conexão:                *NovaConexão(logs.Aluno, bd),
+		Conexão:                *NovaConexão(logAluno, bd),
 		NomeDaTabela:           "AlunoErrado",
 		NomeDaTabelaSecundária: "AlunoTurmaErrado",
 	}
 
 	alunoBDInválido2 = &AlunoBD{
-		Conexão:                *NovaConexão(logs.Aluno, bd),
+		Conexão:                *NovaConexão(logAluno, bd),
 		NomeDaTabela:           "AlunoErrado",
 		NomeDaTabelaSecundária: "AlunoTurma",
 	}

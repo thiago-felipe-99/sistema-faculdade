@@ -55,7 +55,8 @@ func (lógica *Pessoa) Criar(
 		return nil, erros.Novo(ErroDataDeNascimentoInválido, nil, nil)
 	}
 
-	if !entidades.SenhaVálida(senha) {
+	gerenciadorSenha := entidades.GerenciadorSenhaPadrão()
+	if !gerenciadorSenha.ÉVálida(senha) {
 		return nil, erros.Novo(ErroSenhaInválida, nil, nil)
 	}
 
@@ -64,7 +65,7 @@ func (lógica *Pessoa) Criar(
 		Nome:             nome,
 		CPF:              cpf,
 		DataDeNascimento: dataDeNascimento,
-		Senha:            entidades.GerarNovaSenha(senha),
+		Senha:            gerenciadorSenha.GerarHash(senha),
 	}
 
 	erro = lógica.data.Inserir(pessoaNova)
@@ -101,7 +102,9 @@ func (lógica *Pessoa) VerificarSenha(
 		return false, erros.Novo(ErroPegarPessoa, erro, nil)
 	}
 
-	return entidades.VerificarSenha(senha, pessoa.Senha), nil
+	gerenciadorSenha := entidades.GerenciadorSenhaPadrão()
+
+	return gerenciadorSenha.ÉIgual(senha, pessoa.Senha), nil
 }
 
 func (lógica *Pessoa) Atualizar(
@@ -142,7 +145,8 @@ func (lógica *Pessoa) Atualizar(
 		return nil, erros.Novo(ErroDataDeNascimentoInválido, nil, nil)
 	}
 
-	if !entidades.SenhaVálida(senha) {
+	gerenciadorSenha := entidades.GerenciadorSenhaPadrão()
+	if !gerenciadorSenha.ÉVálida(senha) {
 		return nil, erros.Novo(ErroSenhaInválida, nil, nil)
 	}
 
@@ -151,7 +155,7 @@ func (lógica *Pessoa) Atualizar(
 		Nome:             nome,
 		CPF:              cpf,
 		DataDeNascimento: dataDeNascimento,
-		Senha:            entidades.GerarNovaSenha(senha),
+		Senha:            gerenciadorSenha.GerarHash(senha),
 	}
 
 	erro = lógica.data.Atualizar(id, pessoaNova)

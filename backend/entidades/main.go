@@ -78,24 +78,6 @@ func ValidarCPF(cpf string) (CPF, bool) {
 	return cpf, true
 }
 
-// Senha representa uma senha na aplicação.
-type Senha = string
-
-// GerarNovaSenha retornar a senha hasheada.
-func GerarNovaSenha(senha string) Senha {
-	return senha
-}
-
-// SenhaVálida verifica se a senha segue os padrões requiridos para que tenha
-// uma senha válida.
-func SenhaVálida(senha string) bool {
-	return true
-}
-
-func VerificarSenha(senha string, hash Senha) bool {
-	return senha == hash
-}
-
 // ID representa o indificador único da entidades.
 type ID = uuid.UUID
 
@@ -162,7 +144,7 @@ type Pessoa struct {
 	Nome             string
 	CPF              CPF
 	DataDeNascimento time.Time
-	Senha            Senha
+	Senha            Hash
 }
 
 // Curso representa a entidade Curso.

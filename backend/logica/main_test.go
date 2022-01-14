@@ -3,10 +3,8 @@ package logica_test
 import (
 	"database/sql"
 	"log"
-	"math/rand"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
@@ -54,8 +52,6 @@ func criarConexãoMariaDB() *sql.DB {
 }
 
 func TestMain(m *testing.M) {
-	rand.Seed(time.Now().UnixNano())
-
 	bd := criarConexãoMariaDB()
 	logData := logs.AbrirArquivos("./logs/data/")
 

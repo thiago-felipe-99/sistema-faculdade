@@ -1,23 +1,21 @@
 package mariadb
 
 import (
-	"math/rand"
 	"reflect"
 	"testing"
-	"time"
 
 	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
 func criarTurmasAlunoAleatório(idAluno entidades.ID) *[]entidades.TurmaAluno {
-	turmas := make([]entidades.TurmaAluno, rand.Intn(MATÉRIAS_MÁXIMAS)+1)
+	turmas := make([]entidades.TurmaAluno, aleatorio.Número(MATÉRIAS_MÁXIMAS)+1)
 
 	for i := range turmas {
 		turmas[i] = entidades.TurmaAluno{
 			IDAluno: idAluno,
 			IDTurma: entidades.NovoID(),
-			Status:  aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Status:  aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
 		}
 	}
 
@@ -33,19 +31,21 @@ func criarAlunoAleatório(t *testing.T) *entidades.Aluno {
 
 	id := entidades.NovoID()
 
-	dataAgora := time.Now().UTC()
-	dataAgora = dataAgora.Truncate(24 * time.Hour)
-	dataFutura := dataAgora.AddDate(rand.Intn(50), rand.Intn(12), rand.Intn(28))
+	dataAgora := entidades.DataAtual()
+	ano := int(aleatorio.Número(50))
+	mês := int(aleatorio.Número(12))
+	dia := int(aleatorio.Número(28))
+	dataFutura := dataAgora.AddDate(ano, mês, dia)
 
 	return &entidades.Aluno{
 		ID:             id,
 		Pessoa:         pessoa.ID,
 		Curso:          curso.ID,
-		Matrícula:      aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_MATRÍCULA) + 1),
+		Matrícula:      aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_MATRÍCULA) + 1),
 		DataDeIngresso: dataAgora,
 		DataDeSaída:    dataFutura,
-		Período:        aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
-		Status:         aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
+		Período:        aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+		Status:         aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
 		Turmas:         *criarTurmasAlunoAleatório(id),
 	}
 }

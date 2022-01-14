@@ -1,34 +1,56 @@
 package aleatorio
 
 import (
+	"crypto/rand"
 	"fmt"
-	"math/rand"
-	"time"
+	"log"
+	"math/big"
 
-	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
+	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
-// Palavra criar uma Palavra aleatório de um tamnaho fixo.
-func Palavra(tamanho int) string {
-	letters := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũçABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ") //nolint:lll
+var erroTamanhoInválido = fmt.Errorf("tamanho inválido")
 
-	rand.Seed(time.Now().UnixNano())
+// Número retorna um inteiro aleatório de [0,n).
+func Número(n uint) uint {
+	if n <= 0 {
+		log.Panicln(erroTamanhoInválido)
+	}
+
+	número, err := rand.Int(rand.Reader, big.NewInt(int64(n)))
+	if err != nil {
+		log.Panicln(erros.ErroExterno(err))
+	}
+
+	return uint(número.Uint64())
+}
+
+// Palavra criar uma Palavra aleatório de um tamnaho fixo.
+func Palavra(tamanho uint) string {
+	if tamanho <= 0 {
+		log.Panicln(erroTamanhoInválido)
+	}
+
+	letters := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũçABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ") //nolint:lll
+	lettersLen := len(letters)
+
+	if lettersLen <= 0 {
+		log.Panicln(erroTamanhoInválido)
+	}
 
 	s := make([]rune, tamanho)
 	for i := range s {
-		s[i] = letters[rand.Intn(len(letters))] //nolint: GoSec
+		s[i] = letters[Número(uint(lettersLen))]
 	}
 
 	return string(s)
 }
 
-//nolint: gomnd
+// nolint:gomnd
 // CPF cria um CPF aleatório.
-func CPF() entidades.CPF {
-	rand.Seed(time.Now().UnixNano())
-
-	maxCPF := 999999999
-	CPFSemDigitos := fmt.Sprintf("%09d", rand.Intn(maxCPF)) //nolint: GoSec
+func CPF() string {
+	const maxCPF = 999999999 + 1
+	CPFSemDigitos := fmt.Sprintf("%09d", Número(maxCPF))
 
 	digito1 := 0
 	digito2 := 0
@@ -50,4 +72,16 @@ func CPF() entidades.CPF {
 	cpf = fmt.Sprintf("%s%d%d", cpf, digito1, digito2)
 
 	return cpf
+}
+
+// Bytes retorna uma slice de bytes aleatório de tamanho n.
+func Bytes(n uint32) []byte {
+	b := make([]byte, n)
+
+	_, err := rand.Read(b)
+	if err != nil {
+		log.Panicln(erros.ErroExterno(err))
+	}
+
+	return b
 }

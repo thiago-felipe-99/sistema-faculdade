@@ -1,25 +1,23 @@
 package mariadb
 
 import (
-	"fmt"
-	"math/rand"
 	"reflect"
 	"regexp"
 	"testing"
 	"time"
 
+	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
 	. "thiagofelipe.com.br/sistema-faculdade-backend/data/erros"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
 func criarPessoaAleatória() *entidades.Pessoa {
-	dataAgora := time.Now().UTC()
-	dataAgora = dataAgora.Truncate(24 * time.Hour)
+	dataAgora := entidades.DataAtual()
 
 	var pessoa = &entidades.Pessoa{
 		ID:               entidades.NovoID(),
-		Nome:             "Teste Certo",
-		CPF:              fmt.Sprintf("%011d", rand.Intn(99999999999)),
+		Nome:             aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+		CPF:              aleatorio.CPF(),
 		DataDeNascimento: dataAgora,
 		Senha:            "Senha",
 	}
@@ -76,7 +74,7 @@ func TestInserirPessoa_duplicadoID(t *testing.T) {
 
 	adicionarPessoa(pessoaTeste, t)
 
-	pessoaTeste.CPF = fmt.Sprintf("%011d", rand.Intn(99999999999))
+	pessoaTeste.CPF = aleatorio.CPF()
 
 	erro := pessoaBD.Inserir(pessoaTeste)
 	if erro == nil || erro.ErroExterno == nil {

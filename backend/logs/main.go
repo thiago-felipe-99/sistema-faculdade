@@ -102,37 +102,37 @@ func AbrirArquivos(defaultDir string) *Arquivos {
 
 	pessoa, err := os.OpenFile(defaultDir+"pessoaLogs.txt", flags, mode)
 	if err != nil {
-		log.Panic(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	curso, err := os.OpenFile(defaultDir+"cursoLogs.txt", flags, mode)
 	if err != nil {
-		log.Panic(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	aluno, err := os.OpenFile(defaultDir+"alunoLogs.txt", flags, mode)
 	if err != nil {
-		log.Panic(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	professor, err := os.OpenFile(defaultDir+"professorLogs.txt", flags, mode)
 	if err != nil {
-		log.Panic(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	administrativo, err := os.OpenFile(defaultDir+"administrativoLogs.txt", flags, mode)
 	if err != nil {
-		log.Panic(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	matéria, err := os.OpenFile(defaultDir+"matériaLogs.txt", flags, mode)
 	if err != nil {
-		log.Panic(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	turma, err := os.OpenFile(defaultDir+"turmaLogs.txt", flags, mode)
 	if err != nil {
-		log.Panic(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	return &Arquivos{
@@ -159,37 +159,37 @@ type Entidades struct {
 func NovoLogEntidades(arquivos *Arquivos, nível uint) *Entidades {
 	pessoa, err := NovoLog(arquivos.Pessoa, nível)
 	if err != nil {
-		log.Panicln(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	curso, err := NovoLog(arquivos.Curso, nível)
 	if err != nil {
-		log.Panicln(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	aluno, err := NovoLog(arquivos.Aluno, nível)
 	if err != nil {
-		log.Panicln(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	professor, err := NovoLog(arquivos.Professor, nível)
 	if err != nil {
-		log.Panicln(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	administrativo, err := NovoLog(arquivos.Administrativo, nível)
 	if err != nil {
-		log.Panicln(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	matéria, err := NovoLog(arquivos.Matéria, nível)
 	if err != nil {
-		log.Panicln(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	turma, err := NovoLog(arquivos.Turma, nível)
 	if err != nil {
-		log.Panicln(err)
+		log.Panicln(erros.ErroExterno(err))
 	}
 
 	return &Entidades{

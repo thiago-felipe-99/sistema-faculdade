@@ -1,22 +1,19 @@
 package logica_test
 
 import (
-	"math/rand"
 	"reflect"
 	"testing"
 	"time"
 
 	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
-	//nolint:revive,stylecheck
-	// . "thiagofelipe.com.br/sistema-faculdade-backend/logica"
 )
 
 func criarPessoaAleatória() (string, string, time.Time, string) {
-	nome := aleatorio.Palavra(rand.Intn(tamanhoMáximoDaPalavra))
+	nome := aleatorio.Palavra(aleatorio.Número(tamanhoMáximoDaPalavra) + 1)
 	cpf := aleatorio.CPF()
 	data := time.Now()
-	senha := aleatorio.Palavra(rand.Intn(tamanhoMáximoDaPalavra))
+	senha := aleatorio.Palavra(aleatorio.Número(tamanhoMáximoDaPalavra) + 1)
 
 	return nome, cpf, data, senha
 }

@@ -3,11 +3,9 @@ package mariadb
 import (
 	"database/sql"
 	"log"
-	"math/rand"
 	"os"
 	"regexp"
 	"testing"
-	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade-backend/env"
@@ -142,8 +140,6 @@ func deletarTabelas(bd *sql.DB) {
 }
 
 func TestMain(m *testing.M) {
-
-	rand.Seed(time.Now().UnixNano())
 
 	bd := criarConexão(m)
 

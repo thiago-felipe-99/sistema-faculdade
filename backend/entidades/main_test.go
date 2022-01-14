@@ -2,11 +2,11 @@ package entidades
 
 import (
 	"fmt"
-	"math/rand"
 	"testing"
 	"time"
 
 	"github.com/google/uuid"
+	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
 )
 
 func TestParseCPF(t *testing.T) {
@@ -129,7 +129,6 @@ func TestDataAtual(t *testing.T) {
 }
 
 func TestRemoverHorário(t *testing.T) {
-	rand.Seed(time.Now().UnixNano())
 	var testes = []struct {
 		ano, mes, dia int
 	}{
@@ -144,12 +143,20 @@ func TestRemoverHorário(t *testing.T) {
 	for _, teste := range testes {
 		nomeTeste := fmt.Sprintf("%d-%d-%d", teste.ano, teste.mes, teste.dia)
 		t.Run(nomeTeste, func(t *testing.T) {
+
+			horas := aleatorio.Número(24)
+			minutos := aleatorio.Número(24)
+			segundos := aleatorio.Número(24)
+			milesimos := aleatorio.Número(24)
 			data := time.Date(teste.ano, time.Month(teste.mes), teste.dia,
-				rand.Intn(23), rand.Intn(59), rand.Intn(59), rand.Intn(59), time.Local)
-			teste := time.Date(teste.ano, time.Month(teste.mes), teste.dia, 0, 0, 0, 0, time.UTC)
+				int(horas), int(minutos), int(segundos), int(milesimos), time.Local)
+
+			horárioEsperado := time.Date(teste.ano, time.Month(teste.mes), teste.dia, 0, 0, 0, 0, time.UTC)
+
 			horárioRemovido := RemoverHorário(data)
-			if !teste.Equal(horárioRemovido) {
-				t.Errorf("Queria %s, chegou %s", teste.UTC(), horárioRemovido.UTC())
+
+			if !horárioEsperado.Equal(horárioRemovido) {
+				t.Errorf("Queria %s, chegou %s", horárioEsperado.UTC(), horárioRemovido.UTC())
 			}
 		})
 	}

@@ -1,11 +1,9 @@
 package mariadb
 
 import (
-	"math/rand"
 	"reflect"
 	"regexp"
 	"testing"
-	"time"
 
 	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
 	. "thiagofelipe.com.br/sistema-faculdade-backend/data/erros"
@@ -13,16 +11,16 @@ import (
 )
 
 func criarMatériasCursoAleatórios(idCurso entidades.ID) *[]entidades.CursoMatéria {
-	matérias := make([]entidades.CursoMatéria, rand.Intn(MATÉRIAS_MÁXIMAS)+1)
+	matérias := make([]entidades.CursoMatéria, aleatorio.Número(MATÉRIAS_MÁXIMAS)+1)
 
 	for i := range matérias {
 		matérias[i] = entidades.CursoMatéria{
 			IDCurso:    idCurso,
 			IDMatéria:  entidades.NovoID(),
-			Status:     aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
-			Período:    aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
-			Tipo:       aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
-			Observação: aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Status:     aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Período:    aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Tipo:       aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Observação: aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
 		}
 	}
 
@@ -32,13 +30,15 @@ func criarMatériasCursoAleatórios(idCurso entidades.ID) *[]entidades.CursoMat�
 func criarCursoAleatório() *entidades.Curso {
 	id := entidades.NovoID()
 
-	dataAgora := time.Now().UTC()
-	dataAgora = dataAgora.Truncate(24 * time.Hour)
-	dataFutura := dataAgora.AddDate(rand.Intn(50), rand.Intn(12), rand.Intn(28))
+	dataAgora := entidades.DataAtual()
+	ano := int(aleatorio.Número(50))
+	mês := int(aleatorio.Número(12))
+	dia := int(aleatorio.Número(28))
+	dataFutura := dataAgora.AddDate(ano, mês, dia)
 
 	return &entidades.Curso{
 		ID:                id,
-		Nome:              aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1),
+		Nome:              aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
 		DataDeInício:      dataAgora,
 		DataDeDesativação: dataFutura,
 		Matérias:          *criarMatériasCursoAleatórios(id),
@@ -203,13 +203,13 @@ func TestAtualizarCursoMáterias(t *testing.T) {
 
 	for índice := range cursoTeste.Matérias {
 		cursoTeste.Matérias[índice].Observação =
-			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
 		cursoTeste.Matérias[índice].Período =
-			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
 		cursoTeste.Matérias[índice].Status =
-			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
 		cursoTeste.Matérias[índice].Tipo =
-			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
 	}
 
 	erro := cursoBD.AtualizarMatérias(&cursoTeste.Matérias)
@@ -244,16 +244,16 @@ func TestAtualizarCursoMáterias_tabelaInválida(t *testing.T) {
 
 	for índice := range cursoTeste.Matérias {
 		cursoTeste.Matérias[índice].Observação =
-			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
 
 		cursoTeste.Matérias[índice].Período =
-			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
 
 		cursoTeste.Matérias[índice].Status =
-			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
 
 		cursoTeste.Matérias[índice].Tipo =
-			aleatorio.Palavra(rand.Intn(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
 	}
 
 	erro := cursoBDInválido.AtualizarMatérias(&cursoTeste.Matérias)
@@ -275,10 +275,15 @@ func TestAtualizarCurso(t *testing.T) {
 
 	adiconarCurso(cursoTeste, t)
 
-	dataAgora := time.Now().UTC()
-	dataAgora = dataAgora.Truncate(24 * time.Hour)
-	dataFutura1 := dataAgora.AddDate(rand.Intn(50), rand.Intn(12), rand.Intn(28))
-	dataFutura2 := dataAgora.AddDate(rand.Intn(50), rand.Intn(12), rand.Intn(28))
+	dataAgora := entidades.DataAtual()
+	ano1 := int(aleatorio.Número(50))
+	mês1 := int(aleatorio.Número(12))
+	dia1 := int(aleatorio.Número(28))
+	dataFutura1 := dataAgora.AddDate(ano1, mês1, dia1)
+	ano2 := int(aleatorio.Número(50))
+	mês2 := int(aleatorio.Número(12))
+	dia2 := int(aleatorio.Número(28))
+	dataFutura2 := dataAgora.AddDate(ano2, mês2, dia2)
 
 	cursoTeste.Nome = "Novo Nome"
 	cursoTeste.DataDeDesativação = dataFutura1

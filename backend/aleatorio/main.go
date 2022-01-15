@@ -3,39 +3,41 @@ package aleatorio
 import (
 	"crypto/rand"
 	"fmt"
-	"log"
 	"math/big"
 
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
-var erroTamanhoInválido = fmt.Errorf("tamanho inválido")
+var ErroTamanhoInválido = erros.Padrão{
+	Mensagem: "Tamanho da estrutura aleatória é inválida",
+	Código:   "ALEATÓRIO-[1]",
+}
 
 // Número retorna um inteiro aleatório de [0,n).
 func Número(n uint) uint {
 	if n <= 0 {
-		log.Panicln(erroTamanhoInválido)
+		panic(ErroTamanhoInválido)
 	}
 
 	número, err := rand.Int(rand.Reader, big.NewInt(int64(n)))
 	if err != nil {
-		log.Panicln(erros.ErroExterno(err))
+		panic(erros.ErroExterno(err))
 	}
 
 	return uint(número.Uint64())
 }
 
-// Palavra criar uma Palavra aleatório de um tamnaho fixo.
+// Palavra criar uma Palavra aleatório de um tamanho fixo.
 func Palavra(tamanho uint) string {
 	if tamanho <= 0 {
-		log.Panicln(erroTamanhoInválido)
+		panic(ErroTamanhoInválido)
 	}
 
 	letters := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũçABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ") //nolint:lll
 	lettersLen := len(letters)
 
 	if lettersLen <= 0 {
-		log.Panicln(erroTamanhoInválido)
+		panic(ErroTamanhoInválido)
 	}
 
 	s := make([]rune, tamanho)
@@ -79,7 +81,7 @@ func Bytes(n uint32) []byte {
 
 	_, err := rand.Read(b)
 	if err != nil {
-		log.Panicln(erros.ErroExterno(err))
+		panic(erros.ErroExterno(err))
 	}
 
 	return b

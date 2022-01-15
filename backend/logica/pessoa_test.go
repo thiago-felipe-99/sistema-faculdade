@@ -119,3 +119,37 @@ func TestCriarPessoa(t *testing.T) {
 		}
 	})
 }
+
+func TestPegarPessoa(t *testing.T) {
+	nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
+
+	t.Run("OKAY", func(t *testing.T) {
+		pessoaCriada, err := logicaTeste.Pessoa.Criar(nome, cpf, dataDeNascimento, senha)
+		if err != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, err)
+		}
+
+		pessoaSalva, err := logicaTeste.Pessoa.Pegar(pessoaCriada.ID)
+		if err != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, err)
+		}
+
+		if !reflect.DeepEqual(pessoaCriada, pessoaSalva) {
+			t.Fatalf("Esperava: %v\nChegou: %v", pessoaCriada, pessoaSalva)
+		}
+	})
+
+	t.Run("PessoaNãoExiste", func(t *testing.T) {
+		_, err := logicaTeste.Pessoa.Pegar(entidades.NovoID())
+		if err == nil || !err.ÉPadrão(ErroPessoaNãoEncontrada) {
+			t.Fatalf("Esperava %v\nChegou: %v", ErroPessoaNãoEncontrada, err)
+		}
+	})
+
+	t.Run("BDInválido", func(t *testing.T) {
+		_, err := pessoaInválida.Pegar(entidades.NovoID())
+		if err == nil || !err.ÉPadrão(ErroPegarPessoa) {
+			t.Fatalf("Esperava %v\nChegou: %v", ErroPegarPessoa, err)
+		}
+	})
+}

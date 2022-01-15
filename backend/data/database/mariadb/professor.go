@@ -6,34 +6,37 @@ import (
 )
 
 // ProfessorBD representa a conexão com o banco de dados MariaDB para fazer
-// alterações na entidade ProfessorBD.
+// alterações na entidade Professor.
 type ProfessorBD struct {
 	Conexão
 }
 
-// Inserir é uma função que faz inserção de uma Professor no banco de dados MariaDB.
+// Inserir é uma método que adiciona uma entidade Professor no banco de
+// dados MariaDB.
 func (bd ProfessorBD) Inserir(*entidades.Professor) *erros.Aplicação {
 	bd.Log.Informação("Inserindo Professor")
 
 	return nil
 }
 
-// Atualizar é uma função que faz a atualização de Professor no banco de dados
-// MariaDB.
+// Atualizar é uma método que faz a atualização de uma entidade Professor no
+// banco de dados MariaDB.
 func (bd ProfessorBD) Atualizar(entidades.ID, *entidades.Professor) *erros.Aplicação {
 	bd.Log.Informação("Atualizando Professor")
 
 	return nil
 }
 
-// Pegar é uma função que retorna uma Professor do banco de dados MariaDB.
+// Pegar é uma método que retorna uma entidade Professor no banco de dados
+// MariaDB.
 func (bd ProfessorBD) Pegar(entidades.ID) (*entidades.Professor, *erros.Aplicação) {
 	bd.Log.Informação("Pegando Professor")
 
 	return nil, nil
 }
 
-// Deletar é uma função que remove uma Professor do banco de dados MariaDB.
+// Deletar é uma método que remove uma entidade Professor no banco de dados
+// MariaDB.
 func (bd ProfessorBD) Deletar(entidades.ID) *erros.Aplicação {
 	bd.Log.Informação("Deletando Professor")
 

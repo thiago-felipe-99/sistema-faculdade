@@ -13,12 +13,14 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
+// Conexão representa a conexão com o banco de dados MariaDB.
 type Conexão struct {
 	ID  entidades.ID
 	Log *logs.Log
 	BD  *sql.DB
 }
 
+// NovoBD cria um link com o banco de dados MariaDB.
 func NovoBD(dsn string) (*sql.DB, *erros.Aplicação) {
 	bd, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -28,6 +30,7 @@ func NovoBD(dsn string) (*sql.DB, *erros.Aplicação) {
 	return bd, nil
 }
 
+// NovaConexão cria uma conexão com o banco de dados MariaDB.
 func NovaConexão(log *logs.Log, bd *sql.DB) *Conexão {
 	return &Conexão{
 		ID:  entidades.NovoID(),

@@ -13,7 +13,7 @@ const (
 	pessoaNãoEncontrada
 	pegarPessoa
 	pegarPessoaCPF
-	DeletarPessoa
+	deletarPessoa
 	inserirCurso
 	atualizarCurso
 	cursoNãoEncontrado
@@ -64,7 +64,7 @@ var (
 	}
 	ErroDeletarPessoa = &erros.Padrão{
 		Mensagem: "Erro ao deletar a pessoa",
-		Código:   fmt.Sprintf("DATA-[%d]", DeletarPessoa),
+		Código:   fmt.Sprintf("DATA-[%d]", deletarPessoa),
 	}
 	ErroInserirCurso = &erros.Padrão{
 		Mensagem: "Erro ao inserir o curso",

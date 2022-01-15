@@ -9,13 +9,14 @@ import (
 )
 
 // PessoaBD representa a conexão com o banco de dados MariaDB para fazer
-// alterações na entidade PessoaBD.
+// alterações na entidade Pessoa.
 type PessoaBD struct {
 	Conexão
 	NomeDaTabela string
 }
 
-// Inserir é uma função que faz inserção de uma Pessoa no banco de dados MariaDB.
+// Inserir é uma método que faz adiciona uma entidade Pessoa no banco de dados
+// MariaDB.
 func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 	bd.Log.Informação("Inserindo Pessoa com o seguinte ID: " + pessoa.ID.String())
 
@@ -42,7 +43,8 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 	return nil
 }
 
-// Atualizar é uma função que faz a atualização de Pessoa no banco de dados MariaDB.
+// Atualizar é uma método que faz a atualização de uma entidade Pessoa no banco
+// de dados MariaDB.
 func (bd PessoaBD) Atualizar(id entidades.ID, pessoa *entidades.Pessoa) *erros.Aplicação {
 	bd.Log.Informação("Atualizando Pessoa com o seguinte ID: " + id.String())
 
@@ -70,7 +72,7 @@ func (bd PessoaBD) Atualizar(id entidades.ID, pessoa *entidades.Pessoa) *erros.A
 	return nil
 }
 
-// Pegar é uma função que retorna uma Pessoa do banco de dados MariaDB.
+// Pegar é uma método que retorna uma entidade Pessoa no banco de dados MariaDB.
 func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação) {
 	bd.Log.Informação("Pegando Pessoa com o seguinte ID: " + id.String())
 
@@ -110,6 +112,8 @@ func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação
 	return &pessoa, nil
 }
 
+// PegarPorCPF é uma método que retorna uma entidade Pessoa no banco de dados
+// MariaDB.
 func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Aplicação) {
 	bd.Log.Informação("Pegando Pessoa com o seguinte CPF: " + cpf)
 
@@ -150,7 +154,8 @@ func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Apl
 
 }
 
-// Deletar é uma função que remove uma Pessoa do banco de dados MariaDB.
+// Deletar é uma método que remove uma entidade Pessoa no banco de dados
+// MariaDB.
 func (bd PessoaBD) Deletar(id entidades.ID) *erros.Aplicação {
 	bd.Log.Informação("Deletando Pessoa com o seguinte ID: " + id.String())
 

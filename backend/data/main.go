@@ -90,6 +90,7 @@ type Data struct {
 	Turma
 }
 
+// DataPadrão cria um Data que pode ser utilizado na aplicação.
 func DataPadrão(log *logs.Entidades, bdSQL *sql.DB) *Data {
 	MariaDBPessoa := mariadb.PessoaBD{
 		Conexão:      *mariadb.NovaConexão(log.Pessoa, bdSQL),

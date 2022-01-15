@@ -85,3 +85,28 @@ func Bytes(n uint32) []byte {
 
 	return b
 }
+
+// Senha retorna uma senha aleatória válida na aplicação.
+func Senha() string {
+	senha := ""
+
+	letrasMinúsculas := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũç") //nolint:lll
+	letrasMaiúsculas := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ") //nolint:lll
+	tamanhoLetras := uint(len(letrasMaiúsculas))
+
+	for índice := 0; índice < 4; índice++ {
+		senha += string(letrasMaiúsculas[Número(tamanhoLetras)])
+		senha += string(letrasMinúsculas[Número(tamanhoLetras)])
+	}
+
+	caractersEspeciais := []rune("@#$%^&-+=()")
+
+	senha += fmt.Sprintf(
+		"%s%d%c",
+		senha,
+		Número(tamanhoLetras),
+		caractersEspeciais[Número(uint(len(caractersEspeciais)))],
+	)
+
+	return senha
+}

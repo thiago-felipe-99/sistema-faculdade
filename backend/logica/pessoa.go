@@ -104,7 +104,7 @@ func (lógica *Pessoa) VerificarSenha(
 
 	gerenciadorSenha := entidades.GerenciadorSenhaPadrão()
 
-	return gerenciadorSenha.ÉIgual(senha, pessoa.Senha), nil
+	return gerenciadorSenha.ÉIgual(senha, pessoa.Senha)
 }
 
 func (lógica *Pessoa) Atualizar(

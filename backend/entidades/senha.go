@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"regexp"
 	"strings"
 
 	"golang.org/x/crypto/argon2"
@@ -53,56 +54,64 @@ func (senha *Senha) ÉIgual(
 	senhaPlana string,
 	hashOriginal Hash,
 ) (bool, *erros.Aplicação) {
-	log.Printf("Hash AES b64: %s", hashOriginal)
-
 	hashAES, err := base64Decodificar(hashOriginal)
 	if err != nil {
 		return false, erros.Novo(ErroVerificarSenhaHash, err, nil)
 	}
-
-	log.Printf("Hash AES: %x", hashAES)
 
 	hashArgon2id, err := desencriptarAES(hashAES, senha.chave, senha.nonceSize)
 	if err != nil {
 		return false, erros.Novo(ErroVerificarSenhaHash, err, nil)
 	}
 
-	log.Printf("Hash Argon2id b64: %s", hashArgon2id)
-
 	hashSHA512 := gerarHashSHA3_512([]byte(senhaPlana))
-
-	log.Printf("Hash SHA3-512: %x", hashSHA512)
 
 	return verificarSenhaHashArgon2id(string(hashSHA512), string(hashArgon2id))
 }
 
 // ÉVálida verifica se a senha cumpri os requisitos de uma senha forte.
 func (senha *Senha) ÉVálida(senhaPlana string) bool {
-	return true
+	tamanho := len(senhaPlana)
+	if tamanho < 8 || tamanho > 255 {
+		return false
+	}
+
+	números := regexp.MustCompile(`[0-9]`)
+	if !números.MatchString(senhaPlana) {
+		return false
+	}
+
+	letrasMinúsculas := regexp.MustCompile(`[a-z]`)
+	if !letrasMinúsculas.MatchString(senhaPlana) {
+		return false
+	}
+
+	letrasMaiúsculas := regexp.MustCompile(`[A-Z]`)
+	if !letrasMaiúsculas.MatchString(senhaPlana) {
+		return false
+	}
+
+	caractersEspeciasis := regexp.MustCompile(`[@#$%^&-+=()]`)
+	if !caractersEspeciasis.MatchString(senhaPlana) {
+		return false
+	}
+
+	espaço := regexp.MustCompile(` `)
+
+	return !espaço.MatchString(senhaPlana)
 }
 
 // GerarHash retorna a senhaPlana hasheada no algoritmo padrão.
 func (senha *Senha) GerarHash(senhaPlana string) Hash {
 	hashSHA512 := gerarHashSHA3_512([]byte(senhaPlana))
 
-	log.Printf("Hash SHA3-512: %x", hashSHA512)
-
 	hashArgon2id, saltArgon2id := gerarHashArgon2id(hashSHA512, senha.argon2)
-
-	log.Printf("Hash Argon2id: %x", hashArgon2id)
-	log.Printf("Sal Argon2id: %x", saltArgon2id)
 
 	hashB64 := base64CodificarArgon2id(hashArgon2id, saltArgon2id, senha.argon2)
 
-	log.Printf("Hash Argon2id b64: %s", hashB64)
-
 	hashAES := encriptarAES([]byte(hashB64), senha.chave, senha.nonceSize)
 
-	log.Printf("Hash AES: %x", hashAES)
-
 	hash := base64Codificar(hashAES)
-
-	log.Printf("Hash AES b64: %s", hash)
 
 	return hash
 }

@@ -1,4 +1,4 @@
-package logica_test
+package logica
 
 import (
 	"database/sql"
@@ -10,7 +10,6 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/database/mariadb"
 	"thiagofelipe.com.br/sistema-faculdade-backend/env"
-	. "thiagofelipe.com.br/sistema-faculdade-backend/logica"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
@@ -20,7 +19,9 @@ const (
 )
 
 //nolint:gochecknoglobals
-var logica *Lógica
+var logicaTeste *Lógica
+
+var pessoaInválida *Pessoa
 
 //nolint:gochecknoglobals
 var ambiente = env.PegandoVariáveisDeAmbiente()
@@ -54,10 +55,18 @@ func criarConexãoMariaDB() *sql.DB {
 func TestMain(m *testing.M) {
 	bd := criarConexãoMariaDB()
 	logData := logs.AbrirArquivos("./logs/data/")
+	logsFile := logs.NovoLogEntidades(logData, logs.NívelDebug)
 
-	Data := data.DataPadrão(logs.NovoLogEntidades(logData, logs.NívelDebug), bd)
+	Data := data.DataPadrão(logsFile, bd)
 
-	logica = NovaLógica(Data)
+	logicaTeste = NovaLógica(Data)
+
+	pessoaBDInválido := &mariadb.PessoaBD{
+		Conexão:      *mariadb.NovaConexão(logsFile.Pessoa, bd),
+		NomeDaTabela: "PessoaInválida",
+	}
+
+	pessoaInválida = &Pessoa{data: pessoaBDInválido}
 
 	código := m.Run()
 

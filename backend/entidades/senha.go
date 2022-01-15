@@ -81,17 +81,17 @@ func (senha *Senha) ÉVálida(senhaPlana string) bool {
 		return false
 	}
 
-	letrasMinúsculas := regexp.MustCompile(`[a-z]`)
+	letrasMinúsculas := regexp.MustCompile(`\p{Ll}`)
 	if !letrasMinúsculas.MatchString(senhaPlana) {
 		return false
 	}
 
-	letrasMaiúsculas := regexp.MustCompile(`[A-Z]`)
+	letrasMaiúsculas := regexp.MustCompile(`\p{Lu}`)
 	if !letrasMaiúsculas.MatchString(senhaPlana) {
 		return false
 	}
 
-	caractersEspeciasis := regexp.MustCompile(`[@#$%^&-+=()]`)
+	caractersEspeciasis := regexp.MustCompile(`[@#$%^&\-+=()]`)
 	if !caractersEspeciasis.MatchString(senhaPlana) {
 		return false
 	}

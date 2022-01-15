@@ -34,7 +34,7 @@ func adicionarPessoa(
 	dataDeNascimento time.Time,
 	senha string,
 	t *testing.T,
-) {
+) entidades.ID {
 	pessoaCriada, erro := logicaTeste.Pessoa.Criar(nome, cpf, dataDeNascimento, senha)
 	if erro != nil {
 		t.Fatalf("Erro ao criar a pessoa: %s", erro.Traçado())
@@ -56,6 +56,8 @@ func adicionarPessoa(
 	t.Cleanup(func() {
 		removerPessoa(pessoaCriada.ID, t)
 	})
+
+	return pessoaCriada.ID
 }
 
 func TestCriarPessoa(t *testing.T) {
@@ -142,14 +144,59 @@ func TestPegarPessoa(t *testing.T) {
 	t.Run("PessoaNãoExiste", func(t *testing.T) {
 		_, err := logicaTeste.Pessoa.Pegar(entidades.NovoID())
 		if err == nil || !err.ÉPadrão(ErroPessoaNãoEncontrada) {
-			t.Fatalf("Esperava %v\nChegou: %v", ErroPessoaNãoEncontrada, err)
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroPessoaNãoEncontrada, err)
 		}
 	})
 
 	t.Run("BDInválido", func(t *testing.T) {
 		_, err := pessoaInválida.Pegar(entidades.NovoID())
 		if err == nil || !err.ÉPadrão(ErroPegarPessoa) {
-			t.Fatalf("Esperava %v\nChegou: %v", ErroPegarPessoa, err)
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroPegarPessoa, err)
 		}
 	})
+}
+
+func TestVerificarSenha(t *testing.T) {
+	nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
+
+	t.Run("OKAY", func(t *testing.T) {
+		id := adicionarPessoa(nome, cpf, dataDeNascimento, senha, t)
+
+		igual, err := logicaTeste.Pessoa.VerificarSenha(senha, id)
+		if err != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, err)
+		}
+
+		if !igual {
+			t.Fatalf("Esperava: %t, chegou: %t", true, igual)
+		}
+	})
+
+	t.Run("PessoaNãoEncontrada", func(t *testing.T) {
+		_, err := logicaTeste.Pessoa.VerificarSenha(senha, entidades.NovoID())
+		if err == nil || !err.ÉPadrão(ErroPessoaNãoEncontrada) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroPessoaNãoEncontrada, err)
+		}
+	})
+
+	t.Run("BDInválido", func(t *testing.T) {
+		_, err := pessoaInválida.VerificarSenha(senha, entidades.NovoID())
+		if err == nil || !err.ÉPadrão(ErroVerificarSenha) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroVerificarSenha, err)
+		}
+	})
+
+	t.Run("SenhasDiferentes", func(t *testing.T) {
+		id := adicionarPessoa(nome, cpf, dataDeNascimento, senha, t)
+
+		igual, err := logicaTeste.Pessoa.VerificarSenha("senhaInválida", id)
+		if err != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, err)
+		}
+
+		if igual {
+			t.Fatalf("Esperava: %t, chegou: %t", true, igual)
+		}
+	})
+
 }

@@ -99,7 +99,7 @@ func (lógica *Pessoa) VerificarSenha(
 			return false, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 		}
 
-		return false, erros.Novo(ErroPegarPessoa, erro, nil)
+		return false, erros.Novo(ErroVerificarSenha, erro, nil)
 	}
 
 	gerenciadorSenha := entidades.GerenciadorSenhaPadrão()

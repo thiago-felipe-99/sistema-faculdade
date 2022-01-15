@@ -11,6 +11,7 @@ import (
 	"log"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/sha3"
@@ -71,7 +72,7 @@ func (senha *Senha) ÉIgual(
 
 // ÉVálida verifica se a senha cumpri os requisitos de uma senha forte.
 func (senha *Senha) ÉVálida(senhaPlana string) bool {
-	tamanho := len(senhaPlana)
+	tamanho := utf8.RuneCountInString(senhaPlana)
 	if tamanho < 8 || tamanho > 255 {
 		return false
 	}
@@ -193,9 +194,9 @@ func base64Decodificar(codificado string) ([]byte, *erros.Aplicação) {
 
 // base64CodificarArgon2id retorna o hash de um algoritmo argon2id codificado na
 // base64.
-func base64CodificarArgon2id(hash, sal []byte, config Argon2Config) Hash {
+func base64CodificarArgon2id(senha, sal []byte, config Argon2Config) Hash {
 	codificadoSal := base64Codificar(sal)
-	codiciadoHash := base64Codificar(hash)
+	codiciadoSenhaPlana := base64Codificar(senha)
 
 	codificado := fmt.Sprintf(
 		"$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s",
@@ -204,7 +205,7 @@ func base64CodificarArgon2id(hash, sal []byte, config Argon2Config) Hash {
 		config.iterations,
 		config.parallelism,
 		codificadoSal,
-		codiciadoHash,
+		codiciadoSenhaPlana,
 	)
 
 	return codificado
@@ -213,7 +214,7 @@ func base64CodificarArgon2id(hash, sal []byte, config Argon2Config) Hash {
 // base64DecodificarArgon2id retorna o hash, sal e as configurações usadas em um
 // hash codificado na base 64 e gerado através do Argon2id.
 func base64DecodificarArgon2id(hashB64 string) (
-	hash, sal []byte,
+	senha, sal []byte,
 	config *Argon2Config,
 	erro *erros.Aplicação,
 ) {
@@ -258,7 +259,7 @@ func base64DecodificarArgon2id(hashB64 string) (
 		return nil, nil, nil, erros.Novo(ErroDecodificarArgon2id, erro, nil)
 	}
 
-	hash, erro = base64Decodificar(valores[5])
+	senha, erro = base64Decodificar(valores[5])
 	if erro != nil {
 		return nil, nil, nil, erros.Novo(ErroDecodificarArgon2id, erro, nil)
 	}
@@ -268,10 +269,10 @@ func base64DecodificarArgon2id(hashB64 string) (
 		iterations:  iterations,
 		parallelism: parallelism,
 		saltLength:  uint32(len(sal)),
-		keyLength:   uint32(len(hash)),
+		keyLength:   uint32(len(senha)),
 	}
 
-	return hash, sal, config, nil
+	return senha, sal, config, nil
 }
 
 // encriptarAES encripta a senha pelo algoritmo AES atraves do Galois/Counter
@@ -279,18 +280,24 @@ func base64DecodificarArgon2id(hashB64 string) (
 func encriptarAES(senhaPlana, chave []byte, nonceSize uint) []byte {
 	cifraAES, err := aes.NewCipher(chave)
 	if err != nil {
-		log.Panicln(erros.ErroExterno(err))
+		erro := erros.ErroExterno(err)
+		log.Println(erro)
+		panic(erro)
 	}
 
 	gcm, err := cipher.NewGCMWithNonceSize(cifraAES, int(nonceSize))
 	if err != nil {
-		log.Panicln(erros.ErroExterno(err))
+		erro := erros.ErroExterno(err)
+		log.Println(erro)
+		panic(erro)
 	}
 
 	nonce := make([]byte, gcm.NonceSize())
 
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		log.Panicln(erros.ErroExterno(err))
+		erro := erros.ErroExterno(err)
+		log.Println(erro)
+		panic(erro)
 	}
 
 	return gcm.Seal(nonce, nonce, senhaPlana, nil)

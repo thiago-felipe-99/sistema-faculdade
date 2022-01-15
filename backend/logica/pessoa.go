@@ -12,10 +12,12 @@ import (
 	. "thiagofelipe.com.br/sistema-faculdade-backend/logica/erros"
 )
 
+// Pessoa representa operações que se possa fazer com a entidade Pessoa.
 type Pessoa struct {
 	data data.Pessoa
 }
 
+// ExisteCPF procura se já existe uma pessoa com esse CPF na aplicação.
 func (lógica *Pessoa) ExisteCPF(cpf entidades.CPF) (bool, *erros.Aplicação) {
 	_, erro := lógica.data.PegarPorCPF(cpf)
 	if erro != nil {
@@ -29,6 +31,7 @@ func (lógica *Pessoa) ExisteCPF(cpf entidades.CPF) (bool, *erros.Aplicação) {
 	return true, nil
 }
 
+// Criar adiciona uma pessoa na aplicação.
 func (lógica *Pessoa) Criar(
 	nome string,
 	cpf string,
@@ -76,6 +79,7 @@ func (lógica *Pessoa) Criar(
 	return pessoaNova, nil
 }
 
+// Pegar retorna uma pessoa já criada na aplicação.
 func (lógica *Pessoa) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação) {
 	pessoa, erro := lógica.data.Pegar(id)
 	if erro != nil {
@@ -89,6 +93,8 @@ func (lógica *Pessoa) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplica�
 	return pessoa, nil
 }
 
+// VerificarSenha verifica se a senha fornecida é igual a senha da Pessoa na
+// aplicação.
 func (lógica *Pessoa) VerificarSenha(
 	senha string,
 	id entidades.ID,
@@ -107,6 +113,7 @@ func (lógica *Pessoa) VerificarSenha(
 	return gerenciadorSenha.ÉIgual(senha, pessoa.Senha)
 }
 
+// Atualizar atualiza os dados de uma pessoa na aplicação.
 func (lógica *Pessoa) Atualizar(
 	id entidades.ID,
 	nome string,
@@ -166,6 +173,7 @@ func (lógica *Pessoa) Atualizar(
 	return pessoaNova, nil
 }
 
+// Deletar remove uma pessoa da aplicação.
 func (lógica *Pessoa) Deletar(id entidades.ID) *erros.Aplicação {
 	_, erro := lógica.data.Pegar(id)
 	if erro != nil {

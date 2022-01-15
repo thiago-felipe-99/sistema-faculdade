@@ -59,7 +59,7 @@ func TestPalavra(t *testing.T) {
 					t.Fatalf("\nEsperava: %v\nChegou  : %v", ErroTamanhoInválido, r)
 				}
 			} else {
-				t.Fatalf("Esperar ocorrer um Panic")
+				t.Fatalf("Esperava ocorrer um Panic")
 			}
 		}()
 

@@ -16,7 +16,7 @@ type Pessoa interface {
 	Inserir(*entidades.Pessoa) *erros.Aplicação
 	Atualizar(entidades.ID, *entidades.Pessoa) *erros.Aplicação
 	Pegar(entidades.ID) (*entidades.Pessoa, *erros.Aplicação)
-	PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Aplicação)
+	PegarPorCPF(entidades.CPF) (*entidades.Pessoa, *erros.Aplicação)
 	Deletar(entidades.ID) *erros.Aplicação
 }
 

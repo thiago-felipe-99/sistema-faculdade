@@ -14,17 +14,16 @@ import (
 )
 
 const (
-	//nolint:deadcode,varcheck,unused
 	tamanhoMáximoDaPalavra = 25
 )
 
-//nolint:gochecknoglobals
-var logicaTeste *Lógica
-
-var pessoaInválida *Pessoa
-
-//nolint:gochecknoglobals
-var ambiente = env.PegandoVariáveisDeAmbiente()
+var (
+	logicaTeste         *Lógica
+	pessoaBDInválido    *Pessoa
+	pessoaDataInvalida  *Pessoa
+	pessoaDataInvalida2 *Pessoa
+	ambiente            = env.PegandoVariáveisDeAmbiente()
+)
 
 func criarConexãoMariaDB() *sql.DB {
 	//nolint:exhaustivestruct
@@ -61,12 +60,20 @@ func TestMain(m *testing.M) {
 
 	logicaTeste = NovaLógica(Data)
 
-	pessoaBDInválido := &mariadb.PessoaBD{
+	dataPessoaInválido := &mariadb.PessoaBD{
 		Conexão:      *mariadb.NovaConexão(log.Pessoa, bd),
 		NomeDaTabela: "PessoaInválida",
 	}
 
-	pessoaInválida = &Pessoa{data: pessoaBDInválido}
+	pessoaBDInválido = &Pessoa{data: dataPessoaInválido}
+
+	pessoaDataInvalida = &Pessoa{
+		&dataPessoaInvalida{logicaTeste.Pessoa.data},
+	}
+
+	pessoaDataInvalida2 = &Pessoa{
+		&dataPessoaInvalida2{logicaTeste.Pessoa.data},
+	}
 
 	código := m.Run()
 

@@ -4,9 +4,10 @@ import (
 	"os"
 )
 
-const portaPadrãoBDAdministrativo = "9000"
-
-const portaPadrãoBDMatéria = "9001"
+const (
+	portaPadrãoBDAdministrativo = "9000"
+	portaPadrãoBDMatéria        = "9001"
+)
 
 type Portas struct {
 	BDAdministrativo string

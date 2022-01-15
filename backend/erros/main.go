@@ -10,11 +10,12 @@ type Aplicação struct {
 	Código      string
 }
 
+// Traçado retorna todos os erros que ocorreram.
 func (erro *Aplicação) Traçado() string {
 	mensagem := fmt.Sprintf("Erro Da Aplicação[%s]: %s", erro.Código, erro.Mensagem)
 
 	if erro.ErroExterno != nil {
-		mensagem += fmt.Sprintf("\n\tErro Externo: %s", erro.ErroExterno.Error())
+		mensagem += "\n\t" + ErroExterno(erro.ErroExterno)
 	}
 
 	if erro.ErroInicial != nil {
@@ -24,10 +25,12 @@ func (erro *Aplicação) Traçado() string {
 	return mensagem
 }
 
+// Error é um método para adequar a interface err da biblioteca padrão (stdlb).
 func (erro *Aplicação) Error() string {
 	return erro.Traçado()
 }
 
+// ÉPadrão verifica se um erro vem de um certo erro do tipo Padrão.
 func (erro *Aplicação) ÉPadrão(defaultError *Padrão) bool {
 	return erro.Código == defaultError.Código
 }
@@ -38,10 +41,12 @@ type Padrão struct {
 	Código   string
 }
 
+// Error é um método para adequar a interface err da biblioteca padrão (stdlb).
 func (erro *Padrão) Error() string {
 	return fmt.Sprintf("Erro[%s]: %s", erro.Código, erro.Mensagem)
 }
 
+// Novo criar um novo erro na aplicação.
 func Novo(err *Padrão, initial *Aplicação, system error) *Aplicação {
 	return &Aplicação{
 		Mensagem:    err.Mensagem,
@@ -51,6 +56,7 @@ func Novo(err *Padrão, initial *Aplicação, system error) *Aplicação {
 	}
 }
 
+// ErroExterno encapsula um erro externo a aplicação.
 func ErroExterno(erro error) string {
 	return fmt.Sprintf("Erro Externo: %s", erro.Error())
 }

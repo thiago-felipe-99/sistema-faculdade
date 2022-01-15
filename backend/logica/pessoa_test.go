@@ -56,6 +56,7 @@ func adicionarPessoa(
 	t.Cleanup(func() {
 		removerPessoa(pessoaCriada.ID, t)
 	})
+	t.Log(pessoaCriada.ID)
 
 	return pessoaCriada.ID
 }
@@ -70,8 +71,11 @@ func TestCriarPessoa(t *testing.T) {
 	})
 
 	t.Run("CPFInválido", func(t *testing.T) {
-		_, erro := logicaTeste.Pessoa.Criar(nome, "00000000001", dataDeNascimento, senha)
+		pessoa, erro := logicaTeste.Pessoa.Criar(nome, "00000000001", dataDeNascimento, senha)
 		if erro == nil || !erro.ÉPadrão(ErroCPFInválido) {
+			if pessoa != nil {
+				removerPessoa(pessoa.ID, t)
+			}
 			t.Fatalf("Queria: %v\nChegou: %v", ErroCPFInválido, erro)
 		}
 	})
@@ -126,14 +130,21 @@ func TestPegarPessoa(t *testing.T) {
 	nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
 
 	t.Run("OKAY", func(t *testing.T) {
-		pessoaCriada, err := logicaTeste.Pessoa.Criar(nome, cpf, dataDeNascimento, senha)
-		if err != nil {
-			t.Fatalf("Esperava: %v, chegou: %v", nil, err)
+		pessoaCriada, erro := logicaTeste.Pessoa.Criar(nome, cpf, dataDeNascimento, senha)
+
+		defer func(pessoaCriada *entidades.Pessoa, t *testing.T) {
+			if pessoaCriada != nil {
+				removerPessoa(pessoaCriada.ID, t)
+			}
+		}(pessoaCriada, t)
+
+		if erro != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, erro)
 		}
 
-		pessoaSalva, err := logicaTeste.Pessoa.Pegar(pessoaCriada.ID)
-		if err != nil {
-			t.Fatalf("Esperava: %v, chegou: %v", nil, err)
+		pessoaSalva, erro := logicaTeste.Pessoa.Pegar(pessoaCriada.ID)
+		if erro != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, erro)
 		}
 
 		if !reflect.DeepEqual(pessoaCriada, pessoaSalva) {
@@ -142,16 +153,16 @@ func TestPegarPessoa(t *testing.T) {
 	})
 
 	t.Run("PessoaNãoExiste", func(t *testing.T) {
-		_, err := logicaTeste.Pessoa.Pegar(entidades.NovoID())
-		if err == nil || !err.ÉPadrão(ErroPessoaNãoEncontrada) {
-			t.Fatalf("Esperava: %v\nChegou: %v", ErroPessoaNãoEncontrada, err)
+		_, erro := logicaTeste.Pessoa.Pegar(entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroPessoaNãoEncontrada) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroPessoaNãoEncontrada, erro)
 		}
 	})
 
 	t.Run("BDInválido", func(t *testing.T) {
-		_, err := pessoaInválida.Pegar(entidades.NovoID())
-		if err == nil || !err.ÉPadrão(ErroPegarPessoa) {
-			t.Fatalf("Esperava: %v\nChegou: %v", ErroPegarPessoa, err)
+		_, erro := pessoaInválida.Pegar(entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroPegarPessoa) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroPegarPessoa, erro)
 		}
 	})
 }
@@ -162,9 +173,9 @@ func TestVerificarSenha(t *testing.T) {
 	t.Run("OKAY", func(t *testing.T) {
 		id := adicionarPessoa(nome, cpf, dataDeNascimento, senha, t)
 
-		igual, err := logicaTeste.Pessoa.VerificarSenha(senha, id)
-		if err != nil {
-			t.Fatalf("Esperava: %v, chegou: %v", nil, err)
+		igual, erro := logicaTeste.Pessoa.VerificarSenha(senha, id)
+		if erro != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, erro)
 		}
 
 		if !igual {
@@ -173,25 +184,25 @@ func TestVerificarSenha(t *testing.T) {
 	})
 
 	t.Run("PessoaNãoEncontrada", func(t *testing.T) {
-		_, err := logicaTeste.Pessoa.VerificarSenha(senha, entidades.NovoID())
-		if err == nil || !err.ÉPadrão(ErroPessoaNãoEncontrada) {
-			t.Fatalf("Esperava: %v\nChegou: %v", ErroPessoaNãoEncontrada, err)
+		_, erro := logicaTeste.Pessoa.VerificarSenha(senha, entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroPessoaNãoEncontrada) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroPessoaNãoEncontrada, erro)
 		}
 	})
 
 	t.Run("BDInválido", func(t *testing.T) {
-		_, err := pessoaInválida.VerificarSenha(senha, entidades.NovoID())
-		if err == nil || !err.ÉPadrão(ErroVerificarSenha) {
-			t.Fatalf("Esperava: %v\nChegou: %v", ErroVerificarSenha, err)
+		_, erro := pessoaInválida.VerificarSenha(senha, entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroVerificarSenha) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroVerificarSenha, erro)
 		}
 	})
 
 	t.Run("SenhasDiferentes", func(t *testing.T) {
 		id := adicionarPessoa(nome, cpf, dataDeNascimento, senha, t)
 
-		igual, err := logicaTeste.Pessoa.VerificarSenha("senhaInválida", id)
-		if err != nil {
-			t.Fatalf("Esperava: %v, chegou: %v", nil, err)
+		igual, erro := logicaTeste.Pessoa.VerificarSenha("senhaInválida", id)
+		if erro != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, erro)
 		}
 
 		if igual {
@@ -199,4 +210,34 @@ func TestVerificarSenha(t *testing.T) {
 		}
 	})
 
+}
+
+func TestDeletar(t *testing.T) {
+	nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
+
+	t.Run("OKAY", func(t *testing.T) {
+		pessoa, erro := logicaTeste.Pessoa.Criar(nome, cpf, dataDeNascimento, senha)
+		if erro != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, erro)
+		}
+
+		erro = logicaTeste.Pessoa.Deletar(pessoa.ID)
+		if erro != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, erro)
+		}
+	})
+
+	t.Run("PessoaNãoEncontrada", func(t *testing.T) {
+		erro := logicaTeste.Pessoa.Deletar(entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroPessoaNãoEncontrada) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroPessoaNãoEncontrada, erro)
+		}
+	})
+
+	t.Run("BDInválido", func(t *testing.T) {
+		erro := pessoaInválida.Deletar(entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroDeletarPessoa) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroDeletarPessoa, erro)
+		}
+	})
 }

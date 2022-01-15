@@ -46,7 +46,6 @@ func Palavra(tamanho uint) string {
 	return string(s)
 }
 
-// nolint:gomnd
 // CPF cria um CPF aleatório.
 func CPF() string {
 	const maxCPF = 999999999 + 1
@@ -56,13 +55,13 @@ func CPF() string {
 	digito2 := 0
 
 	for índice, número := range CPFSemDigitos {
-		digito1 += int(número-'0') * (9 - índice%10)
-		digito2 += int(número-'0') * (9 - (índice+1)%10)
+		digito1 += int(número-'0') * (9 - índice%10)     //nolint: gomnd
+		digito2 += int(número-'0') * (9 - (índice+1)%10) //nolint: gomnd
 	}
 
-	digito1 = (digito1 % 11) % 10
-	digito2 += digito1 * 9
-	digito2 = (digito2 % 11) % 10
+	digito1 = (digito1 % 11) % 10 //nolint: gomnd
+	digito2 += digito1 * 9        //nolint: gomnd
+	digito2 = (digito2 % 11) % 10 //nolint: gomnd
 
 	cpf := ""
 	for índice := 8; índice >= 0; índice-- {

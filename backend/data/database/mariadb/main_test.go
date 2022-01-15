@@ -60,20 +60,11 @@ func criarConexão(m *testing.M) *sql.DB {
 func criandoConexõesComAsTabelas(m *testing.M, bd *sql.DB) {
 
 	arquivos := logs.AbrirArquivos("./logs/")
-	logPessoa, err := logs.NovoLog(arquivos.Pessoa, logs.NívelDebug)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	logPessoa := logs.NovoLog(arquivos.Pessoa, logs.NívelDebug)
 
-	logCurso, err := logs.NovoLog(arquivos.Curso, logs.NívelDebug)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	logCurso := logs.NovoLog(arquivos.Curso, logs.NívelDebug)
 
-	logAluno, err := logs.NovoLog(arquivos.Aluno, logs.NívelDebug)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	logAluno := logs.NovoLog(arquivos.Aluno, logs.NívelDebug)
 
 	pessoaBD = &PessoaBD{
 		Conexão:      *NovaConexão(logPessoa, bd),

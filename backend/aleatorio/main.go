@@ -36,10 +36,6 @@ func Palavra(tamanho uint) string {
 	letters := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũçABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ") //nolint:lll
 	lettersLen := len(letters)
 
-	if lettersLen <= 0 {
-		panic(ErroTamanhoInválido)
-	}
-
 	s := make([]rune, tamanho)
 	for i := range s {
 		s[i] = letters[Número(uint(lettersLen))]

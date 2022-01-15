@@ -212,6 +212,90 @@ func TestVerificarSenha(t *testing.T) {
 
 }
 
+func TestAtualizar(t *testing.T) {
+	nome1, cpf1, dataDeNascimento1, senha1 := criarPessoaAleatória()
+	nome2, cpf2, dataDeNascimento2, senha2 := criarPessoaAleatória()
+
+	t.Run("OKAY", func(t *testing.T) {
+		id := adicionarPessoa(nome1, cpf1, dataDeNascimento1, senha1, t)
+
+		pessoaAtualizada, erro := logicaTeste.Pessoa.Atualizar(
+			id,
+			nome2,
+			cpf2,
+			dataDeNascimento2,
+			senha2,
+		)
+		if erro != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, erro)
+		}
+
+		pessoaSalva, erro := logicaTeste.Pessoa.Pegar(id)
+		if erro != nil {
+			t.Fatalf("Esperava: %v, chegou: %v", nil, erro)
+		}
+
+		if !reflect.DeepEqual(pessoaAtualizada, pessoaSalva) {
+			t.Fatalf("Esperava: %v\nChegou: %v", pessoaAtualizada, pessoaSalva)
+		}
+
+	})
+
+	t.Run("PessoaNãoEncontrada", func(t *testing.T) {
+		_, erro := logicaTeste.Pessoa.Atualizar(entidades.NovoID(), nome1, cpf1, dataDeNascimento1, senha1)
+		if erro == nil || !erro.ÉPadrão(ErroPessoaNãoEncontrada) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroPessoaNãoEncontrada, erro)
+		}
+	})
+
+	t.Run("BDInválido", func(t *testing.T) {
+		_, erro := pessoaInválida.Atualizar(entidades.NovoID(), nome1, cpf1, dataDeNascimento1, senha1)
+		if erro == nil || !erro.ÉPadrão(ErroAtualizarPessoa) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroAtualizarPessoa, erro)
+		}
+	})
+
+	t.Run("CPFInválido", func(t *testing.T) {
+		id := adicionarPessoa(nome1, cpf1, dataDeNascimento1, senha1, t)
+
+		_, erro := logicaTeste.Pessoa.Atualizar(id, nome1, "00000000001", dataDeNascimento1, senha1)
+		if erro == nil || !erro.ÉPadrão(ErroCPFInválido) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroCPFInválido, erro)
+		}
+	})
+
+	t.Run("CPFJáExiste", func(t *testing.T) {
+		id := adicionarPessoa(nome1, cpf1, dataDeNascimento1, senha1, t)
+		adicionarPessoa(nome2, cpf2, dataDeNascimento2, senha2, t)
+
+		_, erro := logicaTeste.Pessoa.Atualizar(id, nome1, cpf2, dataDeNascimento1, senha1)
+		if erro == nil || !erro.ÉPadrão(ErroCPFExiste) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroCPFExiste, erro)
+		}
+	})
+
+	t.Run("DataDeNascimentoInválida", func(t *testing.T) {
+		id := adicionarPessoa(nome1, cpf1, dataDeNascimento1, senha1, t)
+
+		dataAtual := entidades.DataAtual().AddDate(1, 0, 0)
+
+		_, erro := logicaTeste.Pessoa.Atualizar(id, nome1, cpf1, dataAtual, senha1)
+		if erro == nil || !erro.ÉPadrão(ErroDataDeNascimentoInválido) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroDataDeNascimentoInválido, erro)
+		}
+	})
+
+	t.Run("DataDeNascimentoInválida", func(t *testing.T) {
+		id := adicionarPessoa(nome1, cpf1, dataDeNascimento1, senha1, t)
+
+		_, erro := logicaTeste.Pessoa.Atualizar(id, nome1, cpf1, dataDeNascimento1, "senha")
+		if erro == nil || !erro.ÉPadrão(ErroSenhaInválida) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroSenhaInválida, erro)
+		}
+	})
+
+}
+
 func TestDeletar(t *testing.T) {
 	nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
 

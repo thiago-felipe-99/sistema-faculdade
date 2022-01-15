@@ -54,15 +54,15 @@ func criarConexãoMariaDB() *sql.DB {
 
 func TestMain(m *testing.M) {
 	bd := criarConexãoMariaDB()
-	logData := logs.AbrirArquivos("./logs/data/")
-	logsFile := logs.NovoLogEntidades(logData, logs.NívelDebug)
+	logFiles := logs.AbrirArquivos("./logs/data/")
+	log := logs.NovoLogEntidades(logFiles, logs.NívelDebug)
 
-	Data := data.DataPadrão(logsFile, bd)
+	Data := data.DataPadrão(log, bd)
 
 	logicaTeste = NovaLógica(Data)
 
 	pessoaBDInválido := &mariadb.PessoaBD{
-		Conexão:      *mariadb.NovaConexão(logsFile.Pessoa, bd),
+		Conexão:      *mariadb.NovaConexão(log.Pessoa, bd),
 		NomeDaTabela: "PessoaInválida",
 	}
 

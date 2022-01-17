@@ -3,8 +3,8 @@ package data
 import (
 	"database/sql"
 
-	"thiagofelipe.com.br/sistema-faculdade-backend/data/database/mariadb"
-	"thiagofelipe.com.br/sistema-faculdade-backend/data/database/mongodb"
+	"thiagofelipe.com.br/sistema-faculdade-backend/data/mariadb"
+	"thiagofelipe.com.br/sistema-faculdade-backend/data/mongodb"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"

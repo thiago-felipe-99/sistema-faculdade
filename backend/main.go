@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
-	"thiagofelipe.com.br/sistema-faculdade-backend/data/database/mariadb"
+	"thiagofelipe.com.br/sistema-faculdade-backend/data/mariadb"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logica"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )

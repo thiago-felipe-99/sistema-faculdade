@@ -210,5 +210,5 @@ func TestAbrirArquivos(t *testing.T) {
 }
 
 func TestNovoLogEntidades(t *testing.T) {
-	NovoLogEntidades(AbrirArquivos("./logs"), NívelDebug)
+	NovoLogEntidades(AbrirArquivos("./logs/"), NívelDebug)
 }

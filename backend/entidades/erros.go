@@ -1,4 +1,4 @@
-package erros
+package entidades
 
 import "thiagofelipe.com.br/sistema-faculdade-backend/erros"
 
@@ -8,7 +8,7 @@ const (
 	decodificarArgon2id
 	decodificarArgon2idVersão
 	verificarSenhaHash
-	desencriptarAES
+	desencriptarAESErroNo
 	desencriptarAESNonceSize
 )
 
@@ -37,7 +37,7 @@ var (
 	)
 	ErroDesencriptarAES = criarErroPadrão(
 		"Erro ao tentar desencriptar a senha com o algoritmo AES",
-		desencriptarAES,
+		desencriptarAESErroNo,
 	)
 	ErroDesencriptarAESNonceSize = criarErroPadrão(
 		"A senha cifrada é menor que o nonce",

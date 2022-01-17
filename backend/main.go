@@ -11,6 +11,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mariadb"
+	dataPadrão "thiagofelipe.com.br/sistema-faculdade-backend/data/padrao"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logica"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
@@ -37,7 +38,7 @@ func newData() *data.Data {
 		log.Panicln(err.Mensagem)
 	}
 
-	return data.DataPadrão(logs.NovoLogEntidades(logFiles, logs.NívelDebug), bd)
+	return dataPadrão.DataPadrão(logs.NovoLogEntidades(logFiles, logs.NívelDebug), bd)
 }
 
 func prettyStruct(s ...interface{}) string {

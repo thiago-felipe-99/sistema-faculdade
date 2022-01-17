@@ -4,12 +4,8 @@ import (
 	"time"
 
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
-	dataErros "thiagofelipe.com.br/sistema-faculdade-backend/data/erros"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
-
-	//nolint:revive,stylecheck
-	. "thiagofelipe.com.br/sistema-faculdade-backend/logica/erros"
 )
 
 // Pessoa representa operações que se possa fazer com a entidade Pessoa.
@@ -21,7 +17,7 @@ type Pessoa struct {
 func (lógica *Pessoa) ExisteCPF(cpf entidades.CPF) (bool, *erros.Aplicação) {
 	_, erro := lógica.data.PegarPorCPF(cpf)
 	if erro != nil {
-		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
 			return false, nil
 		}
 
@@ -83,7 +79,7 @@ func (lógica *Pessoa) Criar(
 func (lógica *Pessoa) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação) {
 	pessoa, erro := lógica.data.Pegar(id)
 	if erro != nil {
-		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
 			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 		}
 
@@ -101,7 +97,7 @@ func (lógica *Pessoa) VerificarSenha(
 ) (bool, *erros.Aplicação) {
 	pessoa, erro := lógica.data.Pegar(id)
 	if erro != nil {
-		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
 			return false, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 		}
 
@@ -123,7 +119,7 @@ func (lógica *Pessoa) Atualizar(
 ) (*entidades.Pessoa, *erros.Aplicação) {
 	pessoa, erro := lógica.data.Pegar(id)
 	if erro != nil {
-		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
 			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 		}
 
@@ -177,7 +173,7 @@ func (lógica *Pessoa) Atualizar(
 func (lógica *Pessoa) Deletar(id entidades.ID) *erros.Aplicação {
 	_, erro := lógica.data.Pegar(id)
 	if erro != nil {
-		if erro.ÉPadrão(dataErros.ErroPessoaNãoEncontrada) {
+		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
 			return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 		}
 

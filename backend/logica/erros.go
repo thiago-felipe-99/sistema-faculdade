@@ -1,4 +1,4 @@
-package erros
+package logica
 
 import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"

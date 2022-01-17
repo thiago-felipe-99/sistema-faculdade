@@ -17,8 +17,6 @@ import (
 	"golang.org/x/crypto/sha3"
 	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
 
-	//nolint: revive, stylecheck
-	. "thiagofelipe.com.br/sistema-faculdade-backend/entidades/erros"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 

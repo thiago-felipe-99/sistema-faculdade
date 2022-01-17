@@ -3,7 +3,7 @@ package mariadb
 import (
 	"database/sql"
 
-	. "thiagofelipe.com.br/sistema-faculdade-backend/data/erros"
+	. "thiagofelipe.com.br/sistema-faculdade-backend/data"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )

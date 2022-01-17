@@ -7,9 +7,6 @@ import (
 
 	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
-
-	//nolint:revive, stylecheck
-	. "thiagofelipe.com.br/sistema-faculdade-backend/logica/erros"
 )
 
 func criarPessoaAleatória() (string, string, time.Time, string) {

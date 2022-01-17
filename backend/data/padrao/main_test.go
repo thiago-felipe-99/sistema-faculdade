@@ -1,29 +1,18 @@
-package logica
+package padrao
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
-	"os"
 	"testing"
 
 	"github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mariadb"
-	dataPadrão "thiagofelipe.com.br/sistema-faculdade-backend/data/padrao"
 	"thiagofelipe.com.br/sistema-faculdade-backend/env"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
-const (
-	tamanhoMáximoDaPalavra = 25
-)
-
-var (
-	logicaTeste         *Lógica
-	pessoaBDInválido    *Pessoa
-	pessoaDataInvalida  *Pessoa
-	pessoaDataInvalida2 *Pessoa
-	ambiente            = env.PegandoVariáveisDeAmbiente()
-)
+var ambiente = env.PegandoVariáveisDeAmbiente()
 
 func criarConexãoMariaDB() *sql.DB {
 	//nolint:exhaustivestruct
@@ -51,31 +40,29 @@ func criarConexãoMariaDB() *sql.DB {
 	return conexão
 }
 
-func TestMain(m *testing.M) {
+func TestDataPadrão(t *testing.T) {
 	bd := criarConexãoMariaDB()
-	logFiles := logs.AbrirArquivos("./logs/data/")
+	logFiles := logs.AbrirArquivos("./logs/")
 	log := logs.NovoLogEntidades(logFiles, logs.NívelDebug)
 
-	Data := dataPadrão.DataPadrão(log, bd)
+	data := DataPadrão(log, bd)
 
-	logicaTeste = NovaLógica(Data)
-
-	dataPessoaInválido := &mariadb.PessoaBD{
-		Conexão:      *mariadb.NovaConexão(log.Pessoa, bd),
-		NomeDaTabela: "PessoaInválida",
+	tipos := map[string]struct{ quer, recebou string }{
+		"Pessoa":         {"mariadb.PessoaBD", fmt.Sprintf("%T", data.Pessoa)},
+		"Curso":          {"mariadb.CursoBD", fmt.Sprintf("%T", data.Curso)},
+		"Aluno":          {"mariadb.AlunoBD", fmt.Sprintf("%T", data.Aluno)},
+		"Professor":      {"mariadb.ProfessorBD", fmt.Sprintf("%T", data.Professor)},
+		"Administrativo": {"mariadb.AdministrativoBD", fmt.Sprintf("%T", data.Administrativo)},
+		"Matéria":        {"mongodb.MatériaBD", fmt.Sprintf("%T", data.Matéria)},
+		"Turma":          {"mongodb.TurmaBD", fmt.Sprintf("%T", data.Turma)},
 	}
 
-	pessoaBDInválido = &Pessoa{data: dataPessoaInválido}
-
-	pessoaDataInvalida = &Pessoa{
-		&dataPessoaInvalida{logicaTeste.Pessoa.data},
+	for chave, valor := range tipos {
+		if valor.quer != valor.recebou {
+			t.Fatalf(
+				"A data da entidade %s quer: %s, porém recebeu: %s",
+				chave, valor.quer, valor.recebou,
+			)
+		}
 	}
-
-	pessoaDataInvalida2 = &Pessoa{
-		&dataPessoaInvalida2{logicaTeste.Pessoa.data},
-	}
-
-	código := m.Run()
-
-	os.Exit(código)
 }

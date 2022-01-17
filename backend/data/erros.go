@@ -1,4 +1,4 @@
-package erros
+package data
 
 import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"

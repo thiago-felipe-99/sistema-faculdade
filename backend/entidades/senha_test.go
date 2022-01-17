@@ -8,9 +8,7 @@ import (
 	"reflect"
 	"testing"
 
-	//nolint: revive, stylecheck
 	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
-	. "thiagofelipe.com.br/sistema-faculdade-backend/entidades/erros"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 

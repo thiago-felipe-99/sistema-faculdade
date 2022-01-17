@@ -7,7 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 
 	//nolint:revive,stylecheck
-	. "thiagofelipe.com.br/sistema-faculdade-backend/data/erros"
+	. "thiagofelipe.com.br/sistema-faculdade-backend/data"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"

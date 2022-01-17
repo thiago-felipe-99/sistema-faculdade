@@ -46,7 +46,7 @@ func TestAplicação(t *testing.T) {
 
 func TestPadrão(t *testing.T) {
 	erro := Padrão{"Mensagem", "Código"}
-	mensagem := "Erro[Código]: Mensagem"
+	mensagem := "Erro Código: Mensagem"
 
 	if erro.Error() != mensagem {
 		t.Fatalf("Esperava: %s\nChegou: %s", mensagem, erro.Error())
@@ -72,9 +72,19 @@ func TestNovo(t *testing.T) {
 
 func TestErroExterno(t *testing.T) {
 	erro := Padrão{"Mensagem", "Código"}
-	mensagem := "Erro Externo: Erro[Código]: Mensagem"
+	mensagem := "Erro Externo: Erro Código: Mensagem"
 
 	if ErroExterno(&erro) != mensagem {
+		t.Fatalf("Esperava: %s\nChegou: %s", mensagem, erro.Error())
+	}
+}
+
+func TestNovoPadrãoFunc(t *testing.T) {
+	padrão := NovoPadrãoFunc("PACOTE")
+	erro := padrão("Mensagem", 1)
+	mensagem := "Erro PACOTE-[1]: Mensagem"
+
+	if erro.Error() != mensagem {
 		t.Fatalf("Esperava: %s\nChegou: %s", mensagem, erro.Error())
 	}
 }

@@ -1,10 +1,6 @@
 package erros
 
-import (
-	"fmt"
-
-	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
-)
+import "thiagofelipe.com.br/sistema-faculdade-backend/erros"
 
 const (
 	decodificarBase64 = iota + 1
@@ -16,12 +12,7 @@ const (
 	desencriptarAESNonceSize
 )
 
-func criarErroPadrão(mensagem string, códigoNúmero int) *erros.Padrão {
-	return &erros.Padrão{
-		Mensagem: mensagem,
-		Código:   fmt.Sprintf("ENTIDADES-[%d]", códigoNúmero),
-	}
-}
+var criarErroPadrão = erros.NovoPadrãoFunc("ENTIDADES") //nolint: gochecknoglobals
 
 var (
 	ErroDecodificarBase64 = criarErroPadrão(

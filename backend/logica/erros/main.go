@@ -1,8 +1,6 @@
 package erros
 
 import (
-	"fmt"
-
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
@@ -20,12 +18,7 @@ const (
 	deletarPessoa
 )
 
-func criarErroPadrão(mensagem string, códigoNúmero int) *erros.Padrão {
-	return &erros.Padrão{
-		Mensagem: mensagem,
-		Código:   fmt.Sprintf("LÓGICA-[%d]", códigoNúmero),
-	}
-}
+var criarErroPadrão = erros.NovoPadrãoFunc("LÓGICA") //nolint:gochecknoglobals
 
 var (
 	ErroAoVerificarCPF = criarErroPadrão(

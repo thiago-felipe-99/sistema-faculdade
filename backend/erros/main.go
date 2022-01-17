@@ -1,6 +1,8 @@
 package erros
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Aplicação representa um erro na aplicação.
 type Aplicação struct {
@@ -10,7 +12,7 @@ type Aplicação struct {
 	Código      string
 }
 
-// Traçado retorna todos os erros que ocorreram.
+// Traçado retorna todos os erros que ocorreram na aplicação.
 func (erro *Aplicação) Traçado() string {
 	mensagem := fmt.Sprintf("Erro Da Aplicação[%s]: %s", erro.Código, erro.Mensagem)
 
@@ -43,7 +45,17 @@ type Padrão struct {
 
 // Error é um método para adequar a interface err da biblioteca padrão (stdlb).
 func (erro *Padrão) Error() string {
-	return fmt.Sprintf("Erro[%s]: %s", erro.Código, erro.Mensagem)
+	return fmt.Sprintf("Erro %s: %s", erro.Código, erro.Mensagem)
+}
+
+// NovoPadrãoFunc retorna uma função para criar erros padrões.
+func NovoPadrãoFunc(nomePacote string) func(mensagem string, código int) *Padrão {
+	return func(mensagem string, código int) *Padrão {
+		return &Padrão{
+			Mensagem: mensagem,
+			Código:   fmt.Sprintf("%s-[%d]", nomePacote, código),
+		}
+	}
 }
 
 // Novo criar um novo erro na aplicação.

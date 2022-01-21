@@ -24,7 +24,7 @@ func TestParseCPF(t *testing.T) {
 		{"123456789090..-", false, "00000000000"},
 	}
 	for _, teste := range testes {
-		nomeTeste := fmt.Sprintf("%s", teste.cpf)
+		nomeTeste := teste.cpf
 		t.Run(nomeTeste, func(t *testing.T) {
 			cpf, válido := parseCPF(teste.cpf)
 			if válido != teste.válido {
@@ -58,7 +58,7 @@ func TestVerificarDígitosCPF(t *testing.T) {
 	}
 
 	for _, teste := range testes {
-		nomeTeste := fmt.Sprintf("%s", teste.cpf)
+		nomeTeste := teste.cpf
 		t.Run(nomeTeste, func(t *testing.T) {
 			válido := verificarDígitoCPF(teste.cpf)
 			if válido != teste.válido {
@@ -90,7 +90,7 @@ func TestValidarCPF(t *testing.T) {
 		{"123456789090..-", false, "00000000000"},
 	}
 	for _, teste := range testes {
-		nomeTeste := fmt.Sprintf("%s", teste.cpf)
+		nomeTeste := teste.cpf
 		t.Run(nomeTeste, func(t *testing.T) {
 			cpf, válido := ValidarCPF(teste.cpf)
 			if válido != teste.válido {
@@ -106,7 +106,7 @@ func TestValidarCPF(t *testing.T) {
 func TestNovoID(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		id := NovoID()
-		nomeTeste := fmt.Sprintf("%s", id.String())
+		nomeTeste := id.String()
 		t.Run(nomeTeste, func(t *testing.T) {
 			if _, err := uuid.Parse(id.String()); err != nil {
 				t.Errorf("Esperava %v, chegou %v", nil, err)

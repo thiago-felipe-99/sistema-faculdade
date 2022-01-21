@@ -58,6 +58,7 @@ func adicionarPessoa(
 }
 
 func TestCriarPessoa(t *testing.T) {
+	t.Parallel()
 
 	nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
 
@@ -126,10 +127,11 @@ func TestCriarPessoa(t *testing.T) {
 			t.Fatalf("Esperava: %v\nChegou: %v", ErroCriarPessoa, erro)
 		}
 	})
-
 }
 
 func TestPegarPessoa(t *testing.T) {
+	t.Parallel()
+
 	nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
 
 	t.Run("OKAY", func(t *testing.T) {
@@ -171,6 +173,8 @@ func TestPegarPessoa(t *testing.T) {
 }
 
 func TestVerificarSenha(t *testing.T) {
+	t.Parallel()
+
 	nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
 
 	t.Run("OKAY", func(t *testing.T) {
@@ -212,10 +216,11 @@ func TestVerificarSenha(t *testing.T) {
 			t.Fatalf("Esperava: %t, chegou: %t", true, igual)
 		}
 	})
-
 }
 
 func TestAtualizar(t *testing.T) {
+	t.Parallel()
+
 	nome1, cpf1, dataDeNascimento1, senha1 := criarPessoaAleatória()
 	nome2, cpf2, dataDeNascimento2, senha2 := criarPessoaAleatória()
 
@@ -241,7 +246,6 @@ func TestAtualizar(t *testing.T) {
 		if !reflect.DeepEqual(pessoaAtualizada, pessoaSalva) {
 			t.Fatalf("Esperava: %v\nChegou: %v", pessoaAtualizada, pessoaSalva)
 		}
-
 	})
 
 	t.Run("PessoaNãoEncontrada", func(t *testing.T) {
@@ -317,6 +321,7 @@ func TestAtualizar(t *testing.T) {
 }
 
 func TestDeletar(t *testing.T) {
+	t.Parallel()
 	nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
 
 	t.Run("OKAY", func(t *testing.T) {

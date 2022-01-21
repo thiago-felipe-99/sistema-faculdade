@@ -6,7 +6,6 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
-//nolint:unused
 type dataPessoaInvalida struct {
 	data data.Pessoa
 }
@@ -40,7 +39,6 @@ func (p *dataPessoaInvalida) Deletar(entidades.ID) *erros.Aplicação {
 	return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 }
 
-//nolint:unused
 type dataPessoaInvalida2 struct {
 	data data.Pessoa
 }

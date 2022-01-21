@@ -9,13 +9,13 @@ import (
 )
 
 func criarTurmasAlunoAleatório(idAluno entidades.ID) *[]entidades.TurmaAluno {
-	turmas := make([]entidades.TurmaAluno, aleatorio.Número(MATÉRIAS_MÁXIMAS)+1)
+	turmas := make([]entidades.TurmaAluno, aleatorio.Número(matériasMáximas)+1)
 
 	for i := range turmas {
 		turmas[i] = entidades.TurmaAluno{
 			IDAluno: idAluno,
 			IDTurma: entidades.NovoID(),
-			Status:  aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Status:  aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		}
 	}
 
@@ -27,7 +27,7 @@ func criarAlunoAleatório(t *testing.T) *entidades.Aluno {
 	adicionarPessoa(pessoa, t)
 
 	curso := criarCursoAleatório()
-	adiconarCurso(curso, t)
+	adiconarCurso(t, curso)
 
 	id := entidades.NovoID()
 
@@ -41,16 +41,16 @@ func criarAlunoAleatório(t *testing.T) *entidades.Aluno {
 		ID:             id,
 		Pessoa:         pessoa.ID,
 		Curso:          curso.ID,
-		Matrícula:      aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_MATRÍCULA) + 1),
+		Matrícula:      aleatorio.Palavra(aleatorio.Número(tamanhoMáximoMatrícula) + 1),
 		DataDeIngresso: dataAgora,
 		DataDeSaída:    dataFutura,
-		Período:        aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
-		Status:         aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+		Período:        aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
+		Status:         aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		Turmas:         *criarTurmasAlunoAleatório(id),
 	}
 }
 
-func adicionarAluno(aluno *entidades.Aluno, t *testing.T) {
+func adicionarAluno(t *testing.T, aluno *entidades.Aluno) {
 	erro := alunoBD.Inserir(aluno)
 	if erro != nil {
 		t.Fatalf("Erro ao inserir o aluno no banco de dados: %s", erro.Error())
@@ -87,7 +87,7 @@ func removerAluno(id entidades.ID, t *testing.T) {
 }
 
 func TestInserirAluno(t *testing.T) {
-	alunoTest := criarAlunoAleatório(t)
+	alunoTeste := criarAlunoAleatório(t)
 
-	adicionarAluno(alunoTest, t)
+	adicionarAluno(t, alunoTeste)
 }

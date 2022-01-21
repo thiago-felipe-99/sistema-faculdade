@@ -11,16 +11,16 @@ import (
 )
 
 func criarMatériasCursoAleatórios(idCurso entidades.ID) *[]entidades.CursoMatéria {
-	matérias := make([]entidades.CursoMatéria, aleatorio.Número(MATÉRIAS_MÁXIMAS)+1)
+	matérias := make([]entidades.CursoMatéria, aleatorio.Número(matériasMáximas)+1)
 
 	for i := range matérias {
 		matérias[i] = entidades.CursoMatéria{
 			IDCurso:    idCurso,
 			IDMatéria:  entidades.NovoID(),
-			Status:     aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
-			Período:    aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
-			Tipo:       aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
-			Observação: aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+			Status:     aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
+			Período:    aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
+			Tipo:       aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
+			Observação: aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		}
 	}
 
@@ -38,62 +38,21 @@ func criarCursoAleatório() *entidades.Curso {
 
 	return &entidades.Curso{
 		ID:                id,
-		Nome:              aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+		Nome:              aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		DataDeInício:      dataAgora,
 		DataDeDesativação: dataFutura,
 		Matérias:          *criarMatériasCursoAleatórios(id),
 	}
 }
 
-func adiconarCursoMatérias(matérias *[]entidades.CursoMatéria, t *testing.T) {
-	erro := cursoBD.InserirMatérias(matérias)
-	if erro != nil {
-		t.Fatalf("Erro ao inserir as matérias do curso: %s", erro.Error())
-	}
-
-	chaves := make(map[entidades.ID]bool)
-	cursoIDs := []entidades.ID{}
-
-	// filtrando os IDS do curso
-	for _, matéria := range *matérias {
-		if _, valor := chaves[matéria.IDCurso]; !valor {
-			chaves[matéria.IDCurso] = true
-			cursoIDs = append(cursoIDs, matéria.IDCurso)
-		}
-	}
-
-	var matériasSalvas []entidades.CursoMatéria
-	for _, id := range cursoIDs {
-		matériaSalva, erro := cursoBD.PegarMatérias(id)
-		if erro != nil {
-			t.Fatalf("Erro ao pegar as matérias do curso: %s", erro.Error())
-		}
-		matériasSalvas = append(matériasSalvas, *matériaSalva...)
-	}
-
-	if !reflect.DeepEqual(&matérias, &matériasSalvas) {
-		t.Fatalf(
-			"Erro ao salvar a curso no banco de dados, queria %v, chegou %v",
-			matérias,
-			matériasSalvas,
-		)
-	}
-
-	t.Cleanup(func() {
-		for _, id := range cursoIDs {
-			removerCursoMatérias(id, t)
-		}
-	})
-}
-
-func removerCursoMatérias(idCurso entidades.ID, t *testing.T) {
+func removerCursoMatérias(t *testing.T, idCurso entidades.ID) {
 	erro := cursoBD.DeletarMatérias(idCurso)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar as matérias do: %v", erro.Error())
 	}
 }
 
-func adiconarCurso(curso *entidades.Curso, t *testing.T) {
+func adiconarCurso(t *testing.T, curso *entidades.Curso) {
 	erro := cursoBD.Inserir(curso)
 	if erro != nil {
 		t.Fatalf("Erro ao inserir o curso no banco de dados: %s", erro.Error())
@@ -113,11 +72,11 @@ func adiconarCurso(curso *entidades.Curso, t *testing.T) {
 	}
 
 	t.Cleanup(func() {
-		removerCurso(curso.ID, t)
+		removerCurso(t, curso.ID)
 	})
 }
 
-func removerCurso(id entidades.ID, t *testing.T) {
+func removerCurso(t *testing.T, id entidades.ID) {
 	erro := cursoBD.Deletar(id)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o curso teste: %v", erro.Error())
@@ -138,11 +97,8 @@ func TestInserirCursoMatérias_semTamanhoMínimo(t *testing.T) {
 }
 
 func TestInserirCursoMatérias_semCurso(t *testing.T) {
-	texto := `foreign key constraint fails`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatal("Erro ao compilar o regex")
-	}
+	const texto = `foreign key constraint fails`
+	padrão := regexp.MustCompile(texto)
 
 	var matérias []entidades.CursoMatéria
 
@@ -168,19 +124,16 @@ func TestInserirCursoMatérias_semCurso(t *testing.T) {
 func TestInserirCurso(t *testing.T) {
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 }
 
 func TestInserirCurso_duplicadoID(t *testing.T) {
-	texto := `Duplicate entry.*PRIMARY`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatal("Erro ao compilar o regex")
-	}
+	const texto = `Duplicate entry.*PRIMARY`
+	padrão := regexp.MustCompile(texto)
 
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 
 	erro := cursoBD.Inserir(cursoTeste)
 	if erro == nil || erro.ErroExterno == nil {
@@ -199,17 +152,17 @@ func TestInserirCurso_duplicadoID(t *testing.T) {
 func TestAtualizarCursoMáterias(t *testing.T) {
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 
 	for índice := range cursoTeste.Matérias {
 		cursoTeste.Matérias[índice].Observação =
-			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 		cursoTeste.Matérias[índice].Período =
-			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 		cursoTeste.Matérias[índice].Status =
-			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 		cursoTeste.Matérias[índice].Tipo =
-			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 	}
 
 	erro := cursoBD.AtualizarMatérias(&cursoTeste.Matérias)
@@ -232,28 +185,25 @@ func TestAtualizarCursoMáterias(t *testing.T) {
 }
 
 func TestAtualizarCursoMáterias_tabelaInválida(t *testing.T) {
-	texto := `Table .* doesn't exist`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatalf("Erro ao compilar o regex: %s", texto)
-	}
+	const texto = `Table .* doesn't exist`
+	padrão := regexp.MustCompile(texto)
 
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 
 	for índice := range cursoTeste.Matérias {
 		cursoTeste.Matérias[índice].Observação =
-			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 
 		cursoTeste.Matérias[índice].Período =
-			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 
 		cursoTeste.Matérias[índice].Status =
-			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 
 		cursoTeste.Matérias[índice].Tipo =
-			aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1)
+			aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 	}
 
 	erro := cursoBDInválido.AtualizarMatérias(&cursoTeste.Matérias)
@@ -273,7 +223,7 @@ func TestAtualizarCursoMáterias_tabelaInválida(t *testing.T) {
 func TestAtualizarCurso(t *testing.T) {
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 
 	dataAgora := entidades.DataAtual()
 	ano1 := int(aleatorio.Número(50))
@@ -309,15 +259,12 @@ func TestAtualizarCurso(t *testing.T) {
 }
 
 func TestAtualizarCurso_tabelaInválida(t *testing.T) {
-	texto := `Table .* doesn't exist`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatal("Erro ao compilar o regex")
-	}
+	const texto = `Table .* doesn't exist`
+	padrão := regexp.MustCompile(texto)
 
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 
 	erro := cursoBDInválido.Atualizar(cursoTeste.ID, cursoTeste)
 	if erro == nil || erro.ErroInicial == nil || erro.ErroInicial.ErroExterno == nil {
@@ -334,15 +281,12 @@ func TestAtualizarCurso_tabelaInválida(t *testing.T) {
 }
 
 func TestAtualizarCurso_tabelaInválida2(t *testing.T) {
-	texto := `Table .* doesn't exist`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatal("Erro ao compilar o regex")
-	}
+	const texto = `Table .* doesn't exist`
+	padrão := regexp.MustCompile(texto)
 
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 
 	erro := cursoBDInválido2.Atualizar(cursoTeste.ID, cursoTeste)
 	if erro == nil || erro.ErroExterno == nil {
@@ -361,7 +305,7 @@ func TestAtualizarCurso_tabelaInválida2(t *testing.T) {
 func TestPegarCursoMatérias(t *testing.T) {
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 
 	matériasSalvas, erro := cursoBD.PegarMatérias(cursoTeste.ID)
 	if erro != nil {
@@ -375,7 +319,6 @@ func TestPegarCursoMatérias(t *testing.T) {
 			matériasSalvas,
 		)
 	}
-
 }
 
 func TestPegarCursoMatérias_idInválido(t *testing.T) {
@@ -390,11 +333,8 @@ func TestPegarCursoMatérias_idInválido(t *testing.T) {
 }
 
 func TestPegarCurso_bdInválido(t *testing.T) {
-	texto := `Table .* doesn't exist`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatal("Erro ao compilar o regex")
-	}
+	const texto = `Table .* doesn't exist`
+	padrão := regexp.MustCompile(texto)
 
 	_, erro := cursoBDInválido.PegarMatérias(entidades.NovoID())
 	if erro == nil || erro.ErroExterno == nil {
@@ -413,7 +353,7 @@ func TestPegarCurso_bdInválido(t *testing.T) {
 func TestPegarCurso(t *testing.T) {
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 }
 
 func TestPegarCurso_idInválido(t *testing.T) {
@@ -432,11 +372,8 @@ func TestPegarCurso_idInválido(t *testing.T) {
 }
 
 func TestCurso_tabelaInválida(t *testing.T) {
-	texto := `Table .* doesn't exist`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatal("Erro ao compilar o regex")
-	}
+	const texto = `Table .* doesn't exist`
+	padrão := regexp.MustCompile(texto)
 
 	_, erro := cursoBDInválido.Pegar(entidades.NovoID())
 	if erro == nil || erro.ErroInicial == nil || erro.ErroInicial.ErroExterno == nil {
@@ -453,11 +390,8 @@ func TestCurso_tabelaInválida(t *testing.T) {
 }
 
 func TestCurso_tabelaInválida2(t *testing.T) {
-	texto := `Table .* doesn't exist`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatal("Erro ao compilar o regex")
-	}
+	const texto = `Table .* doesn't exist`
+	padrão := regexp.MustCompile(texto)
 
 	_, erro := cursoBDInválido2.Pegar(entidades.NovoID())
 	if erro == nil || erro.ErroExterno == nil {
@@ -476,9 +410,9 @@ func TestCurso_tabelaInválida2(t *testing.T) {
 func TestDeletarCurso(t *testing.T) {
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 
-	removerCurso(cursoTeste.ID, t)
+	removerCurso(t, cursoTeste.ID)
 
 	_, erro := cursoBD.Pegar(cursoTeste.ID)
 	if erro == nil || !erro.ÉPadrão(ErroCursoNãoEncontrado) {
@@ -492,7 +426,7 @@ func TestDeletarCurso(t *testing.T) {
 func TestDeletarCurso_invalídoID(t *testing.T) {
 	id := entidades.NovoID()
 
-	removerCurso(id, t)
+	removerCurso(t, id)
 
 	_, erro := cursoBD.Pegar(id)
 	if erro == nil || !erro.ÉPadrão(ErroCursoNãoEncontrado) {
@@ -504,11 +438,8 @@ func TestDeletarCurso_invalídoID(t *testing.T) {
 }
 
 func TestDeletarCurso_tabelaInválida(t *testing.T) {
-	texto := `Table .* doesn't exist`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatalf("Erro ao compilar o regex: %s", texto)
-	}
+	const texto = `Table .* doesn't exist`
+	padrão := regexp.MustCompile(texto)
 
 	erro := cursoBDInválido.Deletar(entidades.NovoID())
 
@@ -526,11 +457,8 @@ func TestDeletarCurso_tabelaInválida(t *testing.T) {
 }
 
 func TestDeletarCurso_tabelaInválida2(t *testing.T) {
-	texto := `Table .* doesn't exist`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatalf("Erro ao compilar o regex: %s", texto)
-	}
+	const texto = `Table .* doesn't exist`
+	padrão := regexp.MustCompile(texto)
 
 	erro := cursoBDInválido2.Deletar(entidades.NovoID())
 
@@ -550,9 +478,9 @@ func TestDeletarCurso_tabelaInválida2(t *testing.T) {
 func TestDeletarCursoMatérias(t *testing.T) {
 	cursoTeste := criarCursoAleatório()
 
-	adiconarCurso(cursoTeste, t)
+	adiconarCurso(t, cursoTeste)
 
-	removerCursoMatérias(cursoTeste.ID, t)
+	removerCursoMatérias(t, cursoTeste.ID)
 
 	matérias, erro := cursoBD.PegarMatérias(cursoTeste.ID)
 	if erro != nil || len(*matérias) != 0 {
@@ -566,7 +494,7 @@ func TestDeletarCursoMatérias(t *testing.T) {
 func TestDeletarCursoMatérias_invalídoID(t *testing.T) {
 	id := entidades.NovoID()
 
-	removerCursoMatérias(id, t)
+	removerCursoMatérias(t, id)
 
 	matérias, erro := cursoBD.PegarMatérias(id)
 	if erro != nil || len(*matérias) != 0 {
@@ -578,11 +506,8 @@ func TestDeletarCursoMatérias_invalídoID(t *testing.T) {
 }
 
 func TestDeletarCursoMatérias_tabelaInválida(t *testing.T) {
-	texto := `Table .* doesn't exist`
-	padrão, erroRegex := regexp.Compile(texto)
-	if erroRegex != nil {
-		t.Fatalf("Erro ao compilar o regex: %s", texto)
-	}
+	const texto = `Table .* doesn't exist`
+	padrão := regexp.MustCompile(texto)
 
 	erro := cursoBDInválido.DeletarMatérias(entidades.NovoID())
 

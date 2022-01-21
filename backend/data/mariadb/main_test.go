@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	MATÉRIAS_MÁXIMAS         = 20
-	TAMANHO_MÁXIMO_PALAVRA   = 25
-	TAMANHO_MÁXIMO_MATRÍCULA = 11
+	matériasMáximas        = 20
+	tamanhoMáximoPalavra   = 25
+	tamanhoMáximoMatrícula = 11
 )
 
 var (
@@ -31,8 +31,7 @@ var (
 
 var ambiente = env.PegandoVariáveisDeAmbiente()
 
-func criarConexão(m *testing.M) *sql.DB {
-
+func criarConexão() *sql.DB {
 	config := mysql.Config{
 		User:                 "Teste",
 		Passwd:               "Teste",
@@ -57,8 +56,7 @@ func criarConexão(m *testing.M) *sql.DB {
 	return conexão
 }
 
-func criandoConexõesComAsTabelas(m *testing.M, bd *sql.DB) {
-
+func criandoConexõesComAsTabelas(bd *sql.DB) {
 	arquivos := logs.AbrirArquivos("./logs/")
 	logPessoa := logs.NovoLog(arquivos.Pessoa, logs.NívelDebug)
 
@@ -111,11 +109,9 @@ func criandoConexõesComAsTabelas(m *testing.M, bd *sql.DB) {
 		NomeDaTabela:           "AlunoErrado",
 		NomeDaTabelaSecundária: "AlunoTurma",
 	}
-
 }
 
 func deletarTabelas(bd *sql.DB) {
-
 	query := ""
 
 	query += "DELETE FROM AlunoTurma;"
@@ -131,10 +127,9 @@ func deletarTabelas(bd *sql.DB) {
 }
 
 func TestMain(m *testing.M) {
+	bd := criarConexão()
 
-	bd := criarConexão(m)
-
-	criandoConexõesComAsTabelas(m, bd)
+	criandoConexõesComAsTabelas(bd)
 
 	código := m.Run()
 
@@ -146,8 +141,6 @@ func TestMain(m *testing.M) {
 // TestNovoBD verifica se a inicialização do banco de dados está okay.
 //nolint: paralleltest
 func TestNovoBD(t *testing.T) {
-	var ambiente = env.PegandoVariáveisDeAmbiente()
-
 	//nolint: exhaustivestruct
 	config := mysql.Config{
 		User:                 "Teste",
@@ -170,15 +163,13 @@ func TestNovoBD(t *testing.T) {
 }
 
 func TestNovoBD_EndereçoErrado(t *testing.T) {
-	padrão, erroRegex := regexp.Compile(`invalid DSN`)
-	if erroRegex != nil {
-		t.Fatal("Erro ao compilar o regex")
-	}
+	padrão := regexp.MustCompile(`invalid DSN`)
 
 	_, erro := NovoBD("endereço inválido")
 	if erro == nil {
 		t.Fatalf("Devia dar um erro na configuração")
 	}
+
 	if erro.ErroExterno == nil {
 		t.Fatalf("Devia da um erro externo")
 	}

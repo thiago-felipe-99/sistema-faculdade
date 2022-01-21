@@ -15,7 +15,7 @@ func criarPessoaAleatória() *entidades.Pessoa {
 
 	var pessoa = &entidades.Pessoa{
 		ID:               entidades.NovoID(),
-		Nome:             aleatorio.Palavra(aleatorio.Número(TAMANHO_MÁXIMO_PALAVRA) + 1),
+		Nome:             aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		CPF:              aleatorio.CPF(),
 		DataDeNascimento: dataAgora,
 		Senha:            "Senha",
@@ -25,7 +25,6 @@ func criarPessoaAleatória() *entidades.Pessoa {
 }
 
 func adicionarPessoa(pessoa *entidades.Pessoa, t *testing.T) {
-
 	erro := pessoaBD.Inserir(pessoa)
 	if erro != nil {
 		t.Fatalf("Erro ao inserir a pessoa no banco de dados: %s", erro.Error())
@@ -45,11 +44,11 @@ func adicionarPessoa(pessoa *entidades.Pessoa, t *testing.T) {
 	}
 
 	t.Cleanup(func() {
-		removerPessoa(pessoa.ID, t)
+		removerPessoa(t, pessoa.ID)
 	})
 }
 
-func removerPessoa(id entidades.ID, t *testing.T) {
+func removerPessoa(t *testing.T, id entidades.ID) {
 	erro := pessoaBD.Deletar(id)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o usuário teste: %v", erro.Error())
@@ -64,7 +63,7 @@ func TestInserirPessoa(t *testing.T) {
 	})
 
 	t.Run("Duplicado/ID", func(t *testing.T) {
-		texto := `Duplicate entry.*PRIMARY`
+		const texto = `Duplicate entry.*PRIMARY`
 		padrão := regexp.MustCompile(texto)
 
 		adicionarPessoa(pessoaTeste, t)
@@ -87,7 +86,7 @@ func TestInserirPessoa(t *testing.T) {
 	})
 
 	t.Run("Duplicado/CPF", func(t *testing.T) {
-		texto := `Duplicate entry.*CPF`
+		const texto = `Duplicate entry.*CPF`
 		padrão := regexp.MustCompile(texto)
 
 		adicionarPessoa(pessoaTeste, t)
@@ -140,7 +139,7 @@ func TestAtualizarPessoa(t *testing.T) {
 	})
 
 	t.Run("Duplicado/CPF", func(t *testing.T) {
-		texto := `Duplicate entry.*CPF`
+		const texto = `Duplicate entry.*CPF`
 		padrão := regexp.MustCompile(texto)
 
 		adicionarPessoa(pessoaTeste1, t)
@@ -159,7 +158,6 @@ func TestAtualizarPessoa(t *testing.T) {
 			)
 		}
 	})
-
 }
 
 func TestPegarPessoa(t *testing.T) {
@@ -199,7 +197,7 @@ func TestPegarPessoa(t *testing.T) {
 	})
 
 	t.Run("TabelaInválida", func(t *testing.T) {
-		texto := `Table .* doesn't exist`
+		const texto = `Table .* doesn't exist`
 		padrão := regexp.MustCompile(texto)
 
 		_, erro := pessoaBDInválido.Pegar(entidades.NovoID())
@@ -255,7 +253,7 @@ func TestPegarPessoaPorCPF(t *testing.T) {
 	})
 
 	t.Run("TabelaInválida", func(t *testing.T) {
-		texto := `Table .* doesn't exist`
+		const texto = `Table .* doesn't exist`
 		padrão := regexp.MustCompile(texto)
 
 		_, erro := pessoaBDInválido.PegarPorCPF(aleatorio.CPF())
@@ -280,7 +278,7 @@ func TestDeletarPessoa(t *testing.T) {
 	t.Run("OKAY", func(t *testing.T) {
 		adicionarPessoa(pessoaTeste, t)
 
-		removerPessoa(pessoaTeste.ID, t)
+		removerPessoa(t, pessoaTeste.ID)
 
 		_, erro := pessoaBD.Pegar(pessoaTeste.ID)
 		if erro == nil || !erro.ÉPadrão(ErroPessoaNãoEncontrada) {
@@ -292,7 +290,7 @@ func TestDeletarPessoa(t *testing.T) {
 	})
 
 	t.Run("PessoaNãoEncontrada", func(t *testing.T) {
-		removerPessoa(pessoaTeste.ID, t)
+		removerPessoa(t, pessoaTeste.ID)
 
 		_, erro := pessoaBD.Pegar(pessoaTeste.ID)
 		if erro == nil || !erro.ÉPadrão(ErroPessoaNãoEncontrada) {
@@ -304,7 +302,7 @@ func TestDeletarPessoa(t *testing.T) {
 	})
 
 	t.Run("TabelaInválida", func(t *testing.T) {
-		texto := `Table .* doesn't exist`
+		const texto = `Table .* doesn't exist`
 		padrão := regexp.MustCompile(texto)
 
 		erro := pessoaBDInválido.Deletar(pessoaTeste.ID)

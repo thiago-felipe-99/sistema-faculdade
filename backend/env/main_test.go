@@ -7,7 +7,11 @@ import (
 )
 
 func TestPegandoVariáveisDeAmbiente(t *testing.T) {
+	t.Parallel()
+
 	t.Run("SemVariáveisDeAmbiente", func(t *testing.T) {
+		t.Parallel()
+
 		esperado := VariáveisDeAmbiente{
 			Portas: Portas{
 				BDAdministrativo: portaPadrãoBDAdministrativo,
@@ -23,6 +27,8 @@ func TestPegandoVariáveisDeAmbiente(t *testing.T) {
 	})
 
 	t.Run("ComVariáveisDeAmbiente", func(t *testing.T) {
+		t.Parallel()
+
 		esperado := VariáveisDeAmbiente{
 			Portas: Portas{
 				BDAdministrativo: portaPadrãoBDAdministrativo + "0",

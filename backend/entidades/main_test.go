@@ -10,7 +10,9 @@ import (
 )
 
 func TestParseCPF(t *testing.T) {
-	var testes = []struct {
+	t.Parallel()
+
+	testes := []struct {
 		cpf      string
 		válido   bool
 		cpfParse string
@@ -24,8 +26,10 @@ func TestParseCPF(t *testing.T) {
 		{"123456789090..-", false, "00000000000"},
 	}
 	for _, teste := range testes {
-		nomeTeste := teste.cpf
-		t.Run(nomeTeste, func(t *testing.T) {
+		teste := teste
+		t.Run(teste.cpf, func(t *testing.T) {
+			t.Parallel()
+
 			cpf, válido := parseCPF(teste.cpf)
 			if válido != teste.válido {
 				t.Errorf("Queria %t, chegou %t", teste.válido, válido)
@@ -38,7 +42,9 @@ func TestParseCPF(t *testing.T) {
 }
 
 func TestVerificarDígitosCPF(t *testing.T) {
-	var testes = []struct {
+	t.Parallel()
+
+	testes := []struct {
 		cpf    string
 		válido bool
 	}{
@@ -58,8 +64,10 @@ func TestVerificarDígitosCPF(t *testing.T) {
 	}
 
 	for _, teste := range testes {
-		nomeTeste := teste.cpf
-		t.Run(nomeTeste, func(t *testing.T) {
+		teste := teste
+		t.Run(teste.cpf, func(t *testing.T) {
+			t.Parallel()
+
 			válido := verificarDígitoCPF(teste.cpf)
 			if válido != teste.válido {
 				t.Errorf("Queria %t, chegou %t", teste.válido, válido)
@@ -69,7 +77,9 @@ func TestVerificarDígitosCPF(t *testing.T) {
 }
 
 func TestValidarCPF(t *testing.T) {
-	var testes = []struct {
+	t.Parallel()
+
+	testes := []struct {
 		cpf      string
 		válido   bool
 		cpfParse string
@@ -89,9 +99,12 @@ func TestValidarCPF(t *testing.T) {
 		{"0123.456.789-09", false, "00000000000"},
 		{"123456789090..-", false, "00000000000"},
 	}
+
 	for _, teste := range testes {
-		nomeTeste := teste.cpf
-		t.Run(nomeTeste, func(t *testing.T) {
+		teste := teste
+		t.Run(teste.cpf, func(t *testing.T) {
+			t.Parallel()
+
 			cpf, válido := ValidarCPF(teste.cpf)
 			if válido != teste.válido {
 				t.Errorf("Queria %t, chegou %t", teste.válido, válido)
@@ -104,10 +117,14 @@ func TestValidarCPF(t *testing.T) {
 }
 
 func TestNovoID(t *testing.T) {
+	t.Parallel()
+
 	for i := 0; i < 100; i++ {
 		id := NovoID()
 		nomeTeste := id.String()
 		t.Run(nomeTeste, func(t *testing.T) {
+			t.Parallel()
+
 			if _, err := uuid.Parse(id.String()); err != nil {
 				t.Errorf("Esperava %v, chegou %v", nil, err)
 			}
@@ -116,6 +133,8 @@ func TestNovoID(t *testing.T) {
 }
 
 func TestDataAtual(t *testing.T) {
+	t.Parallel()
+
 	dataAtual := DataAtual().String()
 	dataNow := time.Now().UTC()
 	ano := dataNow.UTC().Year()
@@ -129,20 +148,24 @@ func TestDataAtual(t *testing.T) {
 }
 
 func TestRemoverHorário(t *testing.T) {
-	var testes = []struct {
+	t.Parallel()
+
+	testes := []struct {
 		ano, mes, dia int
+		nome          string
 	}{
-		{2000, 4, 7},
-		{2030, 11, 30},
-		{2040, 12, 31},
-		{1900, 1, 1},
-		{1900, 6, 20},
-		{980, 12, 4},
+		{2000, 4, 7, "2000-4-7"},
+		{2030, 11, 30, "2030-11-30"},
+		{2040, 12, 31, "2040-12-3"},
+		{1900, 1, 1, "1900-1-1"},
+		{1900, 6, 20, "1900-6-20"},
+		{980, 12, 4, "980-12-7"},
 	}
 
 	for _, teste := range testes {
-		nomeTeste := fmt.Sprintf("%d-%d-%d", teste.ano, teste.mes, teste.dia)
-		t.Run(nomeTeste, func(t *testing.T) {
+		teste := teste
+		t.Run(teste.nome, func(t *testing.T) {
+			t.Parallel()
 
 			horas := aleatorio.Número(24)
 			minutos := aleatorio.Número(24)
@@ -151,7 +174,13 @@ func TestRemoverHorário(t *testing.T) {
 			data := time.Date(teste.ano, time.Month(teste.mes), teste.dia,
 				int(horas), int(minutos), int(segundos), int(milesimos), time.Local)
 
-			horárioEsperado := time.Date(teste.ano, time.Month(teste.mes), teste.dia, 0, 0, 0, 0, time.UTC)
+			horárioEsperado := time.Date(
+				teste.ano,
+				time.Month(teste.mes),
+				teste.dia,
+				0, 0, 0, 0,
+				time.UTC,
+			)
 
 			horárioRemovido := RemoverHorário(data)
 

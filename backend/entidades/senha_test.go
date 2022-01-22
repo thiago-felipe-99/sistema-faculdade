@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/aes"
 	"encoding/base64"
-	"errors"
 	"reflect"
 	"testing"
 
@@ -12,12 +11,17 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
+//nolint: funlen
 func TestVerificarSenha(t *testing.T) {
+	t.Parallel()
+
 	gerenciadorSenha := GerenciadorSenhaPadrão()
 	senhaPlana := aleatorio.Senha()
 	hash := gerenciadorSenha.GerarHash(senhaPlana)
 
 	t.Run("SemErro", func(t *testing.T) {
+		t.Parallel()
+
 		testes := []struct {
 			senha string
 			igual bool
@@ -30,7 +34,10 @@ func TestVerificarSenha(t *testing.T) {
 		}
 
 		for _, teste := range testes {
+			teste := teste
 			t.Run(teste.senha, func(t *testing.T) {
+				t.Parallel()
+
 				igual, erro := gerenciadorSenha.ÉIgual(teste.senha, hash)
 				if erro != nil {
 					t.Fatalf("Erro inesperado aconteceu: %v", erro)
@@ -44,10 +51,14 @@ func TestVerificarSenha(t *testing.T) {
 	})
 
 	t.Run("ComErro", func(t *testing.T) {
+		t.Parallel()
+
 		t.Run("Base64Inválida", func(t *testing.T) {
+			t.Parallel()
+
 			_, erro := gerenciadorSenha.ÉIgual(senhaPlana, "ÇçÇçÇçÇçÇçÇç")
 
-			var erroExterno base64.CorruptInputError = 0
+			var erroExterno base64.CorruptInputError
 			erroEsperadoInicial := erros.Novo(ErroDecodificarBase64, nil, erroExterno)
 			erroEsperado := erros.Novo(ErroVerificarSenhaHash, erroEsperadoInicial, nil)
 
@@ -57,6 +68,8 @@ func TestVerificarSenha(t *testing.T) {
 		})
 
 		t.Run("HashTamanhoInválido", func(t *testing.T) {
+			t.Parallel()
+
 			_, erro := gerenciadorSenha.ÉIgual(senhaPlana, "aAaA")
 
 			erroEsperadoInicial := erros.Novo(ErroDesencriptarAESNonceSize, nil, nil)
@@ -69,6 +82,8 @@ func TestVerificarSenha(t *testing.T) {
 	})
 
 	t.Run("Argon2idErro", func(t *testing.T) {
+		t.Parallel()
+
 		erroInicial := erros.Novo(ErroDecodificarHashInválido, nil, nil)
 		erroEsperado := erros.Novo(ErroVerificarSenhaHash, erroInicial, nil)
 
@@ -77,14 +92,17 @@ func TestVerificarSenha(t *testing.T) {
 			t.Fatalf("Esperava: %v\nChegou: %v", erroEsperado, erro)
 		}
 	})
-
 }
 
 func TestEncriptarAES(t *testing.T) {
+	t.Parallel()
+
 	senha := []byte("senha")
 	chave := []byte("1616161616161616")
 
 	t.Run("ChaveInválida", func(t *testing.T) {
+		t.Parallel()
+
 		defer func() {
 			r := recover()
 			var erroEsperado aes.KeySizeError = 1
@@ -97,9 +115,12 @@ func TestEncriptarAES(t *testing.T) {
 	})
 
 	t.Run("NonceSizeInválido", func(t *testing.T) {
+		t.Parallel()
+
 		defer func() {
 			r := recover()
-			var erroEsperado = "Erro Externo: cipher: the nonce can't have zero length, or the security of the key will be immediately compromised"
+			erroEsperado := "Erro Externo: cipher: the nonce can't have zero length," +
+				" or the security of the key will be immediately compromised"
 			if r != erroEsperado {
 				t.Fatalf("Esperava: %v\nChegou: %v", erroEsperado, r)
 			}
@@ -110,10 +131,14 @@ func TestEncriptarAES(t *testing.T) {
 }
 
 func TestDesencriptarAES(t *testing.T) {
+	t.Parallel()
+
 	senha := []byte("senha")
 	chave := []byte("1616161616161616")
 
 	t.Run("ChaveInválida", func(t *testing.T) {
+		t.Parallel()
+
 		var erroExterno aes.KeySizeError = 1
 		erroEsperado := erros.Novo(ErroDesencriptarAES, nil, erroExterno)
 
@@ -124,12 +149,15 @@ func TestDesencriptarAES(t *testing.T) {
 	})
 
 	t.Run("NonceSizeInválido", func(t *testing.T) {
+		t.Parallel()
+
 		_, erro := desencriptarAES(senha, chave, 0)
 		if erro == nil || !erro.ÉPadrão(ErroDesencriptarAES) {
 			t.Fatalf("Esperava: %v\nChegou: %v", ErroDesencriptarAES, erro)
 		}
 
-		externo := "cipher: the nonce can't have zero length, or the security of the key will be immediately compromised"
+		externo := "cipher: the nonce can't have zero length, or the security" +
+			" of the key will be immediately compromised"
 
 		if erro.ErroExterno == nil || erro.ErroExterno.Error() != externo {
 			t.Fatalf("Esperava erroInicial: %v\nChegou: %v", externo, erro.ErroExterno)
@@ -137,6 +165,8 @@ func TestDesencriptarAES(t *testing.T) {
 	})
 
 	t.Run("SenhaMenorNonceSize", func(t *testing.T) {
+		t.Parallel()
+
 		erroEsperado := erros.Novo(ErroDesencriptarAESNonceSize, nil, nil)
 
 		_, erro := desencriptarAES(senha, []byte("1616161616161616"), 16)
@@ -146,19 +176,25 @@ func TestDesencriptarAES(t *testing.T) {
 	})
 
 	t.Run("HashInválido", func(t *testing.T) {
-		erroInicial := errors.New("cipher: message authentication failed")
-		erroEsperado := erros.Novo(ErroDesencriptarAES, nil, erroInicial)
+		t.Parallel()
+
+		erroEsperado := "cipher: message authentication failed"
 
 		_, erro := desencriptarAES(senha, []byte("1616161616161616"), 1)
-		if erroEsperado.Error() != erro.Error() {
+		if erro == nil || erro.ErroExterno == nil ||
+			erro.ErroExterno.Error() != erroEsperado {
 			t.Fatalf("Esperava: %v\nChegou: %v", erroEsperado, erro)
 		}
 	})
-
 }
 
+//nolint: funlen
 func TestBase64DecodificarArgon2id(t *testing.T) {
+	t.Parallel()
+
 	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
 		testes := []struct {
 			senha, sal []byte
 		}{
@@ -167,7 +203,10 @@ func TestBase64DecodificarArgon2id(t *testing.T) {
 			{[]byte("password"), []byte("Teste")},
 		}
 		for _, teste := range testes {
+			teste := teste
 			t.Run(string(teste.senha)+"-"+string(teste.sal), func(t *testing.T) {
+				t.Parallel()
+
 				config := Argon2Config{
 					memory:      64 * 1024,
 					iterations:  3,
@@ -196,6 +235,8 @@ func TestBase64DecodificarArgon2id(t *testing.T) {
 	})
 
 	t.Run("Erros", func(t *testing.T) {
+		t.Parallel()
+
 		testes := []struct {
 			hash string
 			erro *erros.Padrão
@@ -210,7 +251,10 @@ func TestBase64DecodificarArgon2id(t *testing.T) {
 		}
 
 		for _, teste := range testes {
+			teste := teste
 			t.Run(teste.hash, func(t *testing.T) {
+				t.Parallel()
+
 				_, _, _, erro := base64DecodificarArgon2id(teste.hash)
 				if erro == nil || !erro.ÉPadrão(teste.erro) {
 					t.Fatalf("Esperava: %v\nChegou: %v", teste.erro, erro)
@@ -221,13 +265,19 @@ func TestBase64DecodificarArgon2id(t *testing.T) {
 }
 
 func TestSenhaVálida(t *testing.T) {
+	t.Parallel()
+
 	testes := []struct {
 		senha  string
 		válida bool
 	}{
 		{"aA0-", false},
 		{
-			`aA0-0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000`,
+			`aA0-00000000000000000000000000000000000000000000000000000000000000000000` +
+				`0000000000000000000000000000000000000000000000000000000000000000000000` +
+				`0000000000000000000000000000000000000000000000000000000000000000000000` +
+				`0000000000000000000000000000000000000000000000000000000000000000000000` +
+				`0000000000000000000000000000000000000000000000000000000000000000000000`,
 			false,
 		},
 		{"aAaAaAaAaAaA-", false},
@@ -241,7 +291,10 @@ func TestSenhaVálida(t *testing.T) {
 	senha := GerenciadorSenhaPadrão()
 
 	for _, teste := range testes {
+		teste := teste
 		t.Run(teste.senha, func(t *testing.T) {
+			t.Parallel()
+
 			válida := senha.ÉVálida(teste.senha)
 			if válida != teste.válida {
 				t.Fatalf("Esperava: %t, chegou: %t", teste.válida, válida)
@@ -251,6 +304,8 @@ func TestSenhaVálida(t *testing.T) {
 }
 
 func TestGerenciadorSenhaPadrão(t *testing.T) {
+	t.Parallel()
+
 	esperado := &Senha{
 		argon2: Argon2Config{
 			memory:      64 * 1024,

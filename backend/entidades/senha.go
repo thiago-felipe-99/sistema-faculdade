@@ -16,7 +16,6 @@ import (
 	"golang.org/x/crypto/argon2"
 	"golang.org/x/crypto/sha3"
 	"thiagofelipe.com.br/sistema-faculdade-backend/aleatorio"
-
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 

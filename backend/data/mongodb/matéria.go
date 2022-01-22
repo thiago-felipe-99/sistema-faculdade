@@ -30,7 +30,7 @@ type MatériaBD struct {
 
 // Inserir é uma método que adiciona uma entidade Matéria no banco de
 // dados MongoDB.
-func (bd *MatériaBD) Inserir(matéria *entidades.Matéria) *erros.Aplicação {
+func (bd MatériaBD) Inserir(matéria *entidades.Matéria) *erros.Aplicação {
 	bd.Log.Informação("Inserindo Matéria com ID:", matéria.ID.String())
 
 	inserir := &matériaParse{
@@ -55,14 +55,14 @@ func (bd *MatériaBD) Inserir(matéria *entidades.Matéria) *erros.Aplicação {
 
 // Atualizar é uma método que faz a atualização de uma entidade Matéria no banco
 // de dados MongoDB.
-func (bd *MatériaBD) Atualizar(entidades.ID, *entidades.Matéria) *erros.Aplicação {
+func (bd MatériaBD) Atualizar(id entidades.ID, matéria *entidades.Matéria) *erros.Aplicação {
 	bd.Log.Informação("Atualizando Matéria")
 
 	return nil
 }
 
 // Pegar é uma método que retorna uma entidade Matéria no banco de dados MongoDB.
-func (bd *MatériaBD) Pegar(id entidades.ID) (*entidades.Matéria, *erros.Aplicação) {
+func (bd MatériaBD) Pegar(id entidades.ID) (*entidades.Matéria, *erros.Aplicação) {
 	bd.Log.Informação("Pegando Matéria com ID:", id)
 
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
@@ -90,7 +90,7 @@ func (bd *MatériaBD) Pegar(id entidades.ID) (*entidades.Matéria, *erros.Aplica
 }
 
 // Deletar é uma método que remove uma entidade Matéria no banco de dados MongoDB.
-func (bd *MatériaBD) Deletar(id entidades.ID) *erros.Aplicação {
+func (bd MatériaBD) Deletar(id entidades.ID) *erros.Aplicação {
 	bd.Log.Informação("Deletando Matéria com ID:", id)
 
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)

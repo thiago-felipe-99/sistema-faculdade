@@ -164,7 +164,7 @@ func TestAbrirArquivos(t *testing.T) {
 				}
 
 				caminhoArquivo := arquivo.MethodByName("Name").Call(nil)[0].String()
-				caminhoEsperado := pasta + entidade + "Logs.txt"
+				caminhoEsperado := pasta + entidade + ".log"
 				if caminhoArquivo != caminhoEsperado {
 					t.Fatalf("Esperava: %s, chegou: %s", caminhoEsperado, caminhoArquivo)
 				}
@@ -180,7 +180,7 @@ func TestAbrirArquivos(t *testing.T) {
 
 				const mode os.FileMode = 0644
 
-				caminhoArquivo := pasta + entidade + "Logs.txt"
+				caminhoArquivo := pasta + entidade + ".log"
 
 				arquivo, erro := os.OpenFile(caminhoArquivo, flags, mode)
 				if erro != nil {

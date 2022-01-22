@@ -1,13 +1,17 @@
 package logica
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"os"
 	"testing"
 
 	"github.com/go-sql-driver/mysql"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mariadb"
+	"thiagofelipe.com.br/sistema-faculdade-backend/data/mongodb"
 	dataPadrão "thiagofelipe.com.br/sistema-faculdade-backend/data/padrao"
 	"thiagofelipe.com.br/sistema-faculdade-backend/env"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
@@ -25,7 +29,7 @@ var (
 	ambiente            = env.PegandoVariáveisDeAmbiente()
 )
 
-func criarConexãoMariaDB() *sql.DB {
+func criarConexãoBDs() (*sql.DB, *mongo.Database) {
 	//nolint:exhaustivestruct
 	config := mysql.Config{
 		User:                 "Teste",
@@ -38,30 +42,41 @@ func criarConexãoMariaDB() *sql.DB {
 		MultiStatements:      true,
 	}
 
-	conexão, erro := mariadb.NovoBD(config.FormatDSN())
+	sqlConexão, erro := mariadb.NovoBD(config.FormatDSN())
 	if erro != nil {
-		log.Fatalf("Erro ao configurar o banco de dados: %s", erro)
+		log.Fatalf("Erro ao configurar o banco de dados MariaDB: %v", erro)
 	}
 
-	erroPing := conexão.Ping()
-	if erroPing != nil {
-		log.Fatalf("Erro ao conectar o banco de dados: %s", erroPing)
+	err := sqlConexão.Ping()
+	if err != nil {
+		log.Fatalf("Erro ao conectar o banco de dados MariaDB: %v", err)
 	}
 
-	return conexão
+	uri := "mongodb://root:root@localhost:" + ambiente.Portas.BDMateria
+	mongoConexão, erro := mongodb.NovoDB(context.Background(), uri, "Teste")
+	if erro != nil {
+		log.Fatalf("Erro ao configurar o banco de dados MongoDB: %v", erro)
+	}
+
+	err = mongoConexão.Client().Ping(context.Background(), readpref.Primary())
+	if err != nil {
+		log.Fatalf("Erro ao conectar o banco de dados MongoDB: %v", err)
+	}
+
+	return sqlConexão, mongoConexão
 }
 
 func TestMain(m *testing.M) {
-	bd := criarConexãoMariaDB()
+	sqlDB, mongoDB := criarConexãoBDs()
 	logFiles := logs.AbrirArquivos("./logs/data/")
 	log := logs.NovoLogEntidades(logFiles, logs.NívelDebug)
 
-	Data := dataPadrão.DataPadrão(log, bd)
+	Data := dataPadrão.DataPadrão(log, sqlDB, mongoDB)
 
 	logicaTeste = NovaLógica(Data)
 
 	dataPessoaInválido := &mariadb.PessoaBD{
-		Conexão:      *mariadb.NovaConexão(log.Pessoa, bd),
+		Conexão:      *mariadb.NovaConexão(log.Pessoa, sqlDB),
 		NomeDaTabela: "PessoaInválida",
 	}
 

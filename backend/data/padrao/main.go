@@ -1,8 +1,10 @@
 package padrao
 
 import (
+	"context"
 	"database/sql"
 
+	"go.mongodb.org/mongo-driver/mongo"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mariadb"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mongodb"
@@ -10,7 +12,7 @@ import (
 )
 
 // DataPadrão cria um Data que pode ser utilizado na aplicação.
-func DataPadrão(log *logs.Entidades, bdSQL *sql.DB) *data.Data {
+func DataPadrão(log *logs.Entidades, bdSQL *sql.DB, bdMongo *mongo.Database) *data.Data {
 	MariaDBPessoa := mariadb.PessoaBD{
 		Conexão:      *mariadb.NovaConexão(log.Pessoa, bdSQL),
 		NomeDaTabela: "Pessoa",
@@ -36,12 +38,17 @@ func DataPadrão(log *logs.Entidades, bdSQL *sql.DB) *data.Data {
 		Conexão: *mariadb.NovaConexão(log.Administrativo, bdSQL),
 	}
 
+	conexãoMatéria := *mongodb.NovaConexão(context.Background(), log.Matéria, bdMongo)
+
 	MariaDBMatéria := mongodb.MatériaBD{
-		Conexão: *mongodb.NovaConexão(log.Matéria),
+		Conexão:    conexãoMatéria,
+		Collection: conexãoMatéria.BD.Collection("Matéria"),
 	}
 
+	conexãoTurma := *mongodb.NovaConexão(context.Background(), log.Turma, bdMongo)
+
 	MariaDBTurma := mongodb.TurmaBD{
-		Conexão: *mongodb.NovaConexão(log.Turma),
+		Conexão: conexãoTurma,
 	}
 
 	return &data.Data{

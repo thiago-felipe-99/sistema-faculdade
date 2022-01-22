@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mariadb"
+	"thiagofelipe.com.br/sistema-faculdade-backend/data/mongodb"
 	dataPadrão "thiagofelipe.com.br/sistema-faculdade-backend/data/padrao"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logica"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
@@ -33,12 +35,23 @@ func newData() *data.Data {
 	dns := config.FormatDSN()
 	log.Println(dns)
 
-	bd, err := mariadb.NovoBD(config.FormatDSN())
+	sqlBD, err := mariadb.NovoBD(config.FormatDSN())
 	if err != nil {
 		log.Panicln(err.Mensagem)
 	}
 
-	return dataPadrão.DataPadrão(logs.NovoLogEntidades(logFiles, logs.NívelDebug), bd)
+	uri := "mongodb://root:root@localhost:9001"
+
+	mongoDB, err := mongodb.NovoDB(context.Background(), uri, "Matéria")
+	if err != nil {
+		log.Panicln(err.Mensagem)
+	}
+
+	return dataPadrão.DataPadrão(
+		logs.NovoLogEntidades(logFiles, logs.NívelDebug),
+		sqlBD,
+		mongoDB,
+	)
 }
 
 func prettyStruct(s ...interface{}) string {

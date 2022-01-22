@@ -2,7 +2,6 @@
 package aleatorio_test
 
 import (
-	"reflect"
 	"testing"
 	"unicode/utf8"
 
@@ -28,8 +27,8 @@ func TestNúmero(t *testing.T) {
 	t.Run("0", func(t *testing.T) {
 		defer func() {
 			if r := recover(); r != nil {
-				if !reflect.DeepEqual(r, ErroTamanhoInválido) {
-					t.Fatalf("\nEsperava: %v\nChegou  : %v", ErroTamanhoInválido, r)
+				if r != ErroTamanhoInválido.Error() {
+					t.Fatalf("\nEsperava: %v\nChegou  : %v", ErroTamanhoInválido.Error(), r)
 				}
 			} else {
 				t.Fatalf("Esperar ocorrer um Panic")
@@ -55,8 +54,8 @@ func TestPalavra(t *testing.T) {
 	t.Run("0", func(t *testing.T) {
 		defer func() {
 			if r := recover(); r != nil {
-				if !reflect.DeepEqual(r, ErroTamanhoInválido) {
-					t.Fatalf("\nEsperava: %v\nChegou  : %v", ErroTamanhoInválido, r)
+				if r != ErroTamanhoInválido.Error() {
+					t.Fatalf("\nEsperava: %v\nChegou  : %v", ErroTamanhoInválido.Error(), r)
 				}
 			} else {
 				t.Fatalf("Esperava ocorrer um Panic")

@@ -21,6 +21,7 @@ const (
 	tamanhoMáximoDaPalavra = 25
 )
 
+//nolint: gochecknoglobals
 var (
 	logicaTeste         *Lógica
 	pessoaBDInválido    *Pessoa
@@ -53,6 +54,7 @@ func criarConexãoBDs() (*sql.DB, *mongo.Database) {
 	}
 
 	uri := "mongodb://root:root@localhost:" + ambiente.Portas.BDMateria
+
 	mongoConexão, erro := mongodb.NovoDB(context.Background(), uri, "Teste")
 	if erro != nil {
 		log.Fatalf("Erro ao configurar o banco de dados MongoDB: %v", erro)

@@ -13,18 +13,20 @@ import (
 func criarPessoaAleatória() *entidades.Pessoa {
 	dataAgora := entidades.DataAtual()
 
-	var pessoa = &entidades.Pessoa{
+	pessoa := &entidades.Pessoa{
 		ID:               entidades.NovoID(),
 		Nome:             aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		CPF:              aleatorio.CPF(),
 		DataDeNascimento: dataAgora,
-		Senha:            "Senha",
+		Senha:            aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 	}
 
 	return pessoa
 }
 
-func adicionarPessoa(pessoa *entidades.Pessoa, t *testing.T) {
+func adicionarPessoa(t *testing.T, pessoa *entidades.Pessoa) {
+	t.Helper()
+
 	erro := pessoaBD.Inserir(pessoa)
 	if erro != nil {
 		t.Fatalf("Erro ao inserir a pessoa no banco de dados: %s", erro.Error())
@@ -49,24 +51,35 @@ func adicionarPessoa(pessoa *entidades.Pessoa, t *testing.T) {
 }
 
 func removerPessoa(t *testing.T, id entidades.ID) {
+	t.Helper()
+
 	erro := pessoaBD.Deletar(id)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar a pessoa teste: %v", erro.Error())
 	}
 }
 
+//nolint: funlen
 func TestInserirPessoa(t *testing.T) {
-	pessoaTeste := criarPessoaAleatória()
+	t.Parallel()
 
 	t.Run("OKAY", func(t *testing.T) {
-		adicionarPessoa(pessoaTeste, t)
+		t.Parallel()
+
+		pessoaTeste := criarPessoaAleatória()
+
+		adicionarPessoa(t, pessoaTeste)
 	})
 
 	t.Run("Duplicado/ID", func(t *testing.T) {
+		t.Parallel()
+
 		const texto = `Duplicate entry.*PRIMARY`
 		padrão := regexp.MustCompile(texto)
 
-		adicionarPessoa(pessoaTeste, t)
+		pessoaTeste := criarPessoaAleatória()
+
+		adicionarPessoa(t, pessoaTeste)
 
 		pesssoaDuplicada := pessoaTeste
 		pesssoaDuplicada.CPF = aleatorio.CPF()
@@ -86,10 +99,14 @@ func TestInserirPessoa(t *testing.T) {
 	})
 
 	t.Run("Duplicado/CPF", func(t *testing.T) {
+		t.Parallel()
+
 		const texto = `Duplicate entry.*CPF`
 		padrão := regexp.MustCompile(texto)
 
-		adicionarPessoa(pessoaTeste, t)
+		pessoaTeste := criarPessoaAleatória()
+
+		adicionarPessoa(t, pessoaTeste)
 
 		pesssoaDuplicada := pessoaTeste
 		pesssoaDuplicada.ID = entidades.NovoID()
@@ -110,11 +127,15 @@ func TestInserirPessoa(t *testing.T) {
 }
 
 func TestAtualizarPessoa(t *testing.T) {
-	pessoaTeste1 := criarPessoaAleatória()
-	pessoaTeste2 := criarPessoaAleatória()
+	t.Parallel()
 
 	t.Run("OKAY", func(t *testing.T) {
-		adicionarPessoa(pessoaTeste1, t)
+		t.Parallel()
+
+		pessoaTeste1 := criarPessoaAleatória()
+		pessoaTeste2 := criarPessoaAleatória()
+
+		adicionarPessoa(t, pessoaTeste1)
 		idBuffer := pessoaTeste2.ID
 		pessoaTeste2.ID = pessoaTeste1.ID
 		defer func() { pessoaTeste2.ID = idBuffer }()
@@ -139,11 +160,16 @@ func TestAtualizarPessoa(t *testing.T) {
 	})
 
 	t.Run("Duplicado/CPF", func(t *testing.T) {
+		t.Parallel()
+
 		const texto = `Duplicate entry.*CPF`
 		padrão := regexp.MustCompile(texto)
 
-		adicionarPessoa(pessoaTeste1, t)
-		adicionarPessoa(pessoaTeste2, t)
+		pessoaTeste1 := criarPessoaAleatória()
+		pessoaTeste2 := criarPessoaAleatória()
+
+		adicionarPessoa(t, pessoaTeste1)
+		adicionarPessoa(t, pessoaTeste2)
 
 		erro := pessoaBD.Atualizar(pessoaTeste1.ID, pessoaTeste2)
 		if erro == nil || erro.ErroExterno == nil {
@@ -160,11 +186,15 @@ func TestAtualizarPessoa(t *testing.T) {
 	})
 }
 
+//nolint: dupl
 func TestPegarPessoa(t *testing.T) {
-	t.Run("OKAY", func(t *testing.T) {
-		pessoaTeste := criarPessoaAleatória()
+	t.Parallel()
 
-		adicionarPessoa(pessoaTeste, t)
+	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
+		pessoaTeste := criarPessoaAleatória()
+		adicionarPessoa(t, pessoaTeste)
 
 		pessoaSalva, erro := pessoaBD.Pegar(pessoaTeste.ID)
 		if erro != nil {
@@ -181,6 +211,8 @@ func TestPegarPessoa(t *testing.T) {
 	})
 
 	t.Run("PessoaNãoEncontrada", func(t *testing.T) {
+		t.Parallel()
+
 		_, erro := pessoaBD.Pegar(entidades.NovoID())
 
 		if erro == nil || erro.ErroExterno == nil {
@@ -197,6 +229,8 @@ func TestPegarPessoa(t *testing.T) {
 	})
 
 	t.Run("TabelaInválida", func(t *testing.T) {
+		t.Parallel()
+
 		const texto = `Table .* doesn't exist`
 		padrão := regexp.MustCompile(texto)
 
@@ -216,11 +250,15 @@ func TestPegarPessoa(t *testing.T) {
 	})
 }
 
+//nolint: dupl
 func TestPegarPessoaPorCPF(t *testing.T) {
-	t.Run("OKAY", func(t *testing.T) {
-		pessoaTeste := criarPessoaAleatória()
+	t.Parallel()
 
-		adicionarPessoa(pessoaTeste, t)
+	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
+		pessoaTeste := criarPessoaAleatória()
+		adicionarPessoa(t, pessoaTeste)
 
 		pessoaSalva, erro := pessoaBD.PegarPorCPF(pessoaTeste.CPF)
 		if erro != nil {
@@ -237,6 +275,8 @@ func TestPegarPessoaPorCPF(t *testing.T) {
 	})
 
 	t.Run("PessoaNãoEncontrada", func(t *testing.T) {
+		t.Parallel()
+
 		_, erro := pessoaBD.PegarPorCPF(aleatorio.CPF())
 
 		if erro == nil || erro.ErroExterno == nil {
@@ -253,6 +293,8 @@ func TestPegarPessoaPorCPF(t *testing.T) {
 	})
 
 	t.Run("TabelaInválida", func(t *testing.T) {
+		t.Parallel()
+
 		const texto = `Table .* doesn't exist`
 		padrão := regexp.MustCompile(texto)
 
@@ -273,10 +315,14 @@ func TestPegarPessoaPorCPF(t *testing.T) {
 }
 
 func TestDeletarPessoa(t *testing.T) {
+	t.Parallel()
+
 	pessoaTeste := criarPessoaAleatória()
 
 	t.Run("OKAY", func(t *testing.T) {
-		adicionarPessoa(pessoaTeste, t)
+		t.Parallel()
+
+		adicionarPessoa(t, pessoaTeste)
 
 		removerPessoa(t, pessoaTeste.ID)
 
@@ -290,9 +336,13 @@ func TestDeletarPessoa(t *testing.T) {
 	})
 
 	t.Run("PessoaNãoEncontrada", func(t *testing.T) {
-		removerPessoa(t, pessoaTeste.ID)
+		t.Parallel()
 
-		_, erro := pessoaBD.Pegar(pessoaTeste.ID)
+		id := entidades.NovoID()
+
+		removerPessoa(t, id)
+
+		_, erro := pessoaBD.Pegar(id)
 		if erro == nil || !erro.ÉPadrão(ErroPessoaNãoEncontrada) {
 			t.Fatalf(
 				"Deveria retonar um erro de pessoa não encontrada, retonou %s",
@@ -302,6 +352,8 @@ func TestDeletarPessoa(t *testing.T) {
 	})
 
 	t.Run("TabelaInválida", func(t *testing.T) {
+		t.Parallel()
+
 		const texto = `Table .* doesn't exist`
 		padrão := regexp.MustCompile(texto)
 

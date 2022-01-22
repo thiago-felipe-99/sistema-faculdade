@@ -16,6 +16,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
+//nolint: gochecknoglobals
 var ambiente = env.PegandoVariáveisDeAmbiente()
 
 func criarConexãoDBs() (*sql.DB, *mongo.Database) {
@@ -42,6 +43,7 @@ func criarConexãoDBs() (*sql.DB, *mongo.Database) {
 	}
 
 	uri := "mongodb://root:root@localhost:" + ambiente.Portas.BDMateria
+
 	mongoConexão, erro := mongodb.NovoDB(context.Background(), uri, "Teste")
 	if erro != nil {
 		log.Fatalf("Erro ao configurar o banco de dados MongoDB: %v", erro)
@@ -56,6 +58,8 @@ func criarConexãoDBs() (*sql.DB, *mongo.Database) {
 }
 
 func TestDataPadrão(t *testing.T) {
+	t.Parallel()
+
 	bdSQL, bdMongo := criarConexãoDBs()
 	logFiles := logs.AbrirArquivos("./logs/")
 	log := logs.NovoLogEntidades(logFiles, logs.NívelDebug)
@@ -63,13 +67,16 @@ func TestDataPadrão(t *testing.T) {
 	data := DataPadrão(log, bdSQL, bdMongo)
 
 	tipos := map[string]struct{ quer, recebou string }{
-		"Pessoa":         {"mariadb.PessoaBD", fmt.Sprintf("%T", data.Pessoa)},
-		"Curso":          {"mariadb.CursoBD", fmt.Sprintf("%T", data.Curso)},
-		"Aluno":          {"mariadb.AlunoBD", fmt.Sprintf("%T", data.Aluno)},
-		"Professor":      {"mariadb.ProfessorBD", fmt.Sprintf("%T", data.Professor)},
-		"Administrativo": {"mariadb.AdministrativoBD", fmt.Sprintf("%T", data.Administrativo)},
-		"Matéria":        {"mongodb.MatériaBD", fmt.Sprintf("%T", data.Matéria)},
-		"Turma":          {"mongodb.TurmaBD", fmt.Sprintf("%T", data.Turma)},
+		"Pessoa":    {"mariadb.PessoaBD", fmt.Sprintf("%T", data.Pessoa)},
+		"Curso":     {"mariadb.CursoBD", fmt.Sprintf("%T", data.Curso)},
+		"Aluno":     {"mariadb.AlunoBD", fmt.Sprintf("%T", data.Aluno)},
+		"Professor": {"mariadb.ProfessorBD", fmt.Sprintf("%T", data.Professor)},
+		"Administrativo": {
+			"mariadb.AdministrativoBD",
+			fmt.Sprintf("%T", data.Administrativo),
+		},
+		"Matéria": {"mongodb.MatériaBD", fmt.Sprintf("%T", data.Matéria)},
+		"Turma":   {"mongodb.TurmaBD", fmt.Sprintf("%T", data.Turma)},
 	}
 
 	for chave, valor := range tipos {

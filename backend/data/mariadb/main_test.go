@@ -18,6 +18,7 @@ const (
 	tamanhoMáximoMatrícula = 11
 )
 
+//nolint: gochecknoglobals
 var (
 	pessoaBD         *PessoaBD
 	pessoaBDInválido *PessoaBD
@@ -27,11 +28,11 @@ var (
 	alunoBD          *AlunoBD
 	alunoBDInválido  *AlunoBD
 	alunoBDInválido2 *AlunoBD
+	ambiente         = env.PegandoVariáveisDeAmbiente()
 )
 
-var ambiente = env.PegandoVariáveisDeAmbiente()
-
 func criarConexão() *sql.DB {
+	//nolint: exhaustivestruct
 	config := mysql.Config{
 		User:                 "Teste",
 		Passwd:               "Teste",
@@ -140,7 +141,11 @@ func TestMain(m *testing.M) {
 }
 
 func TestNovoBD(t *testing.T) {
+	t.Parallel()
+
 	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
 		//nolint: exhaustivestruct
 		config := mysql.Config{
 			User:                 "Teste",
@@ -163,6 +168,8 @@ func TestNovoBD(t *testing.T) {
 	})
 
 	t.Run("EndereçoInválido", func(t *testing.T) {
+		t.Parallel()
+
 		padrão := regexp.MustCompile(`invalid DSN`)
 
 		_, erro := NovoBD("endereço inválido")
@@ -175,7 +182,10 @@ func TestNovoBD(t *testing.T) {
 		}
 
 		if !padrão.MatchString(erro.ErroExterno.Error()) {
-			t.Fatalf("Esperava por um erro de configuração no DSN, chegou: %v", erro.ErroExterno.Error())
+			t.Fatalf(
+				"Esperava por um erro de configuração no DSN, chegou: %v",
+				erro.ErroExterno.Error(),
+			)
 		}
 	})
 }

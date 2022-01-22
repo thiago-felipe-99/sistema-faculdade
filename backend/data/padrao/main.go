@@ -12,7 +12,11 @@ import (
 )
 
 // DataPadrão cria um Data que pode ser utilizado na aplicação.
-func DataPadrão(log *logs.Entidades, bdSQL *sql.DB, bdMongo *mongo.Database) *data.Data {
+func DataPadrão(
+	log *logs.Entidades,
+	bdSQL *sql.DB,
+	bdMongo *mongo.Database,
+) *data.Data {
 	MariaDBPessoa := mariadb.PessoaBD{
 		Conexão:      *mariadb.NovaConexão(log.Pessoa, bdSQL),
 		NomeDaTabela: "Pessoa",

@@ -2,8 +2,9 @@ package mariadb
 
 import (
 	"database/sql"
+	"errors"
 
-	. "thiagofelipe.com.br/sistema-faculdade-backend/data"
+	"thiagofelipe.com.br/sistema-faculdade-backend/data"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
@@ -23,7 +24,7 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 	query := "INSERT INTO " + bd.NomeDaTabela +
 		" (ID, Nome, CPF, Data_De_Nascimento, Senha) VALUES (?, ?, ?, ?, ?)"
 
-	_, erro := bd.BD.Exec(
+	_, err := bd.BD.Exec(
 		query,
 		pessoa.ID,
 		pessoa.Nome,
@@ -31,13 +32,13 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 		pessoa.DataDeNascimento,
 		pessoa.Senha,
 	)
-
-	if erro != nil {
+	if err != nil {
 		bd.Log.Aviso(
 			"Erro ao inserir a Pessoa com o seguinte ID: "+pessoa.ID.String(),
-			"\n\t"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(err),
 		)
-		return erros.Novo(ErroInserirPessoa, nil, erro)
+
+		return erros.Novo(data.ErroInserirPessoa, nil, err)
 	}
 
 	return nil
@@ -45,14 +46,17 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 
 // Atualizar é uma método que faz a atualização de uma entidade Pessoa no banco
 // de dados MariaDB.
-func (bd PessoaBD) Atualizar(id entidades.ID, pessoa *entidades.Pessoa) *erros.Aplicação {
+func (bd PessoaBD) Atualizar(
+	id entidades.ID,
+	pessoa *entidades.Pessoa,
+) *erros.Aplicação {
 	bd.Log.Informação("Atualizando Pessoa com o seguinte ID: " + id.String())
 
 	query := "UPDATE " + bd.NomeDaTabela +
 		" SET Nome = ?, CPF = ?, Data_De_Nascimento = ?, Senha = ?" +
 		" WHERE ID = ?"
 
-	_, erro := bd.BD.Exec(
+	_, err := bd.BD.Exec(
 		query,
 		pessoa.Nome,
 		pessoa.CPF,
@@ -60,13 +64,13 @@ func (bd PessoaBD) Atualizar(id entidades.ID, pessoa *entidades.Pessoa) *erros.A
 		pessoa.Senha,
 		id,
 	)
-
-	if erro != nil {
+	if err != nil {
 		bd.Log.Aviso(
 			"Erro ao atualizar a Pessoa com o seguinte ID: "+id.String(),
-			"\n\t"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(err),
 		)
-		return erros.Novo(ErroAtualizarPessoa, nil, erro)
+
+		return erros.Novo(data.ErroAtualizarPessoa, nil, err)
 	}
 
 	return nil
@@ -83,30 +87,29 @@ func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação
 
 	row := bd.BD.QueryRow(query, id)
 
-	erro := row.Scan(
+	err := row.Scan(
 		&pessoa.ID,
 		&pessoa.Nome,
 		&pessoa.CPF,
 		&pessoa.DataDeNascimento,
 		&pessoa.Senha,
 	)
-
-	if erro != nil {
-
-		if erro == sql.ErrNoRows {
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
 			bd.Log.Aviso(
 				"Não foi encontrada nenhuma a pessoa com o seguinte ID: "+id.String(),
-				"\n\t"+erros.ErroExterno(erro),
+				"\n\t"+erros.ErroExterno(err),
 			)
-			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, erro)
+
+			return nil, erros.Novo(data.ErroPessoaNãoEncontrada, nil, err)
 		}
 
 		bd.Log.Aviso(
 			"Erro ao tentar econtrar a pessoa com o seguinte ID: "+id.String(),
-			"\n\t"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(err),
 		)
-		return nil, erros.Novo(ErroPegarPessoa, nil, erro)
 
+		return nil, erros.Novo(data.ErroPegarPessoa, nil, err)
 	}
 
 	return &pessoa, nil
@@ -114,7 +117,10 @@ func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação
 
 // PegarPorCPF é uma método que retorna uma entidade Pessoa no banco de dados
 // MariaDB.
-func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Aplicação) {
+func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (
+	*entidades.Pessoa,
+	*erros.Aplicação,
+) {
 	bd.Log.Informação("Pegando Pessoa com o seguinte CPF: " + cpf)
 
 	var pessoa entidades.Pessoa
@@ -124,34 +130,32 @@ func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (*entidades.Pessoa, *erros.Apl
 
 	row := bd.BD.QueryRow(query, cpf)
 
-	erro := row.Scan(
+	err := row.Scan(
 		&pessoa.ID,
 		&pessoa.Nome,
 		&pessoa.CPF,
 		&pessoa.DataDeNascimento,
 		&pessoa.Senha,
 	)
-
-	if erro != nil {
-
-		if erro == sql.ErrNoRows {
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
 			bd.Log.Aviso(
 				"Não foi encontrada nenhuma a pessoa com o seguinte CPF: "+cpf,
-				"\n\t"+erros.ErroExterno(erro),
+				"\n\t"+erros.ErroExterno(err),
 			)
-			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, erro)
+
+			return nil, erros.Novo(data.ErroPessoaNãoEncontrada, nil, err)
 		}
 
 		bd.Log.Aviso(
 			"Erro ao tentar econtrar a pessoa com o seguinte CPF: "+cpf,
-			"\n\t"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(err),
 		)
-		return nil, erros.Novo(ErroPegarPessoaPorCPF, nil, erro)
 
+		return nil, erros.Novo(data.ErroPegarPessoaPorCPF, nil, err)
 	}
 
 	return &pessoa, nil
-
 }
 
 // Deletar é uma método que remove uma entidade Pessoa no banco de dados
@@ -161,15 +165,14 @@ func (bd PessoaBD) Deletar(id entidades.ID) *erros.Aplicação {
 
 	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"
 
-	_, erro := bd.BD.Exec(query, id)
-
-	if erro != nil {
+	_, err := bd.BD.Exec(query, id)
+	if err != nil {
 		bd.Log.Aviso(
 			"Erro ao tentar deletar a pessoa com o seguinte ID: "+id.String(),
-			"\n\t"+erros.ErroExterno(erro),
+			"\n\t"+erros.ErroExterno(err),
 		)
 
-		return erros.Novo(ErroDeletarPessoa, nil, erro)
+		return erros.Novo(data.ErroDeletarPessoa, nil, err)
 	}
 
 	return nil

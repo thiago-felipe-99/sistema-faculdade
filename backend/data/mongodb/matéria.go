@@ -55,7 +55,10 @@ func (bd MatériaBD) Inserir(matéria *entidades.Matéria) *erros.Aplicação {
 
 // Atualizar é uma método que faz a atualização de uma entidade Matéria no banco
 // de dados MongoDB.
-func (bd MatériaBD) Atualizar(id entidades.ID, matéria *entidades.Matéria) *erros.Aplicação {
+func (bd MatériaBD) Atualizar(
+	id entidades.ID,
+	matéria *entidades.Matéria,
+) *erros.Aplicação {
 	bd.Log.Informação("Atualizando Matéria")
 
 	return nil

@@ -95,7 +95,7 @@ type Arquivos struct {
 func AbrirArquivos(defaultDir string) *Arquivos {
 	const flags = os.O_APPEND | os.O_CREATE | os.O_WRONLY
 
-	const mode os.FileMode = 0666
+	const mode os.FileMode = 0o666
 
 	const extension = ".log"
 

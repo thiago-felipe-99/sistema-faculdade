@@ -11,10 +11,17 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
+//nolint: funlen, gocognit
 func TestNovoLog(t *testing.T) {
+	t.Parallel()
+
 	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
 		mensagem := "teste"
-		flags := ` - [0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} main.go:[0-9]+: ` + mensagem + `\n$`
+		flags :=
+			` - [0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} main.go:[0-9]+: ` +
+				mensagem + `\n$`
 
 		outs := map[string]string{
 			"Panic":      "PANIC" + flags,
@@ -78,7 +85,11 @@ func TestNovoLog(t *testing.T) {
 		mensagemInput := []reflect.Value{reflect.ValueOf(mensagem)}
 
 		for _, teste := range testes {
+			teste := teste
+
 			t.Run(fmt.Sprint(teste.nível), func(t *testing.T) {
+				t.Parallel()
+
 				var buffer bytes.Buffer
 				log := NovoLog(&buffer, teste.nível)
 
@@ -95,10 +106,8 @@ func TestNovoLog(t *testing.T) {
 								outs[função], buffer.String(),
 							)
 						}
-					} else {
-						if buffer.String() != "" {
-							t.Fatalf("Não esperava mensagem porém chegou: %s", buffer.String())
-						}
+					} else if buffer.String() != "" {
+						t.Fatalf("Não esperava mensagem porém chegou: %s", buffer.String())
 					}
 				}
 
@@ -124,12 +133,13 @@ func TestNovoLog(t *testing.T) {
 
 				buffer.Reset()
 				log.Panic(mensagem)
-
 			})
 		}
 	})
 
 	t.Run("NívelErrado", func(t *testing.T) {
+		t.Parallel()
+
 		var buffer bytes.Buffer
 
 		defer func() {
@@ -145,17 +155,27 @@ func TestNovoLog(t *testing.T) {
 	})
 }
 
+//nolint: funlen
 func TestAbrirArquivos(t *testing.T) {
+	t.Parallel()
+
 	pasta := "./logs/"
-	entidades := []string{"Pessoa", "Curso", "Aluno", "Professor", "Administrativo", "Matéria", "Turma"}
+	entidades := []string{
+		"Pessoa", "Curso", "Aluno", "Professor",
+		"Administrativo", "Matéria", "Turma",
+	}
 
 	t.Run("OKAY", func(t *testing.T) {
+		pasta := pasta + "okay/"
+
 		arquivos := AbrirArquivos(pasta)
 		arquivosRefletidos := reflect.ValueOf(*arquivos)
 
 		for _, entidade := range entidades {
+			entidade := entidade
 
 			t.Run(entidade, func(t *testing.T) {
+				t.Parallel()
 				arquivo := arquivosRefletidos.FieldByName(entidade).Elem()
 				tipo := arquivo.Type().String()
 
@@ -173,12 +193,17 @@ func TestAbrirArquivos(t *testing.T) {
 	})
 
 	t.Run("PermisãoErrada", func(t *testing.T) {
+		t.Parallel()
+
+		pasta := pasta + "errada/"
+
 		for _, entidade := range entidades {
+			entidade := entidade
 
 			t.Run(entidade, func(t *testing.T) {
 				const flags = os.O_CREATE
 
-				const mode os.FileMode = 0644
+				const mode os.FileMode = 0o644
 
 				caminhoArquivo := pasta + entidade + ".log"
 
@@ -187,8 +212,15 @@ func TestAbrirArquivos(t *testing.T) {
 					t.Fatalf("Um erro inesperado aconteceu: %v", erro)
 				}
 
-				defer arquivo.Chmod(mode)
-				arquivo.Chmod(0000)
+				chmod := func(mode os.FileMode) {
+					err := arquivo.Chmod(mode)
+					if err != nil {
+						t.Fatalf("Erro ao alterar a permisão do arquivo: %v", err)
+					}
+				}
+
+				defer chmod(mode)
+				chmod(0o000)
 
 				defer func() {
 					r := recover()
@@ -210,5 +242,6 @@ func TestAbrirArquivos(t *testing.T) {
 }
 
 func TestNovoLogEntidades(t *testing.T) {
+	t.Parallel()
 	NovoLogEntidades(AbrirArquivos("./logs/"), NívelDebug)
 }

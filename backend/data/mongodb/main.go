@@ -19,7 +19,10 @@ type Conexão struct {
 }
 
 // NovoDB cria um link com o banco de dados MongoDB.
-func NovoDB(ctx context.Context, uri string, nomeDB string) (*mongo.Database, *erros.Aplicação) {
+func NovoDB(ctx context.Context, uri string, nomeDB string) (
+	*mongo.Database,
+	*erros.Aplicação,
+) {
 	bd, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, erros.Novo(data.ErroConfigurarBD, nil, err)

@@ -13,11 +13,11 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
+//nolint: gochecknoglobals
 var (
 	matériaBD *MatériaBD
+	ambiente  = env.PegandoVariáveisDeAmbiente()
 )
-
-var ambiente = env.PegandoVariáveisDeAmbiente()
 
 func criarConexão(ctx context.Context) *mongo.Database {
 	uri := "mongodb://root:root@localhost:" + ambiente.Portas.BDMateria
@@ -59,7 +59,11 @@ func TestMain(m *testing.M) {
 }
 
 func TestNovoDB(t *testing.T) {
+	t.Parallel()
+
 	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
 		uri := "mongodb://root:root@localhost:" + ambiente.Portas.BDMateria
 
 		bd, erro := NovoDB(context.Background(), uri, "Teste")
@@ -74,6 +78,8 @@ func TestNovoDB(t *testing.T) {
 	})
 
 	t.Run("EndereçoInválido", func(t *testing.T) {
+		t.Parallel()
+
 		padrão := regexp.MustCompile(`error parsing uri`)
 
 		_, erro := NovoDB(context.Background(), "endereço inválido", "Teste")
@@ -86,7 +92,10 @@ func TestNovoDB(t *testing.T) {
 		}
 
 		if !padrão.MatchString(erro.ErroExterno.Error()) {
-			t.Fatalf("Esperava por um erro de configuração no URI, chegou: %v", erro.ErroExterno.Error())
+			t.Fatalf(
+				"Esperava por um erro de configuração no URI, chegou: %v",
+				erro.ErroExterno.Error(),
+			)
 		}
 	})
 }

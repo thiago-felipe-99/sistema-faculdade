@@ -97,37 +97,39 @@ func AbrirArquivos(defaultDir string) *Arquivos {
 
 	const mode os.FileMode = 0666
 
-	pessoa, err := os.OpenFile(defaultDir+"PessoaLogs.txt", flags, mode)
+	const extension = ".log"
+
+	pessoa, err := os.OpenFile(defaultDir+"Pessoa"+extension, flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	curso, err := os.OpenFile(defaultDir+"CursoLogs.txt", flags, mode)
+	curso, err := os.OpenFile(defaultDir+"Curso"+extension, flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	aluno, err := os.OpenFile(defaultDir+"AlunoLogs.txt", flags, mode)
+	aluno, err := os.OpenFile(defaultDir+"Aluno"+extension, flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	professor, err := os.OpenFile(defaultDir+"ProfessorLogs.txt", flags, mode)
+	professor, err := os.OpenFile(defaultDir+"Professor"+extension, flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	administrativo, err := os.OpenFile(defaultDir+"AdministrativoLogs.txt", flags, mode)
+	administrativo, err := os.OpenFile(defaultDir+"Administrativo"+extension, flags, mode) //nolint:lll
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	matéria, err := os.OpenFile(defaultDir+"MatériaLogs.txt", flags, mode)
+	matéria, err := os.OpenFile(defaultDir+"Matéria"+extension, flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	turma, err := os.OpenFile(defaultDir+"TurmaLogs.txt", flags, mode)
+	turma, err := os.OpenFile(defaultDir+"Turma"+extension, flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}

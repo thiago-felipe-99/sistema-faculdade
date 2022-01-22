@@ -16,7 +16,7 @@ var ErroTamanhoInválido = erros.Padrão{
 // Número retorna um inteiro aleatório de [0,n).
 func Número(n uint) uint {
 	if n <= 0 {
-		panic(ErroTamanhoInválido)
+		panic(ErroTamanhoInválido.Error())
 	}
 
 	número, err := rand.Int(rand.Reader, big.NewInt(int64(n)))
@@ -30,7 +30,7 @@ func Número(n uint) uint {
 // Palavra criar uma Palavra aleatório de um tamanho fixo.
 func Palavra(tamanho uint) string {
 	if tamanho <= 0 {
-		panic(ErroTamanhoInválido)
+		panic(ErroTamanhoInválido.Error())
 	}
 
 	letters := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũçABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ") //nolint:lll

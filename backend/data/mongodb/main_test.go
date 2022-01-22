@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"testing"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -15,8 +16,15 @@ import (
 
 //nolint: gochecknoglobals
 var (
-	matériaBD *MatériaBD
-	ambiente  = env.PegandoVariáveisDeAmbiente()
+	matériaBD         *MatériaBD
+	matériaBDInválido *MatériaBD
+	ambiente          = env.PegandoVariáveisDeAmbiente()
+)
+
+const (
+	tamanhoMáximoPréRequisito = 10
+	tamanhoMáximoPalavra      = 20
+	cargaHoráriaMáxima        = 10
 )
 
 func criarConexão(ctx context.Context) *mongo.Database {
@@ -40,10 +48,19 @@ func criandoConexõesComAsColeções(bd *mongo.Database) {
 
 	logMatéria := logs.NovoLog(arquivos.Matéria, logs.NívelDebug)
 
+	conexãoMatéria := *NovaConexão(context.Background(), logMatéria, bd)
+
 	matériaBD = &MatériaBD{
-		Conexão:       *NovaConexão(logMatéria, bd),
-		NomeDaColeção: "Matéria",
+		Conexão:    conexãoMatéria,
+		Collection: conexãoMatéria.BD.Collection("Matéria"),
 	}
+
+	matériaBDInválido = &MatériaBD{
+		Conexão:    conexãoMatéria,
+		Collection: conexãoMatéria.BD.Collection("MatériaInválida"),
+	}
+
+	matériaBDInválido.Timeout = time.Microsecond
 }
 
 func TestMain(m *testing.M) {

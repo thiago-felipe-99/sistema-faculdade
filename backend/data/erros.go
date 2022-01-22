@@ -33,6 +33,11 @@ const (
 	alunoTurmaNãoEncontrado
 	pegarAlunoTurma
 	deletarAlunoTurma
+	inserirMatéria
+	atualizarMatéria
+	matériaNãoEncontrada
+	pegarMatéria
+	deletarMatéria
 )
 
 var criarErroPadrão = erros.NovoPadrãoFunc("LÓGICA") //nolint:gochecknoglobals
@@ -149,5 +154,25 @@ var (
 	ErroDeletarAlunoTurma = criarErroPadrão(
 		"Erro ao deletar as turmas do aluno",
 		deletarAlunoTurma,
+	)
+	ErroInserirMatéria = criarErroPadrão(
+		"Erro ao inserir a matéria",
+		inserirMatéria,
+	)
+	ErroAtualizarMatéria = criarErroPadrão(
+		"Erro ao atualizar a matéria",
+		atualizarMatéria,
+	)
+	ErroMatériaNãoEncontrada = criarErroPadrão(
+		"Matéria não encontrada",
+		matériaNãoEncontrada,
+	)
+	ErroPegarMatéria = criarErroPadrão(
+		"Erro ao pegar a matéria",
+		pegarMatéria,
+	)
+	ErroDeletarMatéria = criarErroPadrão(
+		"Erro ao deletar a matéria",
+		deletarMatéria,
 	)
 )

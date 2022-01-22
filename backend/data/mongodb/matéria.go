@@ -59,7 +59,26 @@ func (bd MatériaBD) Atualizar(
 	id entidades.ID,
 	matéria *entidades.Matéria,
 ) *erros.Aplicação {
-	bd.Log.Informação("Atualizando Matéria")
+	bd.Log.Informação("Atualizando Matéria com ID:", matéria.ID.String())
+
+	atualizar := &matériaParse{
+		ID:                  id,
+		Nome:                matéria.Nome,
+		CargaHoráriaSemanal: matéria.CargaHoráriaSemanal,
+		Créditos:            matéria.Créditos,
+		PréRequisitos:       matéria.PréRequisitos,
+		Tipo:                matéria.Tipo,
+	}
+
+	query := bson.D{{Key: "$set", Value: atualizar}}
+
+	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
+	defer cancel()
+
+	_, err := bd.Collection.UpdateByID(ctx, id, query)
+	if err != nil {
+		return erros.Novo(data.ErroAtualizarMatéria, nil, err)
+	}
 
 	return nil
 }

@@ -109,7 +109,45 @@ func TestInserirMatéria(t *testing.T) {
 	})
 }
 
-func TestPegarPessoa(t *testing.T) {
+func TestAtualizarMatéria(t *testing.T) {
+	t.Parallel()
+
+	id := adicionarMatéria(t, criarMatériaAleatória())
+	novaMatéria := criarMatériaAleatória()
+	novaMatéria.ID = id
+
+	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
+		erro := matériaBD.Atualizar(id, novaMatéria)
+		if erro != nil {
+			t.Fatalf("Não deveria ter erro ao atualizar matéria: %v", erro)
+		}
+
+		matériaSalva, erro := matériaBD.Pegar(id)
+		if erro != nil {
+			t.Fatalf("Erro ao pegar a matéria no banco de dados: %v", erro)
+		}
+
+		if !reflect.DeepEqual(novaMatéria, matériaSalva) {
+			t.Fatalf(
+				"Erro ao salvar a matéria no banco de dados, queria: %v, chegou: %v",
+				novaMatéria,
+				matériaSalva,
+			)
+		}
+	})
+
+	t.Run("TimeOut", func(t *testing.T) {
+		t.Parallel()
+		erro := matériaBDInválido.Atualizar(id, novaMatéria)
+		if erro == nil || !mongo.IsTimeout(erro.ErroExterno) {
+			t.Fatalf("Esperava um erro de Timeout, chegou: %v", erro)
+		}
+	})
+}
+
+func TestPegarMatéria(t *testing.T) {
 	t.Parallel()
 
 	t.Run("OKAY", func(t *testing.T) {

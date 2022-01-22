@@ -8,7 +8,8 @@ import (
 // MatériaBD representa a conexão com o banco de dados MongoDB para fazer
 // alterações na entidade Matéria.
 type MatériaBD struct {
-	Connexão
+	Conexão
+	NomeDaColeção string
 }
 
 // Inserir é uma método que adiciona uma entidade Matéria no banco de

@@ -58,6 +58,7 @@ func criarConexão() *sql.DB {
 
 func criandoConexõesComAsTabelas(bd *sql.DB) {
 	arquivos := logs.AbrirArquivos("./logs/")
+
 	logPessoa := logs.NovoLog(arquivos.Pessoa, logs.NívelDebug)
 
 	logCurso := logs.NovoLog(arquivos.Curso, logs.NívelDebug)
@@ -138,43 +139,43 @@ func TestMain(m *testing.M) {
 	os.Exit(código)
 }
 
-// TestNovoBD verifica se a inicialização do banco de dados está okay.
-//nolint: paralleltest
 func TestNovoBD(t *testing.T) {
-	//nolint: exhaustivestruct
-	config := mysql.Config{
-		User:                 "Teste",
-		Passwd:               "Teste",
-		Net:                  "tcp",
-		Addr:                 "localhost:" + ambiente.Portas.BDAdministrativo,
-		DBName:               "Teste",
-		AllowNativePasswords: true,
-	}
+	t.Run("OKAY", func(t *testing.T) {
+		//nolint: exhaustivestruct
+		config := mysql.Config{
+			User:                 "Teste",
+			Passwd:               "Teste",
+			Net:                  "tcp",
+			Addr:                 "localhost:" + ambiente.Portas.BDAdministrativo,
+			DBName:               "Teste",
+			AllowNativePasswords: true,
+		}
 
-	bd, erroAplicação := NovoBD(config.FormatDSN())
-	if erroAplicação != nil {
-		t.Fatalf("Erro ao configurar ao banco de dados: %v", erroAplicação)
-	}
+		bd, erro := NovoBD(config.FormatDSN())
+		if erro != nil {
+			t.Fatalf("Erro ao configurar ao banco de dados: %v", erro)
+		}
 
-	erro := bd.Ping()
-	if erro != nil {
-		t.Fatalf("Erro ao conectar ao banco de dados: %v", erro)
-	}
-}
+		err := bd.Ping()
+		if err != nil {
+			t.Fatalf("Erro ao conectar ao banco de dados: %v", err)
+		}
+	})
 
-func TestNovoBD_EndereçoErrado(t *testing.T) {
-	padrão := regexp.MustCompile(`invalid DSN`)
+	t.Run("EndereçoInválido", func(t *testing.T) {
+		padrão := regexp.MustCompile(`invalid DSN`)
 
-	_, erro := NovoBD("endereço inválido")
-	if erro == nil {
-		t.Fatalf("Devia dar um erro na configuração")
-	}
+		_, erro := NovoBD("endereço inválido")
+		if erro == nil {
+			t.Fatalf("Devia dar um erro na configuração")
+		}
 
-	if erro.ErroExterno == nil {
-		t.Fatalf("Devia da um erro externo")
-	}
+		if erro.ErroExterno == nil {
+			t.Fatalf("Devia da um erro externo")
+		}
 
-	if !padrão.MatchString(erro.ErroExterno.Error()) {
-		t.Fatalf("Esperava por um erro de configuração no DSN, chegou: %v", erro.ErroExterno.Error())
-	}
+		if !padrão.MatchString(erro.ErroExterno.Error()) {
+			t.Fatalf("Esperava por um erro de configuração no DSN, chegou: %v", erro.ErroExterno.Error())
+		}
+	})
 }

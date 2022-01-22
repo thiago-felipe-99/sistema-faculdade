@@ -37,11 +37,11 @@ func DataPadrão(log *logs.Entidades, bdSQL *sql.DB) *data.Data {
 	}
 
 	MariaDBMatéria := mongodb.MatériaBD{
-		Connexão: *mongodb.NovaConexão(log.Matéria),
+		Conexão: *mongodb.NovaConexão(log.Matéria),
 	}
 
 	MariaDBTurma := mongodb.TurmaBD{
-		Connexão: *mongodb.NovaConexão(log.Turma),
+		Conexão: *mongodb.NovaConexão(log.Turma),
 	}
 
 	return &data.Data{

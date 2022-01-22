@@ -8,7 +8,7 @@ import (
 // TurmaBD representa a conexão com o banco de dados MongoDB para fazer alterações
 // na entidade Turma.
 type TurmaBD struct {
-	Connexão
+	Conexão
 }
 
 // Inserir é uma método que adiciona uma entidade Turma no banco de dados

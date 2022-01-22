@@ -6,6 +6,8 @@ import (
 )
 
 func TestAplicação(t *testing.T) {
+	t.Parallel()
+
 	erroPadrão1 := Padrão{"Mensagem1", "Código1"}
 	erroPadrão2 := Padrão{"Mensagem2", "Código2"}
 	erroInicial := &Aplicação{
@@ -18,6 +20,8 @@ func TestAplicação(t *testing.T) {
 	erro := Novo(&erroPadrão1, erroInicial, &erroPadrão2)
 
 	t.Run("Traçado", func(t *testing.T) {
+		t.Parallel()
+
 		mensagem := fmt.Sprintf(
 			"Erro Da Aplicação[%s]: %s\n\t%s\n\t%s",
 			erroPadrão1.Código, erroPadrão1.Mensagem,
@@ -28,16 +32,19 @@ func TestAplicação(t *testing.T) {
 		if mensagem != erro.Traçado() {
 			t.Fatalf("Esperava: %s\nChegou: %s", mensagem, erro.Traçado())
 		}
-
 	})
 
 	t.Run("Error", func(t *testing.T) {
+		t.Parallel()
+
 		if erro.Error() != erro.Traçado() {
 			t.Fatalf("Esperava: %s\nChegou: %s", erro.Traçado(), erro.Error())
 		}
 	})
 
 	t.Run("ÉPadrão", func(t *testing.T) {
+		t.Parallel()
+
 		if !erro.ÉPadrão(&erroPadrão1) {
 			t.Fatalf("Esperava: %s\nChegou: %s", erroPadrão1.Código, erro.Código)
 		}
@@ -45,6 +52,8 @@ func TestAplicação(t *testing.T) {
 }
 
 func TestPadrão(t *testing.T) {
+	t.Parallel()
+
 	erro := Padrão{"Mensagem", "Código"}
 	mensagem := "Erro Código: Mensagem"
 
@@ -54,6 +63,8 @@ func TestPadrão(t *testing.T) {
 }
 
 func TestNovo(t *testing.T) {
+	t.Parallel()
+
 	erro := Padrão{"Mensagem", "Código"}
 
 	erroEsperado := &Aplicação{
@@ -71,6 +82,8 @@ func TestNovo(t *testing.T) {
 }
 
 func TestErroExterno(t *testing.T) {
+	t.Parallel()
+
 	erro := Padrão{"Mensagem", "Código"}
 	mensagem := "Erro Externo: Erro Código: Mensagem"
 
@@ -80,6 +93,8 @@ func TestErroExterno(t *testing.T) {
 }
 
 func TestNovoPadrãoFunc(t *testing.T) {
+	t.Parallel()
+
 	padrão := NovoPadrãoFunc("PACOTE")
 	erro := padrão("Mensagem", 1)
 	mensagem := "Erro PACOTE-[1]: Mensagem"

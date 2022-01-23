@@ -4,7 +4,6 @@ import (
 	"database/sql"
 
 	. "thiagofelipe.com.br/sistema-faculdade-backend/data"
-	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
@@ -16,9 +15,9 @@ type AlunoBD struct {
 	NomeDaTabelaSecundária string
 }
 
-// InserirTurmas é um método que adiciona turmas de entidades Aluno
+// InserirTurmas é um método que adiciona turmas de aluno
 // no banco de dados MariaDB.
-func (bd AlunoBD) InserirTurmas(turmas *[]entidades.TurmaAluno) *erros.Aplicação {
+func (bd AlunoBD) InserirTurmas(turmas *[]turmaAluno) erro {
 	bd.Log.Informação("Inserindo turmas")
 
 	if len(*turmas) <= 0 {
@@ -71,7 +70,7 @@ func (bd AlunoBD) InserirTurmas(turmas *[]entidades.TurmaAluno) *erros.Aplicaç�
 
 // Inserir é um método que adiciona uma entidade Aluno no banco de dados
 // MariaDB.
-func (bd AlunoBD) Inserir(aluno *entidades.Aluno) *erros.Aplicação {
+func (bd AlunoBD) Inserir(aluno *aluno) erro {
 	bd.Log.Informação("Inserindo Aluno com o seguinte ID: " + aluno.ID.String())
 
 	query := "INSERT INTO " + bd.NomeDaTabela +
@@ -102,7 +101,7 @@ func (bd AlunoBD) Inserir(aluno *entidades.Aluno) *erros.Aplicação {
 
 // Atualizar é um método que faz a atualização de uma entidade Aluno no banco de
 // dados MariaDB.
-func (bd AlunoBD) Atualizar(entidades.ID, *entidades.Aluno) *erros.Aplicação {
+func (bd AlunoBD) Atualizar(id, *aluno) erro {
 	bd.Log.Informação("Atualizando Aluno")
 
 	return nil
@@ -110,10 +109,10 @@ func (bd AlunoBD) Atualizar(entidades.ID, *entidades.Aluno) *erros.Aplicação {
 
 // PegarTurmas é um método que pega as turmas de um entidade Aluno no banco de
 // dados MariaDB.
-func (bd AlunoBD) PegarTurmas(idAluno entidades.ID) (*[]entidades.TurmaAluno, *erros.Aplicação) {
+func (bd AlunoBD) PegarTurmas(idAluno id) (*[]turmaAluno, erro) {
 	bd.Log.Informação("Pegando as turmas do aluno com seguinte ID: " + idAluno.String())
 
-	var turmas []entidades.TurmaAluno
+	var turmas []turmaAluno
 
 	query := "SELECT ID_Aluno, ID_Turma, Status FROM " + bd.NomeDaTabelaSecundária +
 		" WHERE ID_Aluno = ?"
@@ -130,7 +129,7 @@ func (bd AlunoBD) PegarTurmas(idAluno entidades.ID) (*[]entidades.TurmaAluno, *e
 	defer linhas.Close()
 
 	for linhas.Next() {
-		var turma entidades.TurmaAluno
+		var turma turmaAluno
 
 		erro := linhas.Scan(&turma.IDAluno, &turma.IDTurma, &turma.Status)
 		if erro != nil {
@@ -157,7 +156,7 @@ func (bd AlunoBD) PegarTurmas(idAluno entidades.ID) (*[]entidades.TurmaAluno, *e
 }
 
 // Pegar é uma método que retorna uma entidade Aluno no banco de dados MariaDB.
-func (bd AlunoBD) Pegar(id entidades.ID) (*entidades.Aluno, *erros.Aplicação) {
+func (bd AlunoBD) Pegar(id id) (*aluno, erro) {
 	bd.Log.Informação("Pegando Aluno com o seguinte ID: " + id.String())
 
 	turmas, erroAplicação := bd.PegarTurmas(id)
@@ -169,7 +168,7 @@ func (bd AlunoBD) Pegar(id entidades.ID) (*entidades.Aluno, *erros.Aplicação) 
 		)
 	}
 
-	var aluno entidades.Aluno
+	var aluno aluno
 	aluno.Turmas = *turmas
 
 	query := "SELECT ID, ID_Pessoa, ID_Curso, Matrícula, Data_De_Ingresso," +
@@ -208,7 +207,7 @@ func (bd AlunoBD) Pegar(id entidades.ID) (*entidades.Aluno, *erros.Aplicação) 
 }
 
 // Deletar é uma método que remove uma entidade Aluno no banco de dados MariaDB.
-func (bd AlunoBD) Deletar(entidades.ID) *erros.Aplicação {
+func (bd AlunoBD) Deletar(id) erro {
 	bd.Log.Informação("Deletando Aluno")
 
 	return nil

@@ -11,15 +11,28 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
+type (
+	erro           = *erros.Aplicação
+	id             = entidades.ID
+	cpf            = entidades.CPF
+	pessoa         = entidades.Pessoa
+	curso          = entidades.Curso
+	cursoMatéria   = entidades.CursoMatéria
+	aluno          = entidades.Aluno
+	turmaAluno     = entidades.TurmaAluno
+	professor      = entidades.Professor
+	administrativo = entidades.Administrativo
+)
+
 // Conexão representa a conexão com o banco de dados MariaDB.
 type Conexão struct {
-	ID  entidades.ID
+	ID  id
 	Log *logs.Log
 	BD  *sql.DB
 }
 
 // NovoBD cria um link com o banco de dados MariaDB.
-func NovoBD(dsn string) (*sql.DB, *erros.Aplicação) {
+func NovoBD(dsn string) (*sql.DB, erro) {
 	bd, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return nil, erros.Novo(data.ErroConfigurarBD, nil, err)

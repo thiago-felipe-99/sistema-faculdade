@@ -10,11 +10,11 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
-func criarMatériasCursoAleatórios(idCurso entidades.ID) *[]entidades.CursoMatéria {
-	matérias := make([]entidades.CursoMatéria, aleatorio.Número(matériasMáximas)+1)
+func criarMatériasCursoAleatórios(idCurso id) *[]cursoMatéria {
+	matérias := make([]cursoMatéria, aleatorio.Número(matériasMáximas)+1)
 
 	for i := range matérias {
-		matérias[i] = entidades.CursoMatéria{
+		matérias[i] = cursoMatéria{
 			IDCurso:    idCurso,
 			IDMatéria:  entidades.NovoID(),
 			Status:     aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
@@ -27,7 +27,7 @@ func criarMatériasCursoAleatórios(idCurso entidades.ID) *[]entidades.CursoMat�
 	return &matérias
 }
 
-func criarCursoAleatório() *entidades.Curso {
+func criarCursoAleatório() *curso {
 	id := entidades.NovoID()
 
 	dataAgora := entidades.DataAtual()
@@ -36,7 +36,7 @@ func criarCursoAleatório() *entidades.Curso {
 	dia := int(aleatorio.Número(28))
 	dataFutura := dataAgora.AddDate(ano, mês, dia)
 
-	return &entidades.Curso{
+	return &curso{
 		ID:                id,
 		Nome:              aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		DataDeInício:      dataAgora,
@@ -45,14 +45,14 @@ func criarCursoAleatório() *entidades.Curso {
 	}
 }
 
-func removerCursoMatérias(t *testing.T, idCurso entidades.ID) {
+func removerCursoMatérias(t *testing.T, idCurso id) {
 	erro := cursoBD.DeletarMatérias(idCurso)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar as matérias do: %v", erro.Error())
 	}
 }
 
-func adiconarCurso(t *testing.T, curso *entidades.Curso) {
+func adiconarCurso(t *testing.T, curso *curso) {
 	erro := cursoBD.Inserir(curso)
 	if erro != nil {
 		t.Fatalf("Erro ao inserir o curso no banco de dados: %s", erro.Error())
@@ -76,7 +76,7 @@ func adiconarCurso(t *testing.T, curso *entidades.Curso) {
 	})
 }
 
-func removerCurso(t *testing.T, id entidades.ID) {
+func removerCurso(t *testing.T, id id) {
 	erro := cursoBD.Deletar(id)
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o curso teste: %v", erro.Error())
@@ -84,7 +84,7 @@ func removerCurso(t *testing.T, id entidades.ID) {
 }
 
 func TestInserirCursoMatérias_semTamanhoMínimo(t *testing.T) {
-	matériasVazia := &[]entidades.CursoMatéria{}
+	matériasVazia := &[]cursoMatéria{}
 
 	erro := cursoBD.InserirMatérias(matériasVazia)
 	if !erro.ÉPadrão(ErroInserirCursoMatériasTamanhoMínimo) {
@@ -100,7 +100,7 @@ func TestInserirCursoMatérias_semCurso(t *testing.T) {
 	const texto = `foreign key constraint fails`
 	padrão := regexp.MustCompile(texto)
 
-	var matérias []entidades.CursoMatéria
+	var matérias []cursoMatéria
 
 	índiceMáximo := 5
 	for índice := 0; índiceMáximo > índice; índice++ {

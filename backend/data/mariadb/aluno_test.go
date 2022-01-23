@@ -8,11 +8,11 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
-func criarTurmasAlunoAleatório(idAluno entidades.ID) *[]entidades.TurmaAluno {
-	turmas := make([]entidades.TurmaAluno, aleatorio.Número(matériasMáximas)+1)
+func criarTurmasAlunoAleatório(idAluno id) *[]turmaAluno {
+	turmas := make([]turmaAluno, aleatorio.Número(matériasMáximas)+1)
 
 	for i := range turmas {
-		turmas[i] = entidades.TurmaAluno{
+		turmas[i] = turmaAluno{
 			IDAluno: idAluno,
 			IDTurma: entidades.NovoID(),
 			Status:  aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
@@ -22,7 +22,7 @@ func criarTurmasAlunoAleatório(idAluno entidades.ID) *[]entidades.TurmaAluno {
 	return &turmas
 }
 
-func criarAlunoAleatório(t *testing.T) *entidades.Aluno {
+func criarAlunoAleatório(t *testing.T) *aluno {
 	pessoa := criarPessoaAleatória()
 	adicionarPessoa(t, pessoa)
 
@@ -37,7 +37,7 @@ func criarAlunoAleatório(t *testing.T) *entidades.Aluno {
 	dia := int(aleatorio.Número(28))
 	dataFutura := dataAgora.AddDate(ano, mês, dia)
 
-	return &entidades.Aluno{
+	return &aluno{
 		ID:             id,
 		Pessoa:         pessoa.ID,
 		Curso:          curso.ID,
@@ -50,7 +50,7 @@ func criarAlunoAleatório(t *testing.T) *entidades.Aluno {
 	}
 }
 
-func adicionarAluno(t *testing.T, aluno *entidades.Aluno) {
+func adicionarAluno(t *testing.T, aluno *aluno) {
 	erro := alunoBD.Inserir(aluno)
 	if erro != nil {
 		t.Fatalf("Erro ao inserir o aluno no banco de dados: %s", erro.Error())
@@ -74,7 +74,7 @@ func adicionarAluno(t *testing.T, aluno *entidades.Aluno) {
 	})
 }
 
-func removerAluno(id entidades.ID, t *testing.T) {
+func removerAluno(id id, t *testing.T) {
 	_, erro := alunoBD.BD.Exec("DELETE FROM AlunoTurma;")
 	if erro != nil {
 		t.Fatalf("Erro ao tentar deletar o aluno teste: %v", erro.Error())

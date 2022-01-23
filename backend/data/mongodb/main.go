@@ -12,7 +12,12 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
-type erro = *erros.Aplicação
+type (
+	erro    = *erros.Aplicação
+	matéria = entidades.Matéria
+	turma   = entidades.Turma
+	id      = entidades.ID
+)
 
 // Conexão representa a conexão com o banco de dados MongoDB.
 type Conexão struct {

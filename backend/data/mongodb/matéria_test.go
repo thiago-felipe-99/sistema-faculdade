@@ -12,8 +12,8 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
-func criarMatériaAleatória() *entidades.Matéria {
-	préRequisitos := []entidades.ID{}
+func criarMatériaAleatória() *matéria {
+	préRequisitos := []id{}
 	índice := uint(0)
 
 	for ; índice <= aleatorio.Número(tamanhoMáximoPréRequisito); índice++ {
@@ -22,7 +22,7 @@ func criarMatériaAleatória() *entidades.Matéria {
 
 	ch := aleatorio.Número(cargaHoráriaMáxima) + 1
 
-	matéria := &entidades.Matéria{
+	matéria := &matéria{
 		ID:                  entidades.NovoID(),
 		Nome:                aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		CargaHoráriaSemanal: time.Hour * time.Duration(ch),
@@ -34,8 +34,8 @@ func criarMatériaAleatória() *entidades.Matéria {
 	return matéria
 }
 
-func criarMatériasAleatórias(quantidade uint) *[]entidades.Matéria {
-	matérias := []entidades.Matéria{}
+func criarMatériasAleatórias(quantidade uint) *[]matéria {
+	matérias := []matéria{}
 
 	for índice := uint(0); índice <= quantidade; índice++ {
 		matérias = append(matérias, *criarMatériaAleatória())
@@ -44,7 +44,7 @@ func criarMatériasAleatórias(quantidade uint) *[]entidades.Matéria {
 	return &matérias
 }
 
-func adicionarMatéria(t *testing.T, matéria *entidades.Matéria) entidades.ID {
+func adicionarMatéria(t *testing.T, matéria *matéria) id {
 	t.Helper()
 
 	erro := matériaBD.Inserir(matéria)
@@ -72,7 +72,7 @@ func adicionarMatéria(t *testing.T, matéria *entidades.Matéria) entidades.ID 
 	return matéria.ID
 }
 
-func removerMatéria(t *testing.T, id entidades.ID) {
+func removerMatéria(t *testing.T, id id) {
 	t.Helper()
 
 	erro := matériaBD.Deletar(id)
@@ -200,7 +200,7 @@ func TestExisteMatérias(t *testing.T) {
 			t.Fatalf("Erro ao inserir múltiplas matérias: %v", erro)
 		}
 
-		ids := []entidades.ID{}
+		ids := []id{}
 		for _, matéria := range *matérias {
 			ids = append(ids, matéria.ID)
 		}
@@ -229,7 +229,7 @@ func TestExisteMatérias(t *testing.T) {
 	t.Run("TamanhoInválido", func(t *testing.T) {
 		t.Parallel()
 
-		_, _, erro := matériaBD.ExisteIDs([]entidades.ID{})
+		_, _, erro := matériaBD.ExisteIDs([]id{})
 		if erro == nil || !erro.ÉPadrão(data.ErroIDsTamanho) {
 			t.Fatalf("Esperava: %v\nChegou: %v", data.ErroIDsTamanho, erro)
 		}
@@ -238,7 +238,7 @@ func TestExisteMatérias(t *testing.T) {
 	t.Run("TimeOut", func(t *testing.T) {
 		t.Parallel()
 
-		_, _, erro := matériaBDInválido.ExisteIDs([]entidades.ID{entidades.NovoID()})
+		_, _, erro := matériaBDInválido.ExisteIDs([]id{entidades.NovoID()})
 		if erro == nil || !mongo.IsTimeout(erro.ErroExterno) {
 			t.Fatalf("Esperava um erro de Timeout, chegou: %v", erro)
 		}
@@ -254,7 +254,7 @@ func TestExisteMatérias(t *testing.T) {
 			t.Fatalf("Erro ao inserir múltiplas matérias: %v", erro)
 		}
 
-		ids := []entidades.ID{}
+		ids := []id{}
 		for _, matéria := range *matérias {
 			ids = append(ids, matéria.ID)
 		}
@@ -331,7 +331,7 @@ func TestMúltiplos(t *testing.T) {
 			t.Errorf("Não esperava erro ao inserir múltiplas matérias: %v", erro)
 		}
 
-		ids := []entidades.ID{}
+		ids := []id{}
 
 		for _, matéria := range *matérias {
 			ids = append(ids, matéria.ID)
@@ -375,7 +375,7 @@ func TestMúltiplos(t *testing.T) {
 	t.Run("TimeOut/Deletar", func(t *testing.T) {
 		t.Parallel()
 
-		erro := matériaBDInválido.deletarMúltiplas([]entidades.ID{entidades.NovoID()})
+		erro := matériaBDInválido.deletarMúltiplas([]id{entidades.NovoID()})
 		if erro == nil || !mongo.IsTimeout(erro.ErroExterno) {
 			t.Fatalf("Esperava um erro de Timeout, chegou: %v", erro)
 		}

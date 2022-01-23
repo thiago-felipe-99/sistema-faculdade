@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
-	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
@@ -18,7 +17,7 @@ type PessoaBD struct {
 
 // Inserir é uma método que faz adiciona uma entidade Pessoa no banco de dados
 // MariaDB.
-func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
+func (bd PessoaBD) Inserir(pessoa *pessoa) erro {
 	bd.Log.Informação("Inserindo Pessoa com o seguinte ID: " + pessoa.ID.String())
 
 	query := "INSERT INTO " + bd.NomeDaTabela +
@@ -46,10 +45,7 @@ func (bd PessoaBD) Inserir(pessoa *entidades.Pessoa) *erros.Aplicação {
 
 // Atualizar é uma método que faz a atualização de uma entidade Pessoa no banco
 // de dados MariaDB.
-func (bd PessoaBD) Atualizar(
-	id entidades.ID,
-	pessoa *entidades.Pessoa,
-) *erros.Aplicação {
+func (bd PessoaBD) Atualizar(id id, pessoa *pessoa) erro {
 	bd.Log.Informação("Atualizando Pessoa com o seguinte ID: " + id.String())
 
 	query := "UPDATE " + bd.NomeDaTabela +
@@ -77,10 +73,10 @@ func (bd PessoaBD) Atualizar(
 }
 
 // Pegar é uma método que retorna uma entidade Pessoa no banco de dados MariaDB.
-func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação) {
+func (bd PessoaBD) Pegar(id id) (*pessoa, erro) {
 	bd.Log.Informação("Pegando Pessoa com o seguinte ID: " + id.String())
 
-	var pessoa entidades.Pessoa
+	var pessoa pessoa
 
 	query := "SELECT ID, Nome, CPF, Data_De_Nascimento, Senha FROM " +
 		bd.NomeDaTabela + " WHERE ID = ?"
@@ -117,13 +113,10 @@ func (bd PessoaBD) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação
 
 // PegarPorCPF é uma método que retorna uma entidade Pessoa no banco de dados
 // MariaDB.
-func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (
-	*entidades.Pessoa,
-	*erros.Aplicação,
-) {
+func (bd PessoaBD) PegarPorCPF(cpf cpf) (*pessoa, erro) {
 	bd.Log.Informação("Pegando Pessoa com o seguinte CPF: " + cpf)
 
-	var pessoa entidades.Pessoa
+	var pessoa pessoa
 
 	query := "SELECT ID, Nome, CPF, Data_De_Nascimento, Senha FROM " +
 		bd.NomeDaTabela + " WHERE CPF = ?"
@@ -160,7 +153,7 @@ func (bd PessoaBD) PegarPorCPF(cpf entidades.CPF) (
 
 // Deletar é uma método que remove uma entidade Pessoa no banco de dados
 // MariaDB.
-func (bd PessoaBD) Deletar(id entidades.ID) *erros.Aplicação {
+func (bd PessoaBD) Deletar(id id) erro {
 	bd.Log.Informação("Deletando Pessoa com o seguinte ID: " + id.String())
 
 	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"

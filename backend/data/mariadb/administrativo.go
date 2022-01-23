@@ -1,10 +1,5 @@
 package mariadb
 
-import (
-	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
-	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
-)
-
 // AdministrativoBD representa a conexão com o banco de dados MariaDB para fazer
 // alterações na entidade Administrativo.
 type AdministrativoBD struct {
@@ -13,7 +8,7 @@ type AdministrativoBD struct {
 
 // Inserir é uma método que adiciona uma entidade Administrativo no banco
 // de dados MariaDB.
-func (bd AdministrativoBD) Inserir(*entidades.Administrativo) *erros.Aplicação {
+func (bd AdministrativoBD) Inserir(*administrativo) erro {
 	bd.Log.Informação("Inserindo Administrativo")
 
 	return nil
@@ -21,7 +16,7 @@ func (bd AdministrativoBD) Inserir(*entidades.Administrativo) *erros.Aplicação
 
 // Atualizar é uma método que faz a atualização de uma entidade Administrativo
 // no banco de dados MariaDB.
-func (bd AdministrativoBD) Atualizar(entidades.ID, *entidades.Administrativo) *erros.Aplicação {
+func (bd AdministrativoBD) Atualizar(id, *administrativo) erro {
 	bd.Log.Informação("Atualizando Administrativo")
 
 	return nil
@@ -29,7 +24,7 @@ func (bd AdministrativoBD) Atualizar(entidades.ID, *entidades.Administrativo) *e
 
 // Pegar é uma método que retorna uma entidade Administrativo no banco de dados
 // MariaDB.
-func (bd AdministrativoBD) Pegar(entidades.ID) (*entidades.Administrativo, *erros.Aplicação) {
+func (bd AdministrativoBD) Pegar(id) (*administrativo, erro) {
 	bd.Log.Informação("Pegando Administrativo")
 
 	return nil, nil
@@ -37,7 +32,7 @@ func (bd AdministrativoBD) Pegar(entidades.ID) (*entidades.Administrativo, *erro
 
 // Deletar é uma método que remove uma entidade Administrativo no banco de dados
 // MariaDB.
-func (bd AdministrativoBD) Deletar(entidades.ID) *erros.Aplicação {
+func (bd AdministrativoBD) Deletar(id) erro {
 	bd.Log.Informação("Deletando Administrativo")
 
 	return nil

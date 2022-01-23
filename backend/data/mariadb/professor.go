@@ -1,10 +1,5 @@
 package mariadb
 
-import (
-	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
-	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
-)
-
 // ProfessorBD representa a conexão com o banco de dados MariaDB para fazer
 // alterações na entidade Professor.
 type ProfessorBD struct {
@@ -13,7 +8,7 @@ type ProfessorBD struct {
 
 // Inserir é uma método que adiciona uma entidade Professor no banco de
 // dados MariaDB.
-func (bd ProfessorBD) Inserir(*entidades.Professor) *erros.Aplicação {
+func (bd ProfessorBD) Inserir(*professor) erro {
 	bd.Log.Informação("Inserindo Professor")
 
 	return nil
@@ -21,7 +16,7 @@ func (bd ProfessorBD) Inserir(*entidades.Professor) *erros.Aplicação {
 
 // Atualizar é uma método que faz a atualização de uma entidade Professor no
 // banco de dados MariaDB.
-func (bd ProfessorBD) Atualizar(entidades.ID, *entidades.Professor) *erros.Aplicação {
+func (bd ProfessorBD) Atualizar(id, *professor) erro {
 	bd.Log.Informação("Atualizando Professor")
 
 	return nil
@@ -29,7 +24,7 @@ func (bd ProfessorBD) Atualizar(entidades.ID, *entidades.Professor) *erros.Aplic
 
 // Pegar é uma método que retorna uma entidade Professor no banco de dados
 // MariaDB.
-func (bd ProfessorBD) Pegar(entidades.ID) (*entidades.Professor, *erros.Aplicação) {
+func (bd ProfessorBD) Pegar(id) (*professor, erro) {
 	bd.Log.Informação("Pegando Professor")
 
 	return nil, nil
@@ -37,7 +32,7 @@ func (bd ProfessorBD) Pegar(entidades.ID) (*entidades.Professor, *erros.Aplicaç
 
 // Deletar é uma método que remove uma entidade Professor no banco de dados
 // MariaDB.
-func (bd ProfessorBD) Deletar(entidades.ID) *erros.Aplicação {
+func (bd ProfessorBD) Deletar(id) erro {
 	bd.Log.Informação("Deletando Professor")
 
 	return nil

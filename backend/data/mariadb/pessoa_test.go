@@ -10,10 +10,10 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
-func criarPessoaAleatória() *entidades.Pessoa {
+func criarPessoaAleatória() *pessoa {
 	dataAgora := entidades.DataAtual()
 
-	pessoa := &entidades.Pessoa{
+	pessoa := &pessoa{
 		ID:               entidades.NovoID(),
 		Nome:             aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		CPF:              aleatorio.CPF(),
@@ -24,7 +24,7 @@ func criarPessoaAleatória() *entidades.Pessoa {
 	return pessoa
 }
 
-func adicionarPessoa(t *testing.T, pessoa *entidades.Pessoa) {
+func adicionarPessoa(t *testing.T, pessoa *pessoa) {
 	t.Helper()
 
 	erro := pessoaBD.Inserir(pessoa)
@@ -50,7 +50,7 @@ func adicionarPessoa(t *testing.T, pessoa *entidades.Pessoa) {
 	})
 }
 
-func removerPessoa(t *testing.T, id entidades.ID) {
+func removerPessoa(t *testing.T, id id) {
 	t.Helper()
 
 	erro := pessoaBD.Deletar(id)

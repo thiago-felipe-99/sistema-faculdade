@@ -4,7 +4,6 @@ import (
 	"database/sql"
 
 	. "thiagofelipe.com.br/sistema-faculdade-backend/data"
-	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
@@ -18,7 +17,7 @@ type CursoBD struct {
 
 // InserirMatérias inseres as matérias da entidade Curso no banco de dados
 // MariaDB.
-func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *erros.Aplicação {
+func (bd CursoBD) InserirMatérias(matérias *[]cursoMatéria) erro {
 	bd.Log.Informação("Inserindo matérias no Curso")
 
 	if len(*matérias) <= 0 {
@@ -75,7 +74,7 @@ func (bd CursoBD) InserirMatérias(matérias *[]entidades.CursoMatéria) *erros.
 
 // Inserir é uma método que adiciona uma entidade Curso no banco de dados
 // MariaDB.
-func (bd CursoBD) Inserir(curso *entidades.Curso) *erros.Aplicação {
+func (bd CursoBD) Inserir(curso *curso) erro {
 	bd.Log.Informação("Inserindo Curso com o seguinte ID: " + curso.ID.String())
 
 	query := "INSERT INTO " + bd.NomeDaTabela +
@@ -99,9 +98,9 @@ func (bd CursoBD) Inserir(curso *entidades.Curso) *erros.Aplicação {
 	return bd.InserirMatérias(&curso.Matérias)
 }
 
-// AtualizarMatérias é uma método que atualiza as matérias de entidades Cursos
+// AtualizarMatérias é uma método que atualiza as matérias de cursos
 // no banco de dados MariaDB.
-func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erros.Aplicação {
+func (bd CursoBD) AtualizarMatérias(matérias *[]cursoMatéria) erro {
 	bd.Log.Informação("Atualizando matérias no Curso")
 
 	query := "UPDATE " + bd.NomeDaTabelaSecundária +
@@ -148,7 +147,7 @@ func (bd CursoBD) AtualizarMatérias(matérias *[]entidades.CursoMatéria) *erro
 
 // Atualizar é uma método que faz a atualização de uma entidade Curso no banco
 // de dados MariaDB.
-func (bd CursoBD) Atualizar(id entidades.ID, curso *entidades.Curso) *erros.Aplicação {
+func (bd CursoBD) Atualizar(id id, curso *curso) erro {
 	bd.Log.Informação("Atualizando Curso com o seguinte ID: " + id.String())
 
 	erro := bd.AtualizarMatérias(&curso.Matérias)
@@ -184,10 +183,10 @@ func (bd CursoBD) Atualizar(id entidades.ID, curso *entidades.Curso) *erros.Apli
 
 // PegarMatérias é uma método que retonar as matérias de uma entidade Curso
 // no banco de dados MariaDB.
-func (bd CursoBD) PegarMatérias(idCurso entidades.ID) (*[]entidades.CursoMatéria, *erros.Aplicação) {
+func (bd CursoBD) PegarMatérias(idCurso id) (*[]cursoMatéria, erro) {
 	bd.Log.Informação("Pegando as matérias do Curso com o seguinte ID: " + idCurso.String())
 
-	var matérias []entidades.CursoMatéria
+	var matérias []cursoMatéria
 
 	query := "SELECT ID_Curso, ID_Matéria, Período, Tipo, Status, Observação FROM " +
 		bd.NomeDaTabelaSecundária + " WHERE ID_Curso = ?"
@@ -204,7 +203,7 @@ func (bd CursoBD) PegarMatérias(idCurso entidades.ID) (*[]entidades.CursoMatér
 	defer linhas.Close()
 
 	for linhas.Next() {
-		var matéria entidades.CursoMatéria
+		var matéria cursoMatéria
 
 		erro := linhas.Scan(
 			&matéria.IDCurso,
@@ -241,7 +240,7 @@ func (bd CursoBD) PegarMatérias(idCurso entidades.ID) (*[]entidades.CursoMatér
 }
 
 // Pegar é uma método que retorna uma entidade Curso no banco de dados MariaDB.
-func (bd CursoBD) Pegar(id entidades.ID) (*entidades.Curso, *erros.Aplicação) {
+func (bd CursoBD) Pegar(id id) (*curso, erro) {
 	bd.Log.Informação("Pegando Curso com o seguinte ID: " + id.String())
 
 	matérias, erroAplicação := bd.PegarMatérias(id)
@@ -256,7 +255,7 @@ func (bd CursoBD) Pegar(id entidades.ID) (*entidades.Curso, *erros.Aplicação) 
 		return nil, erros.Novo(ErroPegarCurso, erroAplicação, nil)
 	}
 
-	var curso entidades.Curso
+	var curso curso
 	curso.Matérias = *matérias
 
 	query := "SELECT ID, Nome, Data_De_Início, Data_De_Desativação FROM " +
@@ -292,7 +291,7 @@ func (bd CursoBD) Pegar(id entidades.ID) (*entidades.Curso, *erros.Aplicação) 
 
 // DeletarMatérias é uma método que remove as matérias de uma entidade Curso no
 // banco de dados MariaDB.
-func (bd CursoBD) DeletarMatérias(idCurso entidades.ID) *erros.Aplicação {
+func (bd CursoBD) DeletarMatérias(idCurso id) erro {
 	bd.Log.Informação("Deletando as matérias do Curso com o seguinte ID: " + idCurso.String())
 
 	query := "DELETE FROM " + bd.NomeDaTabelaSecundária + " WHERE ID_Curso = ?"
@@ -312,7 +311,7 @@ func (bd CursoBD) DeletarMatérias(idCurso entidades.ID) *erros.Aplicação {
 }
 
 // Deletar é uma método que remove uma entidade Curso no banco de dados MariaDB.
-func (bd CursoBD) Deletar(id entidades.ID) *erros.Aplicação {
+func (bd CursoBD) Deletar(id id) erro {
 	bd.Log.Informação("Deletando Curso com o seguinte ID: " + id.String())
 
 	erro := bd.DeletarMatérias(id)

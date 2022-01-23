@@ -9,16 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
-	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
 type matériaParse struct {
-	ID                  entidades.ID `bson:"_id"`
+	ID                  id `bson:"_id"`
 	Nome                string
 	CargaHoráriaSemanal time.Duration `bson:"carga_horária_semanal"`
 	Créditos            float32
-	PréRequisitos       []entidades.ID `bson:"pré-requisitos"`
+	PréRequisitos       []id `bson:"pré-requisitos"`
 	Tipo                string
 }
 
@@ -29,7 +28,7 @@ type MatériaBD struct {
 	Collection *mongo.Collection
 }
 
-func (bd MatériaBD) inserirMúltiplas(matérias *[]entidades.Matéria) erro {
+func (bd MatériaBD) inserirMúltiplas(matérias *[]matéria) erro {
 	ids := ""
 	for _, matéria := range *matérias {
 		ids += matéria.ID.String() + ","
@@ -65,7 +64,7 @@ func (bd MatériaBD) inserirMúltiplas(matérias *[]entidades.Matéria) erro {
 
 // Inserir é uma método que adiciona uma entidade Matéria no banco de
 // dados MongoDB.
-func (bd MatériaBD) Inserir(matéria *entidades.Matéria) erro {
+func (bd MatériaBD) Inserir(matéria *matéria) erro {
 	bd.Log.Informação("Inserindo Matéria com ID:", matéria.ID.String())
 
 	inserir := &matériaParse{
@@ -90,7 +89,7 @@ func (bd MatériaBD) Inserir(matéria *entidades.Matéria) erro {
 
 // Atualizar é uma método que faz a atualização de uma entidade Matéria no banco
 // de dados MongoDB.
-func (bd MatériaBD) Atualizar(id entidades.ID, matéria *entidades.Matéria) erro {
+func (bd MatériaBD) Atualizar(id id, matéria *matéria) erro {
 	bd.Log.Informação("Atualizando Matéria com ID:", matéria.ID.String())
 
 	atualizar := &matériaParse{
@@ -116,7 +115,7 @@ func (bd MatériaBD) Atualizar(id entidades.ID, matéria *entidades.Matéria) er
 }
 
 // Pegar é uma método que retorna uma entidade Matéria no banco de dados MongoDB.
-func (bd MatériaBD) Pegar(id entidades.ID) (*entidades.Matéria, erro) {
+func (bd MatériaBD) Pegar(id id) (*matéria, erro) {
 	bd.Log.Informação("Pegando Matéria com ID:", id)
 
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
@@ -133,7 +132,7 @@ func (bd MatériaBD) Pegar(id entidades.ID) (*entidades.Matéria, erro) {
 		return nil, erros.Novo(data.ErroPegarMatéria, nil, err)
 	}
 
-	return &entidades.Matéria{
+	return &matéria{
 		ID:                  resultado.ID,
 		Nome:                resultado.Nome,
 		CargaHoráriaSemanal: resultado.CargaHoráriaSemanal,
@@ -145,12 +144,12 @@ func (bd MatériaBD) Pegar(id entidades.ID) (*entidades.Matéria, erro) {
 
 // ExisteIDs é um método que retorna se as matérias existe no banco de dados
 // MongoDB.
-func (bd MatériaBD) ExisteIDs(ids []entidades.ID) ([]entidades.ID, bool, erro) {
+func (bd MatériaBD) ExisteIDs(ids []id) ([]id, bool, erro) {
 	if len(ids) == 0 {
-		return []entidades.ID{}, false, erros.Novo(data.ErroIDsTamanho, nil, nil)
+		return []id{}, false, erros.Novo(data.ErroIDsTamanho, nil, nil)
 	}
 
-	idsÚnico := []entidades.ID{}
+	idsÚnico := []id{}
 
 ids:
 	for _, id := range ids {
@@ -170,20 +169,20 @@ ids:
 
 	cursor, err := bd.Collection.Find(ctx, filtro, opts)
 	if err != nil {
-		return []entidades.ID{}, false, erros.Novo(data.ErroExisteMatérias, nil, err)
+		return []id{}, false, erros.Novo(data.ErroExisteMatérias, nil, err)
 	}
 
 	results := []struct {
-		ID entidades.ID `bson:"_id"`
+		ID id `bson:"_id"`
 	}{}
 
 	err = cursor.All(ctx, &results)
 	if err != nil {
-		return []entidades.ID{}, false, erros.Novo(data.ErroExisteMatérias, nil, err)
+		return []id{}, false, erros.Novo(data.ErroExisteMatérias, nil, err)
 	}
 
 	if len(results) != len(idsÚnico) {
-		ids := []entidades.ID{}
+		ids := []id{}
 
 		for _, result := range results {
 			ids = append(ids, result.ID)
@@ -195,7 +194,7 @@ ids:
 	return idsÚnico, true, nil
 }
 
-func (bd MatériaBD) deletarMúltiplas(ids []entidades.ID) erro {
+func (bd MatériaBD) deletarMúltiplas(ids []id) erro {
 	bd.Log.Informação("Deletando matérias com os IDs:", ids)
 
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
@@ -210,7 +209,7 @@ func (bd MatériaBD) deletarMúltiplas(ids []entidades.ID) erro {
 }
 
 // Deletar é uma método que remove uma entidade Matéria no banco de dados MongoDB.
-func (bd MatériaBD) Deletar(id entidades.ID) erro {
+func (bd MatériaBD) Deletar(id id) erro {
 	bd.Log.Informação("Deletando Matéria com ID:", id)
 
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)

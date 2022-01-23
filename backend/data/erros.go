@@ -177,7 +177,7 @@ var (
 		"Precisa ter no mínimo ID",
 		idsTamanho,
 	)
-	ErroExisteMatérias = criarErroPadrão(
+	ErroPegarIDs = criarErroPadrão(
 		"Erro ao verificar se as matérias existe",
 		existeMatérias,
 	)

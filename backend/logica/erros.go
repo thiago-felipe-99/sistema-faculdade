@@ -16,10 +16,15 @@ const (
 	verificarSenha
 	atualizarPessoa
 	deletarPessoa
+	idsTamanho
+	idsExiste
 	criarMatéria
 	cargaHoráriaSemanalInválida
 	créditosInválido
 	préRequisitosNãoExiste
+	matériaNãoEncontrada
+	pegarMatéria
+	deletarMatéria
 )
 
 var criarErroPadrão = erros.NovoPadrãoFunc("LÓGICA") //nolint:gochecknoglobals
@@ -69,6 +74,14 @@ var (
 		"Erro ao deletar a pessoa",
 		deletarPessoa,
 	)
+	ErroIDsTamanho = criarErroPadrão(
+		"Não foi passado nenhum ID",
+		idsTamanho,
+	)
+	ErroIDsExiste = criarErroPadrão(
+		"Erro ao verificar se os IDs existe",
+		idsExiste,
+	)
 	ErroCriarMatéria = criarErroPadrão(
 		"Erro ao criar a matéria",
 		criarMatéria,
@@ -84,5 +97,17 @@ var (
 	ErroPréRequisitosNãoExiste = criarErroPadrão(
 		"Um dos pré requisitos não existe",
 		préRequisitosNãoExiste,
+	)
+	ErroMatériaNãoEncontrada = criarErroPadrão(
+		"Não foi encontrado a matéria na aplicação",
+		matériaNãoEncontrada,
+	)
+	ErroPegarMatéria = criarErroPadrão(
+		"Erro ao pegar a matéria",
+		pegarMatéria,
+	)
+	ErroDeletarMatéria = criarErroPadrão(
+		"Erro ao deletar a matéria",
+		deletarMatéria,
 	)
 )

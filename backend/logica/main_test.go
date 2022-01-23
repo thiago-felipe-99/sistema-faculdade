@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -29,6 +30,7 @@ var (
 	pessoaBDInválido    *Pessoa
 	pessoaDataInvalida  *Pessoa
 	pessoaDataInvalida2 *Pessoa
+	matériaBDTimeOut    *Matéria
 	ambiente            = env.PegandoVariáveisDeAmbiente()
 )
 
@@ -92,6 +94,21 @@ func TestMain(m *testing.M) {
 
 	pessoaDataInvalida2 = &Pessoa{
 		&dataPessoaInvalida2{logicaTeste.Pessoa.data},
+	}
+
+	conexãoMatériaTimeOut := *mongodb.NovaConexão(
+		context.Background(),
+		log.Matéria,
+		mongoDB,
+	)
+	conexãoMatériaTimeOut.Timeout = time.Millisecond
+	dataMatériaInválida := &mongodb.MatériaBD{
+		Conexão:    conexãoMatériaTimeOut,
+		Collection: conexãoMatériaTimeOut.BD.Collection("Teste"),
+	}
+
+	matériaBDTimeOut = &Matéria{
+		data: dataMatériaInválida,
 	}
 
 	código := m.Run()

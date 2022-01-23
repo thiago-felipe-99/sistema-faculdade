@@ -34,14 +34,14 @@ func criarMatériaAleatória() *matéria {
 	return matéria
 }
 
-func criarMatériasAleatórias(quantidade uint) *[]matéria {
+func criarMatériasAleatórias(quantidade uint) []matéria {
 	matérias := []matéria{}
 
 	for índice := uint(0); índice <= quantidade; índice++ {
 		matérias = append(matérias, *criarMatériaAleatória())
 	}
 
-	return &matérias
+	return matérias
 }
 
 func adicionarMatéria(t *testing.T, matéria *matéria) id {
@@ -187,7 +187,7 @@ func TestPegarMatéria(t *testing.T) {
 }
 
 //nolint: funlen, gocognit, cyclop
-func TestExisteMatérias(t *testing.T) {
+func TestPegarMúltiplos(t *testing.T) {
 	t.Parallel()
 
 	t.Run("OKAY", func(t *testing.T) {
@@ -195,13 +195,13 @@ func TestExisteMatérias(t *testing.T) {
 
 		matérias := criarMatériasAleatórias(aleatorio.Número(tamanhoMáximoMatérias))
 
-		erro := matériaBD.inserirMúltiplas(matérias)
+		erro := matériaBD.inserirMúltiplas(&matérias)
 		if erro != nil {
 			t.Fatalf("Erro ao inserir múltiplas matérias: %v", erro)
 		}
 
 		ids := []id{}
-		for _, matéria := range *matérias {
+		for _, matéria := range matérias {
 			ids = append(ids, matéria.ID)
 		}
 
@@ -212,24 +212,28 @@ func TestExisteMatérias(t *testing.T) {
 			}
 		}()
 
-		idsExiste, existeTodas, erro := matériaBD.ExisteIDs(append(ids, ids[0]))
+		matériasSalvas, erro := matériaBD.PegarMúltiplos(append(ids, ids[0]))
 		if erro != nil {
 			t.Fatalf("Erro ao verificar se existe matérias: %v", erro)
 		}
 
-		if !existeTodas {
-			t.Fatalf("Esperava existir todas as matérias: %v", erro)
-		}
+		sort.Slice(matérias, func(i, j int) bool {
+			return matérias[i].ID.ID() < matérias[j].ID.ID()
+		})
 
-		if !reflect.DeepEqual(ids, idsExiste) {
-			t.Fatalf("Esperava os ids: %v, chegou: %v", ids, idsExiste)
+		sort.Slice(matériasSalvas, func(i, j int) bool {
+			return matériasSalvas[i].ID.ID() < matériasSalvas[j].ID.ID()
+		})
+
+		if !reflect.DeepEqual(matérias, matériasSalvas) {
+			t.Fatalf("Esperava: %v, chegou: %v", matérias, matériasSalvas)
 		}
 	})
 
 	t.Run("TamanhoInválido", func(t *testing.T) {
 		t.Parallel()
 
-		_, _, erro := matériaBD.ExisteIDs([]id{})
+		_, erro := matériaBD.PegarMúltiplos([]id{})
 		if erro == nil || !erro.ÉPadrão(data.ErroIDsTamanho) {
 			t.Fatalf("Esperava: %v\nChegou: %v", data.ErroIDsTamanho, erro)
 		}
@@ -238,7 +242,7 @@ func TestExisteMatérias(t *testing.T) {
 	t.Run("TimeOut", func(t *testing.T) {
 		t.Parallel()
 
-		_, _, erro := matériaBDInválido.ExisteIDs([]id{entidades.NovoID()})
+		_, erro := matériaBDInválido.PegarMúltiplos([]id{entidades.NovoID()})
 		if erro == nil || !mongo.IsTimeout(erro.ErroExterno) {
 			t.Fatalf("Esperava um erro de Timeout, chegou: %v", erro)
 		}
@@ -249,13 +253,13 @@ func TestExisteMatérias(t *testing.T) {
 
 		matérias := criarMatériasAleatórias(aleatorio.Número(tamanhoMáximoMatérias))
 
-		erro := matériaBD.inserirMúltiplas(matérias)
+		erro := matériaBD.inserirMúltiplas(&matérias)
 		if erro != nil {
 			t.Fatalf("Erro ao inserir múltiplas matérias: %v", erro)
 		}
 
 		ids := []id{}
-		for _, matéria := range *matérias {
+		for _, matéria := range matérias {
 			ids = append(ids, matéria.ID)
 		}
 
@@ -268,25 +272,21 @@ func TestExisteMatérias(t *testing.T) {
 
 		idsErrados := append(ids, entidades.NovoID(), entidades.NovoID())
 
-		idsExiste, existeTudo, erro := matériaBD.ExisteIDs(idsErrados)
+		matériasSalvas, erro := matériaBD.PegarMúltiplos(idsErrados)
 		if erro != nil {
 			t.Fatalf("Não esperava um erro ao verificar se matérias existe: %v", erro)
 		}
 
-		if existeTudo {
-			t.Fatalf("Esperava não existe todos IDs")
-		}
-
-		sort.Slice(ids, func(i, j int) bool {
-			return ids[i].ID() < ids[j].ID()
+		sort.Slice(matérias, func(i, j int) bool {
+			return matérias[i].ID.ID() < matérias[j].ID.ID()
 		})
 
-		sort.Slice(idsExiste, func(i, j int) bool {
-			return idsExiste[i].ID() < idsExiste[j].ID()
+		sort.Slice(matériasSalvas, func(i, j int) bool {
+			return matériasSalvas[i].ID.ID() < matériasSalvas[j].ID.ID()
 		})
 
-		if !reflect.DeepEqual(ids, idsExiste) {
-			t.Fatalf("Esperava os ids: %v, chegou: %v", ids, idsExiste)
+		if !reflect.DeepEqual(matérias, matériasSalvas) {
+			t.Fatalf("Esperava os ids: %v, chegou: %v", matérias, matériasSalvas)
 		}
 	})
 }
@@ -326,19 +326,19 @@ func TestMúltiplos(t *testing.T) {
 
 		matérias := criarMatériasAleatórias(aleatorio.Número(tamanhoMáximoMatérias))
 
-		erro := matériaBD.inserirMúltiplas(matérias)
+		erro := matériaBD.inserirMúltiplas(&matérias)
 		if erro != nil {
 			t.Errorf("Não esperava erro ao inserir múltiplas matérias: %v", erro)
 		}
 
 		ids := []id{}
 
-		for _, matéria := range *matérias {
+		for _, matéria := range matérias {
 			ids = append(ids, matéria.ID)
 		}
 
 		t.Run("Pegar", func(t *testing.T) {
-			for _, matéria := range *matérias {
+			for _, matéria := range matérias {
 				matéria := matéria
 				t.Run("Pegar/"+matéria.ID.String(), func(t *testing.T) {
 					t.Parallel()
@@ -366,7 +366,7 @@ func TestMúltiplos(t *testing.T) {
 
 		matérias := criarMatériasAleatórias(aleatorio.Número(tamanhoMáximoMatérias))
 
-		erro := matériaBDInválido.inserirMúltiplas(matérias)
+		erro := matériaBDInválido.inserirMúltiplas(&matérias)
 		if erro == nil || !mongo.IsTimeout(erro.ErroExterno) {
 			t.Fatalf("Esperava um erro de Timeout, chegou: %v", erro)
 		}

@@ -75,7 +75,7 @@ type Matéria interface {
 	Inserir(*matéria) erro
 	Atualizar(id, *matéria) erro
 	Pegar(id) (*matéria, erro)
-	ExisteIDs([]id) ([]id, bool, erro)
+	PegarMúltiplos([]id) ([]matéria, erro)
 	Deletar(id) erro
 }
 

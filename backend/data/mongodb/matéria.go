@@ -7,8 +7,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
+	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
@@ -142,56 +142,46 @@ func (bd MatériaBD) Pegar(id id) (*matéria, erro) {
 	}, nil
 }
 
-// ExisteIDs é um método que retorna se as matérias existe no banco de dados
+// PegarIDs é um método que retorna se as matérias existe no banco de dados
 // MongoDB.
-func (bd MatériaBD) ExisteIDs(ids []id) ([]id, bool, erro) {
+func (bd MatériaBD) PegarMúltiplos(ids []id) ([]matéria, erro) {
 	if len(ids) == 0 {
-		return []id{}, false, erros.Novo(data.ErroIDsTamanho, nil, nil)
+		return []matéria{}, erros.Novo(data.ErroIDsTamanho, nil, nil)
 	}
 
-	idsÚnico := []id{}
-
-ids:
-	for _, id := range ids {
-		for _, idÚnico := range idsÚnico {
-			if id == idÚnico {
-				break ids
-			}
-		}
-		idsÚnico = append(idsÚnico, id)
-	}
+	idsÚnicos := entidades.IDsÚnicos(ids)
 
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
 	defer cancel()
 
-	opts := options.Find().SetProjection(bson.M{"_id": 1})
-	filtro := bson.M{"_id": bson.M{"$in": idsÚnico}}
+	filtro := bson.M{"_id": bson.M{"$in": idsÚnicos}}
 
-	cursor, err := bd.Collection.Find(ctx, filtro, opts)
+	cursor, err := bd.Collection.Find(ctx, filtro)
 	if err != nil {
-		return []id{}, false, erros.Novo(data.ErroExisteMatérias, nil, err)
+		return []matéria{}, erros.Novo(data.ErroPegarIDs, nil, err)
 	}
 
-	results := []struct {
-		ID id `bson:"_id"`
-	}{}
+	results := []matériaParse{}
 
 	err = cursor.All(ctx, &results)
 	if err != nil {
-		return []id{}, false, erros.Novo(data.ErroExisteMatérias, nil, err)
+		return []matéria{}, erros.Novo(data.ErroPegarIDs, nil, err)
 	}
 
-	if len(results) != len(idsÚnico) {
-		ids := []id{}
+	matérias := []matéria{}
 
-		for _, result := range results {
-			ids = append(ids, result.ID)
-		}
-
-		return ids, false, nil
+	for _, matériaparse := range results {
+		matérias = append(matérias, matéria{
+			ID:                  matériaparse.ID,
+			Nome:                matériaparse.Nome,
+			CargaHoráriaSemanal: matériaparse.CargaHoráriaSemanal,
+			Créditos:            matériaparse.Créditos,
+			PréRequisitos:       matériaparse.PréRequisitos,
+			Tipo:                matériaparse.Tipo,
+		})
 	}
 
-	return idsÚnico, true, nil
+	return matérias, nil
 }
 
 func (bd MatériaBD) deletarMúltiplas(ids []id) erro {

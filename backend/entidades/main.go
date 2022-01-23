@@ -14,6 +14,22 @@ func NovoID() ID {
 	return uuid.New()
 }
 
+func IDsÚnicos(ids []ID) []ID {
+	idsÚnicos := []ID{}
+
+ids:
+	for _, id := range ids {
+		for _, idÚnico := range idsÚnicos {
+			if id == idÚnico {
+				break ids
+			}
+		}
+		idsÚnicos = append(idsÚnicos, id)
+	}
+
+	return idsÚnicos
+}
+
 // DataAtual retornar a data atual do sistema no padrão UTC.
 func DataAtual() time.Time {
 	return RemoverHorário(time.Now().UTC())

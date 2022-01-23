@@ -12,6 +12,8 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
+type erro = *erros.Aplicação
+
 // Conexão representa a conexão com o banco de dados MongoDB.
 type Conexão struct {
 	ID      entidades.ID

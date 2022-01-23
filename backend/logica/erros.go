@@ -16,6 +16,10 @@ const (
 	verificarSenha
 	atualizarPessoa
 	deletarPessoa
+	criarMatéria
+	cargaHoráriaSemanalInválida
+	créditosInválido
+	préRequisitosNãoExiste
 )
 
 var criarErroPadrão = erros.NovoPadrãoFunc("LÓGICA") //nolint:gochecknoglobals
@@ -64,5 +68,21 @@ var (
 	ErroDeletarPessoa = criarErroPadrão(
 		"Erro ao deletar a pessoa",
 		deletarPessoa,
+	)
+	ErroCriarMatéria = criarErroPadrão(
+		"Erro ao criar a matéria",
+		criarMatéria,
+	)
+	ErroCargaHoráriaMínima = criarErroPadrão(
+		"A carga horária semanal mínima é de 1 hora",
+		cargaHoráriaSemanalInválida,
+	)
+	ErroCréditosInválido = criarErroPadrão(
+		"Créditos deve ser maior que 0",
+		créditosInválido,
+	)
+	ErroPréRequisitosNãoExiste = criarErroPadrão(
+		"Um dos pré requisitos não existe",
+		préRequisitosNãoExiste,
 	)
 )

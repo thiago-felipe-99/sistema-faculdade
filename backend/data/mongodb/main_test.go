@@ -24,6 +24,7 @@ var (
 const (
 	tamanhoMáximoPréRequisito = 10
 	tamanhoMáximoPalavra      = 20
+	tamanhoMáximoMatérias     = 10
 	cargaHoráriaMáxima        = 10
 )
 

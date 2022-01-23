@@ -6,11 +6,13 @@ import "thiagofelipe.com.br/sistema-faculdade-backend/data"
 // aplicação.
 type Lógica struct {
 	Pessoa
+	Matéria
 }
 
 // NovaLógica cria uma Lógica da aplicação.
 func NovaLógica(data *data.Data) *Lógica {
 	return &Lógica{
-		Pessoa: Pessoa{data: data.Pessoa},
+		Pessoa:  Pessoa{data: data.Pessoa},
+		Matéria: Matéria{data: data.Matéria},
 	}
 }

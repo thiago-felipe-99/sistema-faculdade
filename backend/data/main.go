@@ -61,6 +61,7 @@ type Matéria interface {
 	Inserir(*entidades.Matéria) *erros.Aplicação
 	Atualizar(entidades.ID, *entidades.Matéria) *erros.Aplicação
 	Pegar(entidades.ID) (*entidades.Matéria, *erros.Aplicação)
+	Existe([]entidades.ID) ([]entidades.ID, bool, *erros.Aplicação)
 	Deletar(entidades.ID) *erros.Aplicação
 }
 

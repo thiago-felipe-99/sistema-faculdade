@@ -37,6 +37,8 @@ const (
 	atualizarMatéria
 	matériaNãoEncontrada
 	pegarMatéria
+	idsTamanho
+	existeMatérias
 	deletarMatéria
 )
 
@@ -170,6 +172,14 @@ var (
 	ErroPegarMatéria = criarErroPadrão(
 		"Erro ao pegar a matéria",
 		pegarMatéria,
+	)
+	ErroIDsTamanho = criarErroPadrão(
+		"Precisa ter no mínimo ID",
+		idsTamanho,
+	)
+	ErroExisteMatérias = criarErroPadrão(
+		"Erro ao verificar se as matérias existe",
+		existeMatérias,
 	)
 	ErroDeletarMatéria = criarErroPadrão(
 		"Erro ao deletar a matéria",

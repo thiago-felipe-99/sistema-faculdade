@@ -10,7 +10,7 @@ import (
 )
 
 func criarPessoaAleatória() (string, string, time.Time, string) {
-	nome := aleatorio.Palavra(aleatorio.Número(tamanhoMáximoDaPalavra) + 1)
+	nome := aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 	cpf := aleatorio.CPF()
 	data := time.Now()
 	senha := aleatorio.Senha()
@@ -18,7 +18,7 @@ func criarPessoaAleatória() (string, string, time.Time, string) {
 	return nome, cpf, data, senha
 }
 
-func removerPessoa(t *testing.T, id entidades.ID) {
+func removerPessoa(t *testing.T, id id) {
 	t.Helper()
 
 	erro := logicaTeste.Pessoa.Deletar(id)
@@ -33,7 +33,7 @@ func adicionarPessoa(
 	cpf string,
 	dataDeNascimento time.Time,
 	senha string,
-) entidades.ID {
+) id {
 	t.Helper()
 
 	pessoaCriada, erro := logicaTeste.Pessoa.Criar(nome, cpf, dataDeNascimento, senha)
@@ -102,7 +102,6 @@ func TestCriarPessoa(t *testing.T) {
 		t.Parallel()
 
 		nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
-
 		adicionarPessoa(t, nome, cpf, dataDeNascimento, senha)
 
 		_, erro := logicaTeste.Pessoa.Criar(nome, cpf, dataDeNascimento, senha)
@@ -254,7 +253,6 @@ func TestVerificarSenha(t *testing.T) {
 		t.Parallel()
 
 		nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
-
 		id := adicionarPessoa(t, nome, cpf, dataDeNascimento, senha)
 
 		igual, erro := logicaTeste.Pessoa.VerificarSenha("senhaInválida", id)
@@ -279,7 +277,6 @@ func TestAtualizar(t *testing.T) {
 		t.Parallel()
 
 		nome1, cpf1, dataDeNascimento1, senha1 := criarPessoaAleatória()
-
 		id := adicionarPessoa(t, nome1, cpf1, dataDeNascimento1, senha1)
 
 		pessoaAtualizada, erro := logicaTeste.Pessoa.Atualizar(
@@ -327,7 +324,6 @@ func TestAtualizar(t *testing.T) {
 		t.Parallel()
 
 		nome1, cpf1, dataDeNascimento1, senha1 := criarPessoaAleatória()
-
 		id := adicionarPessoa(t, nome1, cpf1, dataDeNascimento1, senha1)
 
 		_, erro := logicaTeste.Pessoa.
@@ -341,11 +337,9 @@ func TestAtualizar(t *testing.T) {
 		t.Parallel()
 
 		nome1, cpf1, dataDeNascimento1, senha1 := criarPessoaAleatória()
-
 		id := adicionarPessoa(t, nome1, cpf1, dataDeNascimento1, senha1)
 
 		nome2, cpf2, dataDeNascimento2, senha2 := criarPessoaAleatória()
-
 		adicionarPessoa(t, nome2, cpf2, dataDeNascimento2, senha2)
 
 		_, erro := logicaTeste.Pessoa.Atualizar(id, nome1, cpf2, dataDeNascimento1, senha1)
@@ -358,7 +352,6 @@ func TestAtualizar(t *testing.T) {
 		t.Parallel()
 
 		nome1, cpf1, dataDeNascimento1, senha1 := criarPessoaAleatória()
-
 		id := adicionarPessoa(t, nome1, cpf1, dataDeNascimento1, senha1)
 
 		dataAtual := entidades.DataAtual().AddDate(1, 0, 0)
@@ -373,7 +366,6 @@ func TestAtualizar(t *testing.T) {
 		t.Parallel()
 
 		nome1, cpf1, dataDeNascimento1, senha1 := criarPessoaAleatória()
-
 		id := adicionarPessoa(t, nome1, cpf1, dataDeNascimento1, senha1)
 
 		_, erro := logicaTeste.Pessoa.
@@ -387,7 +379,6 @@ func TestAtualizar(t *testing.T) {
 		t.Parallel()
 
 		nome1, cpf1, dataDeNascimento1, senha1 := criarPessoaAleatória()
-
 		id := adicionarPessoa(t, nome1, cpf1, dataDeNascimento1, senha1)
 
 		_, erro := pessoaDataInvalida.
@@ -401,7 +392,6 @@ func TestAtualizar(t *testing.T) {
 		t.Parallel()
 
 		nome1, cpf1, dataDeNascimento1, senha1 := criarPessoaAleatória()
-
 		id := adicionarPessoa(t, nome1, cpf1, dataDeNascimento1, senha1)
 
 		_, erro := pessoaDataInvalida2.
@@ -453,7 +443,6 @@ func TestDeletar(t *testing.T) {
 		t.Parallel()
 
 		nome, cpf, dataDeNascimento, senha := criarPessoaAleatória()
-
 		id := adicionarPessoa(t, nome, cpf, dataDeNascimento, senha)
 
 		erro := pessoaDataInvalida.Deletar(id)

@@ -14,7 +14,7 @@ type Pessoa struct {
 }
 
 // ExisteCPF procura se já existe uma pessoa com esse CPF na aplicação.
-func (lógica *Pessoa) ExisteCPF(cpf entidades.CPF) (bool, *erros.Aplicação) {
+func (lógica *Pessoa) ExisteCPF(cpf cpf) (bool, erro) {
 	_, erro := lógica.data.PegarPorCPF(cpf)
 	if erro != nil {
 		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
@@ -33,7 +33,7 @@ func (lógica *Pessoa) Criar(
 	cpf string,
 	dataDeNascimento time.Time,
 	senha string,
-) (*entidades.Pessoa, *erros.Aplicação) {
+) (*pessoa, erro) {
 	cpf, cpfVálido := entidades.ValidarCPF(cpf)
 	if !cpfVálido {
 		return nil, erros.Novo(ErroCPFInválido, nil, nil)
@@ -59,7 +59,7 @@ func (lógica *Pessoa) Criar(
 		return nil, erros.Novo(ErroSenhaInválida, nil, nil)
 	}
 
-	pessoaNova := &entidades.Pessoa{
+	pessoaNova := &pessoa{
 		ID:               entidades.NovoID(),
 		Nome:             nome,
 		CPF:              cpf,
@@ -76,7 +76,7 @@ func (lógica *Pessoa) Criar(
 }
 
 // Pegar retorna uma pessoa já criada na aplicação.
-func (lógica *Pessoa) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplicação) {
+func (lógica *Pessoa) Pegar(id id) (*pessoa, erro) {
 	pessoa, erro := lógica.data.Pegar(id)
 	if erro != nil {
 		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
@@ -91,10 +91,7 @@ func (lógica *Pessoa) Pegar(id entidades.ID) (*entidades.Pessoa, *erros.Aplica�
 
 // VerificarSenha verifica se a senha fornecida é igual a senha da Pessoa na
 // aplicação.
-func (lógica *Pessoa) VerificarSenha(
-	senha string,
-	id entidades.ID,
-) (bool, *erros.Aplicação) {
+func (lógica *Pessoa) VerificarSenha(senha string, id id) (bool, erro) {
 	pessoa, erro := lógica.data.Pegar(id)
 	if erro != nil {
 		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
@@ -111,13 +108,13 @@ func (lógica *Pessoa) VerificarSenha(
 
 // Atualizar atualiza os dados de uma pessoa na aplicação.
 func (lógica *Pessoa) Atualizar(
-	id entidades.ID,
+	id id,
 	nome string,
 	cpf string,
 	dataDeNascimento time.Time,
 	senha string,
-) (*entidades.Pessoa, *erros.Aplicação) {
-	pessoa, erro := lógica.data.Pegar(id)
+) (*pessoa, erro) {
+	pessoaSalva, erro := lógica.data.Pegar(id)
 	if erro != nil {
 		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
 			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
@@ -131,7 +128,7 @@ func (lógica *Pessoa) Atualizar(
 		return nil, erros.Novo(ErroCPFInválido, nil, nil)
 	}
 
-	if cpf != pessoa.CPF {
+	if cpf != pessoaSalva.CPF {
 		cpfExiste, erro := lógica.ExisteCPF(cpf)
 		if erro != nil {
 			return nil, erros.Novo(ErroAtualizarPessoa, erro, nil)
@@ -153,7 +150,7 @@ func (lógica *Pessoa) Atualizar(
 		return nil, erros.Novo(ErroSenhaInválida, nil, nil)
 	}
 
-	pessoaNova := &entidades.Pessoa{
+	pessoaNova := &pessoa{
 		ID:               id,
 		Nome:             nome,
 		CPF:              cpf,
@@ -170,7 +167,7 @@ func (lógica *Pessoa) Atualizar(
 }
 
 // Deletar remove uma pessoa da aplicação.
-func (lógica *Pessoa) Deletar(id entidades.ID) *erros.Aplicação {
+func (lógica *Pessoa) Deletar(id id) erro {
 	_, erro := lógica.data.Pegar(id)
 	if erro != nil {
 		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {

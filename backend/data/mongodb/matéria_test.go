@@ -212,7 +212,7 @@ func TestExisteMatérias(t *testing.T) {
 			}
 		}()
 
-		idsExiste, existeTodas, erro := matériaBD.Existe(append(ids, ids[0]))
+		idsExiste, existeTodas, erro := matériaBD.ExisteIDs(append(ids, ids[0]))
 		if erro != nil {
 			t.Fatalf("Erro ao verificar se existe matérias: %v", erro)
 		}
@@ -229,7 +229,7 @@ func TestExisteMatérias(t *testing.T) {
 	t.Run("TamanhoInválido", func(t *testing.T) {
 		t.Parallel()
 
-		_, _, erro := matériaBD.Existe([]entidades.ID{})
+		_, _, erro := matériaBD.ExisteIDs([]entidades.ID{})
 		if erro == nil || !erro.ÉPadrão(data.ErroIDsTamanho) {
 			t.Fatalf("Esperava: %v\nChegou: %v", data.ErroIDsTamanho, erro)
 		}
@@ -238,7 +238,7 @@ func TestExisteMatérias(t *testing.T) {
 	t.Run("TimeOut", func(t *testing.T) {
 		t.Parallel()
 
-		_, _, erro := matériaBDInválido.Existe([]entidades.ID{entidades.NovoID()})
+		_, _, erro := matériaBDInválido.ExisteIDs([]entidades.ID{entidades.NovoID()})
 		if erro == nil || !mongo.IsTimeout(erro.ErroExterno) {
 			t.Fatalf("Esperava um erro de Timeout, chegou: %v", erro)
 		}
@@ -268,7 +268,7 @@ func TestExisteMatérias(t *testing.T) {
 
 		idsErrados := append(ids, entidades.NovoID(), entidades.NovoID())
 
-		idsExiste, existeTudo, erro := matériaBD.Existe(idsErrados)
+		idsExiste, existeTudo, erro := matériaBD.ExisteIDs(idsErrados)
 		if erro != nil {
 			t.Fatalf("Não esperava um erro ao verificar se matérias existe: %v", erro)
 		}

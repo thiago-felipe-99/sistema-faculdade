@@ -20,9 +20,9 @@ func (lógica Matéria) Criar(
 	nome string,
 	cargaHoráriaSemanal time.Duration,
 	créditos float32,
-	préRequisitos []entidades.ID,
 	tipo string,
-) (*entidades.Matéria, *erros.Aplicação) {
+	préRequisitos []id,
+) (*matéria, erro) {
 	if cargaHoráriaSemanal < cargaHoráriaSemanalMímima {
 		return nil, erros.Novo(ErroCargaHoráriaMínima, nil, nil)
 	}
@@ -31,15 +31,16 @@ func (lógica Matéria) Criar(
 		return nil, erros.Novo(ErroCréditosInválido, nil, nil)
 	}
 
-	_, existe, erro := lógica.data.Existe(préRequisitos)
+	préRequisitos, existe, erro := lógica.data.ExisteIDs(préRequisitos)
 	if erro != nil {
 		return nil, erros.Novo(ErroCriarMatéria, erro, nil)
 	}
+
 	if !existe {
 		return nil, erros.Novo(ErroPréRequisitosNãoExiste, nil, nil)
 	}
 
-	matéria := &entidades.Matéria{
+	matéria := &matéria{
 		ID:                  entidades.NovoID(),
 		Nome:                nome,
 		CargaHoráriaSemanal: cargaHoráriaSemanal,
@@ -55,3 +56,5 @@ func (lógica Matéria) Criar(
 
 	return matéria, nil
 }
+
+// Pegar é um método que pega uma matéria da aplicação.

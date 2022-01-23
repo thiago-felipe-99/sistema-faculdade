@@ -143,9 +143,9 @@ func (bd MatériaBD) Pegar(id entidades.ID) (*entidades.Matéria, erro) {
 	}, nil
 }
 
-// Existe é um método que retorna se as matérias existe no banco de dados
+// ExisteIDs é um método que retorna se as matérias existe no banco de dados
 // MongoDB.
-func (bd MatériaBD) Existe(ids []entidades.ID) ([]entidades.ID, bool, erro) {
+func (bd MatériaBD) ExisteIDs(ids []entidades.ID) ([]entidades.ID, bool, erro) {
 	if len(ids) == 0 {
 		return []entidades.ID{}, false, erros.Novo(data.ErroIDsTamanho, nil, nil)
 	}

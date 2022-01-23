@@ -12,13 +12,15 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mariadb"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mongodb"
-	dataPadrão "thiagofelipe.com.br/sistema-faculdade-backend/data/padrao"
+	"thiagofelipe.com.br/sistema-faculdade-backend/data/padrao"
 	"thiagofelipe.com.br/sistema-faculdade-backend/env"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
 const (
-	tamanhoMáximoDaPalavra = 25
+	tamanhoMáximoPalavra      = 25
+	tamanhoMáximoCargaHorária = 10
+	tamanhoMáximoCréditos     = 20
 )
 
 //nolint: gochecknoglobals
@@ -73,7 +75,7 @@ func TestMain(m *testing.M) {
 	logFiles := logs.AbrirArquivos("./logs/data/")
 	log := logs.NovoLogEntidades(logFiles, logs.NívelDebug)
 
-	Data := dataPadrão.DataPadrão(log, sqlDB, mongoDB)
+	Data := padrao.DataPadrão(log, sqlDB, mongoDB)
 
 	logicaTeste = NovaLógica(Data)
 

@@ -83,7 +83,7 @@ func (lógica Matéria) Criar(
 func (lógica Matéria) Pegar(id id) (*matéria, erro) {
 	matéria, erro := lógica.data.Pegar(id)
 	if erro != nil {
-		if !erro.ÉPadrão(data.ErroMatériaNãoEncontrada) {
+		if erro.ÉPadrão(data.ErroMatériaNãoEncontrada) {
 			return nil, erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
 		}
 
@@ -97,7 +97,7 @@ func (lógica Matéria) Pegar(id id) (*matéria, erro) {
 func (lógica Matéria) Deletar(id id) erro {
 	_, erro := lógica.data.Pegar(id)
 	if erro != nil {
-		if !erro.ÉPadrão(ErroMatériaNãoEncontrada) {
+		if erro.ÉPadrão(data.ErroMatériaNãoEncontrada) {
 			return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
 		}
 

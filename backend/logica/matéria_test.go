@@ -132,3 +132,73 @@ func TestCriarMatéria(t *testing.T) {
 		}
 	})
 }
+
+func TestPegarMatéria(t *testing.T) {
+	t.Parallel()
+
+	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
+		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
+	})
+
+	t.Run("MatériaNãoEncontrada", func(t *testing.T) {
+		t.Parallel()
+
+		_, erro := logicaTeste.Matéria.Pegar(entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroMatériaNãoEncontrada) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroMatériaNãoEncontrada, erro)
+		}
+	})
+
+	t.Run("TimeOut", func(t *testing.T) {
+		t.Parallel()
+
+		_, erro := matériaBDTimeOut.Pegar(entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroPegarMatéria) {
+			t.Fatalf("Esperava um erro de timeout: %v", erro)
+		}
+	})
+}
+
+func TestDeletarMatéria(t *testing.T) {
+	t.Parallel()
+
+	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
+		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
+	})
+
+	t.Run("MatériaNãoEncontrada", func(t *testing.T) {
+		t.Parallel()
+
+		erro := logicaTeste.Matéria.Deletar(entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroMatériaNãoEncontrada) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroMatériaNãoEncontrada, erro)
+		}
+	})
+
+	t.Run("TimeOut", func(t *testing.T) {
+		t.Parallel()
+
+		erro := matériaBDTimeOut.Deletar(entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(ErroDeletarMatéria) {
+			t.Fatalf("Esperava um erro de timeout: %v", erro)
+		}
+	})
+
+	t.Run("BDInválido", func(t *testing.T) {
+		t.Parallel()
+
+		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		id := adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
+
+		erro := matériaBDInválido.Deletar(id)
+		if erro == nil || !erro.ÉPadrão(ErroDeletarMatéria) {
+			t.Fatalf("Esperava um erro de deletar matéria: %v", erro)
+		}
+	})
+}

@@ -52,3 +52,27 @@ func (p *dataPessoaInvalida2) PegarPorCPF(cpf cpf) (*pessoa, erro) {
 func (p *dataPessoaInvalida2) Deletar(id) erro {
 	return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 }
+
+type dataMatériaInvalida struct {
+	data data.Matéria
+}
+
+func (p *dataMatériaInvalida) Inserir(matéria *matéria) erro {
+	return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
+}
+
+func (p *dataMatériaInvalida) Atualizar(id id, matéria *matéria) erro {
+	return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
+}
+
+func (p *dataMatériaInvalida) PegarMúltiplos(ids []id) ([]matéria, erro) {
+	return p.data.PegarMúltiplos(ids)
+}
+
+func (p *dataMatériaInvalida) Pegar(id id) (*matéria, erro) {
+	return p.data.Pegar(id)
+}
+
+func (p *dataMatériaInvalida) Deletar(id) erro {
+	return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
+}

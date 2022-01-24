@@ -31,6 +31,7 @@ var (
 	pessoaDataInvalida  *Pessoa
 	pessoaDataInvalida2 *Pessoa
 	matériaBDTimeOut    *Matéria
+	matériaBDInválido   *Matéria
 	ambiente            = env.PegandoVariáveisDeAmbiente()
 )
 
@@ -101,14 +102,18 @@ func TestMain(m *testing.M) {
 		log.Matéria,
 		mongoDB,
 	)
-	conexãoMatériaTimeOut.Timeout = time.Millisecond
-	dataMatériaInválida := &mongodb.MatériaBD{
+	conexãoMatériaTimeOut.Timeout = time.Nanosecond
+	dataMatériaTimeOut := &mongodb.MatériaBD{
 		Conexão:    conexãoMatériaTimeOut,
 		Collection: conexãoMatériaTimeOut.BD.Collection("Teste"),
 	}
 
 	matériaBDTimeOut = &Matéria{
-		data: dataMatériaInválida,
+		data: dataMatériaTimeOut,
+	}
+
+	matériaBDInválido = &Matéria{
+		&dataMatériaInvalida{logicaTeste.Matéria.data},
 	}
 
 	código := m.Run()

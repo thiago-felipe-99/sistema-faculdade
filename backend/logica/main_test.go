@@ -105,7 +105,7 @@ func TestMain(m *testing.M) {
 	conexãoMatériaTimeOut.Timeout = time.Nanosecond
 	dataMatériaTimeOut := &mongodb.MatériaBD{
 		Conexão:    conexãoMatériaTimeOut,
-		Collection: conexãoMatériaTimeOut.BD.Collection("Teste"),
+		Collection: conexãoMatériaTimeOut.BD.Collection("Matéria"),
 	}
 
 	matériaBDTimeOut = &Matéria{

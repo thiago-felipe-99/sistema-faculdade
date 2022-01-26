@@ -10,11 +10,11 @@ type dataPessoaInvalida struct {
 }
 
 func (p *dataPessoaInvalida) Inserir(pessoa *pessoa) erro {
-	return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+	return erros.Novo(ErroCriarPessoa, nil, nil)
 }
 
 func (p *dataPessoaInvalida) Atualizar(id id, pessoa *pessoa) erro {
-	return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+	return erros.Novo(ErroAtualizarPessoa, nil, nil)
 }
 
 func (p *dataPessoaInvalida) Pegar(id id) (*pessoa, erro) {
@@ -26,7 +26,7 @@ func (p *dataPessoaInvalida) PegarPorCPF(cpf cpf) (*pessoa, erro) {
 }
 
 func (p *dataPessoaInvalida) Deletar(id) erro {
-	return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+	return erros.Novo(ErroDeletarPessoa, nil, nil)
 }
 
 type dataPessoaInvalida2 struct {
@@ -34,11 +34,11 @@ type dataPessoaInvalida2 struct {
 }
 
 func (p *dataPessoaInvalida2) Inserir(pessoa *pessoa) erro {
-	return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+	return erros.Novo(ErroCriarPessoa, nil, nil)
 }
 
 func (p *dataPessoaInvalida2) Atualizar(id id, pessoa *pessoa) erro {
-	return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+	return erros.Novo(ErroAtualizarPessoa, nil, nil)
 }
 
 func (p *dataPessoaInvalida2) Pegar(id id) (*pessoa, erro) {
@@ -46,11 +46,11 @@ func (p *dataPessoaInvalida2) Pegar(id id) (*pessoa, erro) {
 }
 
 func (p *dataPessoaInvalida2) PegarPorCPF(cpf cpf) (*pessoa, erro) {
-	return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+	return nil, erros.Novo(ErroPegarPessoa, nil, nil)
 }
 
 func (p *dataPessoaInvalida2) Deletar(id) erro {
-	return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
+	return erros.Novo(ErroDeletarPessoa, nil, nil)
 }
 
 type dataMatériaInvalida struct {
@@ -58,11 +58,11 @@ type dataMatériaInvalida struct {
 }
 
 func (p *dataMatériaInvalida) Inserir(matéria *matéria) erro {
-	return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
+	return erros.Novo(ErroCriarMatéria, nil, nil)
 }
 
 func (p *dataMatériaInvalida) Atualizar(id id, matéria *matéria) erro {
-	return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
+	return erros.Novo(ErroAtualizarMatéria, nil, nil)
 }
 
 func (p *dataMatériaInvalida) PegarMúltiplos(ids []id) ([]matéria, erro) {
@@ -74,5 +74,5 @@ func (p *dataMatériaInvalida) Pegar(id id) (*matéria, erro) {
 }
 
 func (p *dataMatériaInvalida) Deletar(id) erro {
-	return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
+	return erros.Novo(ErroDeletarMatéria, nil, nil)
 }

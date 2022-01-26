@@ -15,8 +15,22 @@ type Matéria struct {
 
 const cargaHoráriaSemanalMímima = time.Hour
 
-// ExisteIDs verifica se as matérias existe na aplicação.
-func (lógica Matéria) ExisteIDs(ids []id) ([]id, bool, erro) {
+// existe verifica se a matéria existe na aplicação.
+func (lógica Matéria) existe(id id) (bool, erro) {
+	_, erro := lógica.data.Pegar(id)
+	if erro != nil {
+		if erro.ÉPadrão(data.ErroMatériaNãoEncontrada) {
+			return false, nil
+		}
+
+		return false, erros.Novo(ErroVerificarID, erro, nil)
+	}
+
+	return true, nil
+}
+
+// existeIDs verifica se as matérias existe na aplicação.
+func (lógica Matéria) existeIDs(ids []id) ([]id, bool, erro) {
 	if len(ids) == 0 {
 		return []id{}, true, erros.Novo(ErroIDsTamanho, nil, nil)
 	}
@@ -25,7 +39,7 @@ func (lógica Matéria) ExisteIDs(ids []id) ([]id, bool, erro) {
 
 	matérias, erro := lógica.data.PegarMúltiplos(idsÚnico)
 	if erro != nil {
-		return []id{}, false, erros.Novo(ErroIDsExiste, erro, nil)
+		return []id{}, false, erros.Novo(ErroVerificarIDs, erro, nil)
 	}
 
 	idsSalvos := []id{}
@@ -53,7 +67,7 @@ func (lógica Matéria) Criar(
 		return nil, erros.Novo(ErroCréditosInválido, nil, nil)
 	}
 
-	préRequisitos, existe, erro := lógica.ExisteIDs(préRequisitos)
+	préRequisitos, existe, erro := lógica.existeIDs(préRequisitos)
 	if erro != nil && !erro.ÉPadrão(ErroIDsTamanho) {
 		return nil, erros.Novo(ErroCriarMatéria, erro, nil)
 	}
@@ -79,7 +93,59 @@ func (lógica Matéria) Criar(
 	return matéria, nil
 }
 
-// Pegar é um método que pega uma matéria da aplicação.
+// Atualizar é um método que atualiza um matéria na aplicação.
+func (lógica Matéria) Atualizar(
+	id id,
+	nome string,
+	cargaHoráriaSemanal time.Duration,
+	créditos float32,
+	tipo string,
+	préRequisitos []id,
+) (*matéria, erro) {
+	existe, erro := lógica.existe(id)
+	if erro != nil {
+		return nil, erros.Novo(ErroAtualizarMatéria, erro, nil)
+	}
+
+	if !existe {
+		return nil, erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
+	}
+
+	if cargaHoráriaSemanal < cargaHoráriaSemanalMímima {
+		return nil, erros.Novo(ErroCargaHoráriaMínima, nil, nil)
+	}
+
+	if créditos <= 0 {
+		return nil, erros.Novo(ErroCréditosInválido, nil, nil)
+	}
+
+	préRequisitos, existe, erro = lógica.existeIDs(préRequisitos)
+	if erro != nil && !erro.ÉPadrão(ErroIDsTamanho) {
+		return nil, erros.Novo(ErroAtualizarMatéria, erro, nil)
+	}
+
+	if !existe {
+		return nil, erros.Novo(ErroPréRequisitosNãoExiste, nil, nil)
+	}
+
+	matéria := &matéria{
+		ID:                  id,
+		Nome:                nome,
+		CargaHoráriaSemanal: cargaHoráriaSemanal,
+		Créditos:            créditos,
+		PréRequisitos:       préRequisitos,
+		Tipo:                tipo,
+	}
+
+	erro = lógica.data.Atualizar(id, matéria)
+	if erro != nil {
+		return nil, erros.Novo(ErroAtualizarMatéria, erro, nil)
+	}
+
+	return matéria, nil
+}
+
+// Pegar é um método que pega uma matéria na aplicação.
 func (lógica Matéria) Pegar(id id) (*matéria, erro) {
 	matéria, erro := lógica.data.Pegar(id)
 	if erro != nil {
@@ -95,13 +161,13 @@ func (lógica Matéria) Pegar(id id) (*matéria, erro) {
 
 // Deletar é um método que deleta uma matéria da aplicação.
 func (lógica Matéria) Deletar(id id) erro {
-	_, erro := lógica.data.Pegar(id)
+	existe, erro := lógica.existe(id)
 	if erro != nil {
-		if erro.ÉPadrão(data.ErroMatériaNãoEncontrada) {
-			return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
-		}
-
 		return erros.Novo(ErroDeletarMatéria, erro, nil)
+	}
+
+	if !existe {
+		return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
 	}
 
 	erro = lógica.data.Deletar(id)

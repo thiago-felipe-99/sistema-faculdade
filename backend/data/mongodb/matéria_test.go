@@ -186,7 +186,7 @@ func TestPegarMatéria(t *testing.T) {
 	})
 }
 
-//nolint: funlen, gocognit, cyclop
+//nolint: funlen, cyclop
 func TestPegarMúltiplos(t *testing.T) {
 	t.Parallel()
 

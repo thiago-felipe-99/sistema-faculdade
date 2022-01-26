@@ -17,12 +17,14 @@ const (
 	atualizarPessoa
 	deletarPessoa
 	idsTamanho
-	idsExiste
+	verificarIDs
+	verificarID
 	criarMatéria
 	cargaHoráriaSemanalInválida
 	créditosInválido
 	préRequisitosNãoExiste
 	matériaNãoEncontrada
+	atualizarMatéria
 	pegarMatéria
 	deletarMatéria
 )
@@ -78,9 +80,13 @@ var (
 		"Não foi passado nenhum ID",
 		idsTamanho,
 	)
-	ErroIDsExiste = criarErroPadrão(
+	ErroVerificarID = criarErroPadrão(
+		"Erro ao verificar se os ID existe",
+		verificarID,
+	)
+	ErroVerificarIDs = criarErroPadrão(
 		"Erro ao verificar se os IDs existe",
-		idsExiste,
+		verificarIDs,
 	)
 	ErroCriarMatéria = criarErroPadrão(
 		"Erro ao criar a matéria",
@@ -101,6 +107,10 @@ var (
 	ErroMatériaNãoEncontrada = criarErroPadrão(
 		"Não foi encontrado a matéria na aplicação",
 		matériaNãoEncontrada,
+	)
+	ErroAtualizarMatéria = criarErroPadrão(
+		"Erro ao atualizar a matéria",
+		atualizarMatéria,
 	)
 	ErroPegarMatéria = criarErroPadrão(
 		"Erro ao pegar a matéria",

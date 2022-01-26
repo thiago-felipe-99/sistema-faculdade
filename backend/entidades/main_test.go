@@ -2,6 +2,7 @@ package entidades
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 	"time"
 
@@ -130,6 +131,34 @@ func TestNovoID(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIDsÚnicos(t *testing.T) {
+	t.Parallel()
+
+	ids := []ID{}
+
+	for índice := 0; índice < 10; índice++ {
+		ids = append(ids, NovoID())
+	}
+
+	t.Run("Igual", func(t *testing.T) {
+		t.Parallel()
+
+		resultado := IDsÚnicos(ids)
+		if !reflect.DeepEqual(ids, resultado) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ids, resultado)
+		}
+	})
+
+	t.Run("Repetidos", func(t *testing.T) {
+		t.Parallel()
+
+		resultado := IDsÚnicos(append(ids, ids...))
+		if !reflect.DeepEqual(ids, resultado) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ids, resultado)
+		}
+	})
 }
 
 func TestDataAtual(t *testing.T) {

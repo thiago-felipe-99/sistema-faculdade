@@ -13,8 +13,22 @@ type Pessoa struct {
 	data data.Pessoa
 }
 
-// ExisteCPF procura se já existe uma pessoa com esse CPF na aplicação.
-func (lógica *Pessoa) ExisteCPF(cpf cpf) (bool, erro) {
+// existeMatéria verifica se a matéria existeMatéria na aplicação.
+func (lógica *Pessoa) existe(id id) (bool, erro) {
+	_, erro := lógica.Pegar(id)
+	if erro != nil {
+		if erro.ÉPadrão(ErroPessoaNãoEncontrada) {
+			return false, nil
+		}
+
+		return false, erros.Novo(ErroVerificarID, erro, nil)
+	}
+
+	return true, nil
+}
+
+// existeCPF procura se já existe uma pessoa com esse CPF na aplicação.
+func (lógica *Pessoa) existeCPF(cpf cpf) (bool, erro) {
 	_, erro := lógica.data.PegarPorCPF(cpf)
 	if erro != nil {
 		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
@@ -39,7 +53,7 @@ func (lógica *Pessoa) Criar(
 		return nil, erros.Novo(ErroCPFInválido, nil, nil)
 	}
 
-	cpfExiste, erro := lógica.ExisteCPF(cpf)
+	cpfExiste, erro := lógica.existeCPF(cpf)
 	if erro != nil {
 		return nil, erros.Novo(ErroCriarPessoa, erro, nil)
 	}
@@ -92,9 +106,9 @@ func (lógica *Pessoa) Pegar(id id) (*pessoa, erro) {
 // VerificarSenha verifica se a senha fornecida é igual a senha da Pessoa na
 // aplicação.
 func (lógica *Pessoa) VerificarSenha(senha string, id id) (bool, erro) {
-	pessoa, erro := lógica.data.Pegar(id)
+	pessoa, erro := lógica.Pegar(id)
 	if erro != nil {
-		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
+		if erro.ÉPadrão(ErroPessoaNãoEncontrada) {
 			return false, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 		}
 
@@ -114,9 +128,9 @@ func (lógica *Pessoa) Atualizar(
 	dataDeNascimento time.Time,
 	senha string,
 ) (*pessoa, erro) {
-	pessoaSalva, erro := lógica.data.Pegar(id)
+	pessoaSalva, erro := lógica.Pegar(id)
 	if erro != nil {
-		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
+		if erro.ÉPadrão(ErroPessoaNãoEncontrada) {
 			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 		}
 
@@ -129,7 +143,7 @@ func (lógica *Pessoa) Atualizar(
 	}
 
 	if cpf != pessoaSalva.CPF {
-		cpfExiste, erro := lógica.ExisteCPF(cpf)
+		cpfExiste, erro := lógica.existeCPF(cpf)
 		if erro != nil {
 			return nil, erros.Novo(ErroAtualizarPessoa, erro, nil)
 		}
@@ -168,13 +182,13 @@ func (lógica *Pessoa) Atualizar(
 
 // Deletar remove uma pessoa da aplicação.
 func (lógica *Pessoa) Deletar(id id) erro {
-	_, erro := lógica.data.Pegar(id)
+	existe, erro := lógica.existe(id)
 	if erro != nil {
-		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
-			return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
-		}
-
 		return erros.Novo(ErroDeletarPessoa, erro, nil)
+	}
+
+	if !existe {
+		return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 	}
 
 	erro = lógica.data.Deletar(id)

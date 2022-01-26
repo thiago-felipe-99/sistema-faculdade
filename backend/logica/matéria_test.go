@@ -133,6 +133,139 @@ func TestCriarMatéria(t *testing.T) {
 	})
 }
 
+//nolint: funlen, cyclop
+func TestAtualizarMatéria(t *testing.T) {
+	t.Parallel()
+
+	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
+		nome1, ch1, créditos1, tipo1 := criarMatériaAleatórira()
+		id1 := adicionarMatéria(t, nome1, ch1, créditos1, tipo1, []id{})
+
+		nome2, ch2, créditos2, tipo2 := criarMatériaAleatórira()
+		id2 := adicionarMatéria(t, nome2, ch2, créditos2, tipo2, []id{})
+
+		nome3, ch3, créditos3, tipo3 := criarMatériaAleatórira()
+		id3 := adicionarMatéria(t, nome3, ch3, créditos3, tipo3, []id{id1, id2})
+
+		matéria, erro := logicaTeste.Matéria.Atualizar(
+			id3,
+			nome1,
+			ch2,
+			créditos3,
+			tipo2,
+			[]id{id1},
+		)
+		if erro != nil {
+			t.Fatalf("Não esperava um erro ao atulizar o atulizar a matéria: %v", erro)
+		}
+
+		matériaSalva, erro := logicaTeste.Matéria.Pegar(id3)
+		if erro != nil {
+			t.Fatalf("Não esperava um erro ao pegar a matéria: %v", erro)
+		}
+
+		if !reflect.DeepEqual(matéria, matériaSalva) {
+			t.Fatalf("Esperava: %v\nChegou: %v", matéria, matériaSalva)
+		}
+	})
+
+	t.Run("IDNãoExiste", func(t *testing.T) {
+		t.Parallel()
+
+		nome, ch, créditos, tipo := criarMatériaAleatórira()
+
+		_, erro := logicaTeste.Matéria.Atualizar(
+			entidades.NovoID(),
+			nome,
+			ch,
+			créditos,
+			tipo,
+			[]id{},
+		)
+		if erro == nil || !erro.ÉPadrão(ErroMatériaNãoEncontrada) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroMatériaNãoEncontrada, erro)
+		}
+	})
+
+	t.Run("CargaHoráriaSemanalInválido", func(t *testing.T) {
+		t.Parallel()
+
+		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		id1 := adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
+
+		_, erro := logicaTeste.Matéria.Atualizar(
+			id1,
+			nome,
+			time.Minute,
+			créditos,
+			tipo,
+			[]id{},
+		)
+		if erro == nil || !erro.ÉPadrão(ErroCargaHoráriaMínima) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroCargaHoráriaMínima, erro)
+		}
+	})
+
+	t.Run("CréditosInválido", func(t *testing.T) {
+		t.Parallel()
+
+		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		id1 := adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
+
+		_, erro := logicaTeste.Matéria.Atualizar(id1, nome, ch, 0, tipo, []id{})
+		if erro == nil || !erro.ÉPadrão(ErroCréditosInválido) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroCréditosInválido, erro)
+		}
+	})
+
+	t.Run("PréRequisitosInválidos", func(t *testing.T) {
+		t.Parallel()
+
+		id1, id2 := entidades.NovoID(), entidades.NovoID()
+		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		id3 := adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
+
+		_, erro := logicaTeste.Matéria.Atualizar(
+			id3,
+			nome,
+			ch,
+			créditos,
+			tipo,
+			[]id{id1, id2},
+		)
+		if erro == nil || !erro.ÉPadrão(ErroPréRequisitosNãoExiste) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroPréRequisitosNãoExiste, erro)
+		}
+	})
+
+	t.Run("TimeOut", func(t *testing.T) {
+		t.Parallel()
+
+		id1 := entidades.NovoID()
+		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		id3 := adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
+
+		_, erro := matériaBDTimeOut.Atualizar(id3, nome, ch, créditos, tipo, []id{id1})
+		if erro == nil || !erro.ÉPadrão(ErroAtualizarMatéria) {
+			t.Fatalf("Esperava um erro de timeout: %v", erro)
+		}
+	})
+
+	t.Run("BDInválido", func(t *testing.T) {
+		t.Parallel()
+
+		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		id1 := adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
+
+		_, erro := matériaBDInválido.Atualizar(id1, nome, ch, créditos, tipo, []id{})
+		if erro == nil || !erro.ÉPadrão(ErroAtualizarMatéria) {
+			t.Fatalf("Esperava um erro ao atulizar matéria: %v", erro)
+		}
+	})
+}
+
 func TestPegarMatéria(t *testing.T) {
 	t.Parallel()
 

@@ -22,12 +22,6 @@ const (
 var (
 	pessoaBD         *PessoaBD
 	pessoaBDInválido *PessoaBD
-	cursoBD          *CursoBD
-	cursoBDInválido  *CursoBD
-	cursoBDInválido2 *CursoBD
-	alunoBD          *AlunoBD
-	alunoBDInválido  *AlunoBD
-	alunoBDInválido2 *AlunoBD
 	ambiente         = env.PegandoVariáveisDeAmbiente()
 )
 
@@ -62,10 +56,6 @@ func criandoConexõesComAsTabelas(bd *sql.DB) {
 
 	logPessoa := logs.NovoLog(arquivos.Pessoa, logs.NívelDebug)
 
-	logCurso := logs.NovoLog(arquivos.Curso, logs.NívelDebug)
-
-	logAluno := logs.NovoLog(arquivos.Aluno, logs.NívelDebug)
-
 	pessoaBD = &PessoaBD{
 		Conexão:      *NovaConexão(logPessoa, bd),
 		NomeDaTabela: "Pessoa",
@@ -74,42 +64,6 @@ func criandoConexõesComAsTabelas(bd *sql.DB) {
 	pessoaBDInválido = &PessoaBD{
 		Conexão:      *NovaConexão(logPessoa, bd),
 		NomeDaTabela: "PessoaErrada",
-	}
-
-	cursoBD = &CursoBD{
-		Conexão:                *NovaConexão(logCurso, bd),
-		NomeDaTabela:           "Curso",
-		NomeDaTabelaSecundária: "CursoMatérias",
-	}
-
-	cursoBDInválido = &CursoBD{
-		Conexão:                *NovaConexão(logCurso, bd),
-		NomeDaTabela:           "CursoErrado",
-		NomeDaTabelaSecundária: "CursoMatériasErrado",
-	}
-
-	cursoBDInválido2 = &CursoBD{
-		Conexão:                *NovaConexão(logCurso, bd),
-		NomeDaTabela:           "CursoErrado",
-		NomeDaTabelaSecundária: "CursoMatérias",
-	}
-
-	alunoBD = &AlunoBD{
-		Conexão:                *NovaConexão(logAluno, bd),
-		NomeDaTabela:           "Aluno",
-		NomeDaTabelaSecundária: "AlunoTurma",
-	}
-
-	alunoBDInválido = &AlunoBD{
-		Conexão:                *NovaConexão(logAluno, bd),
-		NomeDaTabela:           "AlunoErrado",
-		NomeDaTabelaSecundária: "AlunoTurmaErrado",
-	}
-
-	alunoBDInválido2 = &AlunoBD{
-		Conexão:                *NovaConexão(logAluno, bd),
-		NomeDaTabela:           "AlunoErrado",
-		NomeDaTabelaSecundária: "AlunoTurma",
 	}
 }
 

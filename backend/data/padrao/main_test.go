@@ -67,16 +67,13 @@ func TestDataPadrão(t *testing.T) {
 	data := DataPadrão(log, bdSQL, bdMongo)
 
 	tipos := map[string]struct{ quer, recebou string }{
-		"Pessoa":    {"mariadb.PessoaBD", fmt.Sprintf("%T", data.Pessoa)},
-		"Curso":     {"mariadb.CursoBD", fmt.Sprintf("%T", data.Curso)},
-		"Aluno":     {"mariadb.AlunoBD", fmt.Sprintf("%T", data.Aluno)},
-		"Professor": {"mariadb.ProfessorBD", fmt.Sprintf("%T", data.Professor)},
-		"Administrativo": {
-			"mariadb.AdministrativoBD",
-			fmt.Sprintf("%T", data.Administrativo),
-		},
-		"Matéria": {"mongodb.MatériaBD", fmt.Sprintf("%T", data.Matéria)},
-		"Turma":   {"mongodb.TurmaBD", fmt.Sprintf("%T", data.Turma)},
+		"Pessoa":         {"mariadb.PessoaBD", fmt.Sprintf("%T", data.Pessoa)},
+		"Curso":          {"<nil>", fmt.Sprintf("%T", data.Curso)},
+		"Aluno":          {"<nil>", fmt.Sprintf("%T", data.Aluno)},
+		"Professor":      {"<nil>", fmt.Sprintf("%T", data.Professor)},
+		"Administrativo": {"<nil>", fmt.Sprintf("%T", data.Administrativo)},
+		"Matéria":        {"mongodb.MatériaBD", fmt.Sprintf("%T", data.Matéria)},
+		"Turma":          {"mongodb.TurmaBD", fmt.Sprintf("%T", data.Turma)},
 	}
 
 	for chave, valor := range tipos {

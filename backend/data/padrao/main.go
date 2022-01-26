@@ -17,51 +17,49 @@ func DataPadrão(
 	bdSQL *sql.DB,
 	bdMongo *mongo.Database,
 ) *data.Data {
-	MariaDBPessoa := mariadb.PessoaBD{
+	pessoa := mariadb.PessoaBD{
 		Conexão:      *mariadb.NovaConexão(log.Pessoa, bdSQL),
 		NomeDaTabela: "Pessoa",
 	}
 
-	MariaDBCurso := mariadb.CursoBD{
-		Conexão:                *mariadb.NovaConexão(log.Curso, bdSQL),
-		NomeDaTabela:           "Curso",
-		NomeDaTabelaSecundária: "CursoMatérias",
+	conexãoMongoDB := *mongodb.NovaConexão(context.Background(), log.Curso, bdMongo)
+	// curso := mongodb.CursoBD{
+	// 	Conexão: conexãoMongoDB,
+	// }
+
+	// conexãoMongoDB = *mongodb.NovaConexão(context.Background(), log.Aluno, bdMongo)
+	// aluno := mongodb.AlunoBD{
+	// 	Conexão: conexãoMongoDB,
+	// }
+
+	// conexãoMongoDB = *mongodb.NovaConexão(context.Background(), log.Professor, bdMongo)
+	// professor := mongodb.ProfessorBD{
+	// 	Conexão: conexãoMongoDB,
+	// }
+
+	// conexãoMongoDB = *mongodb.NovaConexão(context.Background(), log.Administrativo, bdMongo)
+	// administrativo := mongodb.AdministrativoBD{
+	// 	Conexão: conexãoMongoDB,
+	// }
+
+	conexãoMongoDB = *mongodb.NovaConexão(context.Background(), log.Matéria, bdMongo)
+	matéria := mongodb.MatériaBD{
+		Conexão:    conexãoMongoDB,
+		Collection: conexãoMongoDB.BD.Collection("Matéria"),
 	}
 
-	MariaDBAluno := mariadb.AlunoBD{
-		Conexão:                *mariadb.NovaConexão(log.Aluno, bdSQL),
-		NomeDaTabela:           "Aluno",
-		NomeDaTabelaSecundária: "AlunoTurma",
-	}
-
-	MariaDBProfessor := mariadb.ProfessorBD{
-		Conexão: *mariadb.NovaConexão(log.Professor, bdSQL),
-	}
-
-	MariaDBAdministrativo := mariadb.AdministrativoBD{
-		Conexão: *mariadb.NovaConexão(log.Administrativo, bdSQL),
-	}
-
-	conexãoMatéria := *mongodb.NovaConexão(context.Background(), log.Matéria, bdMongo)
-
-	MariaDBMatéria := mongodb.MatériaBD{
-		Conexão:    conexãoMatéria,
-		Collection: conexãoMatéria.BD.Collection("Matéria"),
-	}
-
-	conexãoTurma := *mongodb.NovaConexão(context.Background(), log.Turma, bdMongo)
-
-	MariaDBTurma := mongodb.TurmaBD{
-		Conexão: conexãoTurma,
+	conexãoMongoDB = *mongodb.NovaConexão(context.Background(), log.Turma, bdMongo)
+	turma := mongodb.TurmaBD{
+		Conexão: conexãoMongoDB,
 	}
 
 	return &data.Data{
-		Pessoa:         MariaDBPessoa,
-		Curso:          MariaDBCurso,
-		Aluno:          MariaDBAluno,
-		Professor:      MariaDBProfessor,
-		Administrativo: MariaDBAdministrativo,
-		Matéria:        MariaDBMatéria,
-		Turma:          MariaDBTurma,
+		Pessoa:         pessoa,
+		Curso:          nil, // curso,
+		Aluno:          nil, // aluno,
+		Professor:      nil, // professor,
+		Administrativo: nil, // administrativo,
+		Matéria:        matéria,
+		Turma:          turma,
 	}
 }

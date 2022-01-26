@@ -29,6 +29,7 @@ Aluno
   - Período
   - Status
   - Turmas (Realizadas E Ativas)
+  - Horário
 
 Professor
 - Herdar: Pessoa
@@ -40,7 +41,7 @@ Professor
   - Status
   - Grau
   - Carga Horária Semanal
-  - Horário De Aulas
+  - Horário
 
 Administrativo
 - Herdar: Pessoa
@@ -52,7 +53,7 @@ Administrativo
   - Status
   - Grau
   - Carga Horária Semanal
-  - Horário De Trabalho
+  - Horário
 
 Matéria
 - Herdar: Não

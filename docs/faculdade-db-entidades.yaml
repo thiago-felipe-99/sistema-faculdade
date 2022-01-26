@@ -1,0 +1,135 @@
+Tipos:
+  - ID: uuid
+
+  - Nome: Nota
+    Tipo: Estrutura
+    Atributos:
+    - Aluno: ID
+    - Nota: Número Racional
+    - Status: Caracteres
+
+  - Nome: Curso
+    Tipo: Estrutura
+    Atributos:
+    - ID: ID
+    - Vagas: Número Inteiro
+    - Período: Caracteres
+
+  - Nome: Horário
+    Tipo : Array
+    Atributos:
+      Tipo: Estrutura
+      Atributos:
+      - Turma: ID
+      - Nome: CARACTERES
+      - Dia: CARACTERES
+      - HorárioInicial: HORA
+      - HorárioFinal: HORA
+      - Observação: CARACTERES
+
+Tabelas:
+- Nome: Pessoa
+  BancoDeDados: Administrativo
+  Atributos:
+  - ID: ID
+  - Nome: Caracteres
+  - CPF: Caracteres
+  - DataDeNascimento: Data
+  - Senha: Caracteres
+
+- Nome: Curso
+  BancoDeDados: Administrativo
+  Atributos:
+  - ID: ID
+  - Nome: Caracteres
+  - DataDeInício: Data
+  - DataDeDesativação: Data
+  - Nome: Matérias
+    Tipo: Array
+    Atributos:
+      Tipo: Estrutura
+      Atributos:
+      - Matéria: ID
+      - Período: Número Inteiro
+      - Status: Caracteres
+      - Observação: Caracteres
+
+- Nome: Aluno
+  BancoDeDados: Administrativo
+  Atributos:
+  - ID: ID
+  - Pessoa: ID
+  - Curso: ID
+  - Matrícula: Número Inteiro
+  - DataDeIngresso: Data
+  - DataDeSaída: Data
+  - Período: Caracteres
+  - Status: Caracteres
+  - Nome: Turmas
+    Tipo: Array
+    Atributos:
+      Tipo: Estrutura
+      Atributos:
+      - Tuma: ID
+      - Status: Caracteres
+  - Horário: Horário
+
+- Nome: Professor
+  BancoDeDados: Administrativo
+  Atributos:
+  - ID: ID
+  - Pessoa: ID
+  - Matrícula: Número Inteiro
+  - DataDeIngresso: Data
+  - DataDeSaída: Data
+  - Status: Caracteres
+  - Grau: Caracteres
+  - Horário: Horário
+
+- Nome: Administrativo
+  BancoDeDados: Administrativo
+  Atributos:
+  - ID: ID
+  - Pessoa: ID
+  - Matrícula: Número Inteiro
+  - DataDeIngresso: Data
+  - DataDeSaída: Data
+  - Status: Caracteres
+  - Grau: Caracteres
+  - Horário: Horário
+
+- Nome: Matéria
+  BancoDeDados: Matéria
+  Atributos:
+  - ID: ID
+  - Nome: Caracteres
+  - CargaHoráriaSemanal: Duração
+  - Créditos: Número Real
+  - Nome: PréRequisitos
+    Tipo: Array
+    Atributos: ID
+  - Tipo: Caracteres
+
+- Nome: Turma
+  BancoDeDados: Matéria
+  Atributos:
+  - ID: ID
+  - Matéria: ID
+  - Nome: Professores
+    Tipo: Array
+    Atributos: ID
+  - Nome: Alunos
+    Tipo: Array
+    Atributos: ID
+  - Nome: CursosResponsáveis
+    Tipo: Array
+    Atributos: ID
+  - Nome: CursosOfertados
+    Tipo: Array
+    Atributos: ID
+  - HorárioDasAulas: Horário
+  - Notas: Nota
+  - QuantidadeDeVagas: Número Inteiro
+  - DataDeInício: Data
+  - DataDeFim: Data
+

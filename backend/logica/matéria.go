@@ -51,6 +51,71 @@ func (lógica Matéria) existeIDs(ids []id) ([]id, bool, erro) {
 	return idsSalvos, len(idsSalvos) == len(idsÚnico), nil
 }
 
+// préRequisitoCiclico verifica se a um ciclo entre os pré requisitos.
+// Para fazer essa verificação ele usa o algoritmo Depth First Traversal(DFS).
+func (lógica Matéria) préRequisitoCiclicos( //nolint: cyclop
+	idMatéria id, préRequisitos []id,
+) (bool, erro) {
+	matérias := préRequisitos
+	matériasPréRequisitos := map[id][]id{idMatéria: préRequisitos}
+
+	for len(matérias) != 0 {
+		var matéria id
+
+		matéria, matérias = matérias[0], matérias[1:]
+
+		if _, existe := matériasPréRequisitos[matéria]; existe {
+			continue
+		}
+
+		préRequisitos, erro := lógica.data.PegarPréRequisitos(matéria)
+		if erro != nil {
+			return false, erros.Novo(ErroVerificarPréRequisitosCiclos, erro, nil)
+		}
+
+		matérias = append(matérias, préRequisitos...)
+		matériasPréRequisitos[matéria] = préRequisitos
+	}
+
+	visitados, pilha := map[id]bool{}, map[id]bool{}
+	for matéria := range matériasPréRequisitos {
+		visitados[matéria] = false
+		pilha[matéria] = false
+	}
+
+	var éCiclico func(id) bool
+
+	éCiclico = func(id id) bool {
+		if pilha[id] {
+			return true
+		}
+
+		if visitados[id] {
+			return false
+		}
+
+		visitados[id], pilha[id] = true, true
+
+		for _, matéria := range matériasPréRequisitos[id] {
+			if éCiclico(matéria) {
+				return true
+			}
+		}
+
+		pilha[id] = false
+
+		return false
+	}
+
+	for matéria := range matériasPréRequisitos {
+		if éCiclico(matéria) {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
 // Criar adiciona uma matéria na aplicação.
 func (lógica Matéria) Criar(
 	nome string,
@@ -94,7 +159,7 @@ func (lógica Matéria) Criar(
 }
 
 // Atualizar é um método que atualiza um matéria na aplicação.
-func (lógica Matéria) Atualizar(
+func (lógica Matéria) Atualizar( //nolint: cyclop
 	id id,
 	nome string,
 	cargaHoráriaSemanal time.Duration,
@@ -126,6 +191,15 @@ func (lógica Matéria) Atualizar(
 
 	if !existe {
 		return nil, erros.Novo(ErroPréRequisitosNãoExiste, nil, nil)
+	}
+
+	ciclo, erro := lógica.préRequisitoCiclicos(id, préRequisitos)
+	if erro != nil {
+		return nil, erros.Novo(ErroAtualizarMatéria, erro, nil)
+	}
+
+	if ciclo {
+		return nil, erros.Novo(ErroPréRequisitosCiclo, nil, nil)
 	}
 
 	matéria := &matéria{

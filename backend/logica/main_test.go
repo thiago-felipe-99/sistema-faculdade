@@ -32,6 +32,7 @@ var (
 	pessoaDataInvalida2 *Pessoa
 	matériaBDTimeOut    *Matéria
 	matériaBDInválido   *Matéria
+	matériaBDInválido2  *Matéria
 	ambiente            = env.PegandoVariáveisDeAmbiente()
 )
 
@@ -114,6 +115,10 @@ func TestMain(m *testing.M) {
 
 	matériaBDInválido = &Matéria{
 		&dataMatériaInvalida{logicaTeste.Matéria.data},
+	}
+
+	matériaBDInválido2 = &Matéria{
+		&dataMatériaInvalida2{logicaTeste.Matéria.data},
 	}
 
 	código := m.Run()

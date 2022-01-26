@@ -76,6 +76,7 @@ type Matéria interface {
 	Atualizar(id, *matéria) erro
 	Pegar(id) (*matéria, erro)
 	PegarMúltiplos([]id) ([]matéria, erro)
+	PegarPréRequisitos(id) ([]id, erro)
 	Deletar(id) erro
 }
 

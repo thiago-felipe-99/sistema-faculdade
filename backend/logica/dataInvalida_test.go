@@ -65,6 +65,14 @@ func (p *dataMatériaInvalida) Atualizar(id id, matéria *matéria) erro {
 	return erros.Novo(ErroAtualizarMatéria, nil, nil)
 }
 
+func (p *dataMatériaInvalida) PegarPréRequisitos(ids id) ([]id, erro) {
+	return []id{}, erros.Novo(ErroAtualizarMatéria, nil, nil)
+}
+
+// func (p *dataMatériaInvalida) PegarMúltiplos(ids []id) ([]matéria, erro) {
+// 	return []matéria{}, erros.Novo(ErroPegarMatéria, nil, nil)
+// }
+
 func (p *dataMatériaInvalida) PegarMúltiplos(ids []id) ([]matéria, erro) {
 	return p.data.PegarMúltiplos(ids)
 }
@@ -74,5 +82,33 @@ func (p *dataMatériaInvalida) Pegar(id id) (*matéria, erro) {
 }
 
 func (p *dataMatériaInvalida) Deletar(id) erro {
+	return erros.Novo(ErroDeletarMatéria, nil, nil)
+}
+
+type dataMatériaInvalida2 struct {
+	data data.Matéria
+}
+
+func (p *dataMatériaInvalida2) Inserir(matéria *matéria) erro {
+	return erros.Novo(ErroCriarMatéria, nil, nil)
+}
+
+func (p *dataMatériaInvalida2) Atualizar(id id, matéria *matéria) erro {
+	return erros.Novo(ErroAtualizarMatéria, nil, nil)
+}
+
+func (p *dataMatériaInvalida2) PegarPréRequisitos(ids id) ([]id, erro) {
+	return []id{}, erros.Novo(ErroAtualizarMatéria, nil, nil)
+}
+
+func (p *dataMatériaInvalida2) PegarMúltiplos(ids []id) ([]matéria, erro) {
+	return []matéria{}, erros.Novo(ErroPegarMatéria, nil, nil)
+}
+
+func (p *dataMatériaInvalida2) Pegar(id id) (*matéria, erro) {
+	return p.data.Pegar(id)
+}
+
+func (p *dataMatériaInvalida2) Deletar(id) erro {
 	return erros.Novo(ErroDeletarMatéria, nil, nil)
 }

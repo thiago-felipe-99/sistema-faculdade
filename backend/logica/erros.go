@@ -17,14 +17,16 @@ const (
 	atualizarPessoa
 	deletarPessoa
 	idsTamanho
-	verificarIDs
 	verificarID
+	verificarIDs
+	verificarPréRequisitosCiclos
 	criarMatéria
 	cargaHoráriaSemanalInválida
 	créditosInválido
 	préRequisitosNãoExiste
 	matériaNãoEncontrada
 	atualizarMatéria
+	préRequisitosCiclo
 	pegarMatéria
 	deletarMatéria
 )
@@ -88,6 +90,10 @@ var (
 		"Erro ao verificar se os IDs existe",
 		verificarIDs,
 	)
+	ErroVerificarPréRequisitosCiclos = criarErroPadrão(
+		"Erro ao verificar se á ciclos nos pré-requisitos",
+		verificarPréRequisitosCiclos,
+	)
 	ErroCriarMatéria = criarErroPadrão(
 		"Erro ao criar a matéria",
 		criarMatéria,
@@ -111,6 +117,10 @@ var (
 	ErroAtualizarMatéria = criarErroPadrão(
 		"Erro ao atualizar a matéria",
 		atualizarMatéria,
+	)
+	ErroPréRequisitosCiclo = criarErroPadrão(
+		"Ao um ciclo entre os pré-requisitos",
+		préRequisitosCiclo,
 	)
 	ErroPegarMatéria = criarErroPadrão(
 		"Erro ao pegar a matéria",

@@ -41,10 +41,24 @@ func TestPegandoVariáveisDeAmbiente(t *testing.T) {
 			t.Fatalf("Não esperva nenhum erro, porém recebeu: %v", erro)
 		}
 
+		defer func() {
+			erro := os.Unsetenv("BD_ADMINISTRATIVO_PORT")
+			if erro != nil {
+				t.Fatalf("Não esperva nenhum erro, porém recebeu: %v", erro)
+			}
+		}()
+
 		erro = os.Setenv("BD_MATERIA_PORT", esperado.Portas.BDMateria)
 		if erro != nil {
 			t.Fatalf("Não esperva nenhum erro, porém recebeu: %v", erro)
 		}
+
+		defer func() {
+			erro := os.Unsetenv("BD_MATERIA_PORT")
+			if erro != nil {
+				t.Fatalf("Não esperva nenhum erro, porém recebeu: %v", erro)
+			}
+		}()
 
 		recebido := PegandoVariáveisDeAmbiente()
 

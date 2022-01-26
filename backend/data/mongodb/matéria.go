@@ -7,6 +7,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data"
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
@@ -140,6 +141,30 @@ func (bd MatériaBD) Pegar(id id) (*matéria, erro) {
 		PréRequisitos:       resultado.PréRequisitos,
 		Tipo:                resultado.Tipo,
 	}, nil
+}
+
+// PegarPréRequisitos é uma método que retorna os pré-requisitos de uma Matéria
+// no banco de dados MongoDB.
+func (bd MatériaBD) PegarPréRequisitos(id id) ([]id, erro) {
+	bd.Log.Informação("Pegando pré-requisitos da Matéria com ID:", id)
+
+	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
+	defer cancel()
+
+	var resultado matériaParse
+
+	options := options.FindOne().SetProjection(bson.M{"pré-requisitos": 1})
+
+	err := bd.Collection.FindOne(ctx, bson.M{"_id": id}, options).Decode(&resultado)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, erros.Novo(data.ErroMatériaNãoEncontrada, nil, err)
+		}
+
+		return nil, erros.Novo(data.ErroPegarMatéria, nil, err)
+	}
+
+	return resultado.PréRequisitos, nil
 }
 
 // PegarIDs é um método que retorna se as matérias existe no banco de dados

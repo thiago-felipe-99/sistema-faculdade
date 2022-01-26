@@ -186,6 +186,49 @@ func TestPegarMatéria(t *testing.T) {
 	})
 }
 
+func TestPegarPréRequisitos(t *testing.T) {
+	t.Parallel()
+
+	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+		id := adicionarMatéria(t, criarMatériaAleatória())
+
+		matéria, erro := matériaBD.Pegar(id)
+		if erro != nil {
+			t.Fatalf("Não esperava um erro ao pegar a matéria: %v", erro)
+		}
+
+		ids, erro := matériaBD.PegarPréRequisitos(id)
+		if erro != nil {
+			t.Fatalf("Não esperava um erro ao pegar as IDs: %v", erro)
+		}
+
+		if !reflect.DeepEqual(ids, matéria.PréRequisitos) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ids, matéria.ID)
+		}
+	})
+
+	t.Run("MatériaNãoEcontrada", func(t *testing.T) {
+		t.Parallel()
+		_, erro := matériaBD.PegarPréRequisitos(entidades.NovoID())
+		if erro == nil || !erro.ÉPadrão(data.ErroMatériaNãoEncontrada) {
+			t.Fatalf(
+				"Erro ao pegar a matéria, queria: %v, chegou: %v",
+				data.ErroMatériaNãoEncontrada,
+				erro,
+			)
+		}
+	})
+
+	t.Run("TimeOut", func(t *testing.T) {
+		t.Parallel()
+		_, erro := matériaBDInválido.PegarPréRequisitos(entidades.NovoID())
+		if erro == nil || !mongo.IsTimeout(erro.ErroExterno) {
+			t.Fatalf("Esperava um erro de Timeout, chegou: %v", erro)
+		}
+	})
+}
+
 //nolint: funlen, cyclop
 func TestPegarMúltiplos(t *testing.T) {
 	t.Parallel()

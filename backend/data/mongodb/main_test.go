@@ -18,6 +18,8 @@ import (
 var (
 	matériaBD         *MatériaBD
 	matériaBDInválido *MatériaBD
+	cursoBD           *CursoBD
+	cursoBDInválido   *CursoBD
 	ambiente          = env.PegandoVariáveisDeAmbiente()
 )
 
@@ -62,6 +64,22 @@ func criandoConexõesComAsColeções(bd *mongo.Database) {
 	}
 
 	matériaBDInválido.Timeout = time.Microsecond
+
+	logCurso := logs.NovoLog(arquivos.Curso, logs.NívelDebug)
+
+	conexãoCurso := *NovaConexão(context.Background(), logCurso, bd)
+
+	cursoBD = &CursoBD{
+		Conexão:    conexãoCurso,
+		Collection: conexãoCurso.BD.Collection("Curso"),
+	}
+
+	cursoBDInválido = &CursoBD{
+		Conexão:    conexãoCurso,
+		Collection: conexãoCurso.BD.Collection("CursoInválido"),
+	}
+
+	cursoBDInválido.Timeout = time.Microsecond
 }
 
 func TestMain(m *testing.M) {

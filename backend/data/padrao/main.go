@@ -23,21 +23,24 @@ func DataPadrão(
 	}
 
 	conexãoMongoDB := *mongodb.NovaConexão(context.Background(), log.Curso, bdMongo)
-	// curso := mongodb.CursoBD{
-	// 	Conexão: conexãoMongoDB,
-	// }
+	curso := mongodb.CursoBD{
+		Conexão:    conexãoMongoDB,
+		Collection: conexãoMongoDB.BD.Collection("Curso"),
+	}
 
 	// conexãoMongoDB = *mongodb.NovaConexão(context.Background(), log.Aluno, bdMongo)
 	// aluno := mongodb.AlunoBD{
 	// 	Conexão: conexãoMongoDB,
 	// }
 
-	// conexãoMongoDB = *mongodb.NovaConexão(context.Background(), log.Professor, bdMongo)
+	// conexãoMongoDB =
+	// *mongodb.NovaConexão(context.Background(), log.Professor, bdMongo)
 	// professor := mongodb.ProfessorBD{
 	// 	Conexão: conexãoMongoDB,
 	// }
 
-	// conexãoMongoDB = *mongodb.NovaConexão(context.Background(), log.Administrativo, bdMongo)
+	// conexãoMongoDB =
+	// *mongodb.NovaConexão(context.Background(), log.Administrativo, bdMongo)
 	// administrativo := mongodb.AdministrativoBD{
 	// 	Conexão: conexãoMongoDB,
 	// }
@@ -55,7 +58,7 @@ func DataPadrão(
 
 	return &data.Data{
 		Pessoa:         pessoa,
-		Curso:          nil, // curso,
+		Curso:          curso,
 		Aluno:          nil, // aluno,
 		Professor:      nil, // professor,
 		Administrativo: nil, // administrativo,

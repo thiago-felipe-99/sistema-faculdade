@@ -13,9 +13,7 @@ import (
 )
 
 const (
-	matériasMáximas        = 20
-	tamanhoMáximoPalavra   = 25
-	tamanhoMáximoMatrícula = 11
+	tamanhoMáximoPalavra = 25
 )
 
 //nolint: gochecknoglobals

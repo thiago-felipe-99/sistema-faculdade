@@ -13,10 +13,12 @@ import (
 )
 
 type (
-	erro    = *erros.Aplicação
-	matéria = entidades.Matéria
-	turma   = entidades.Turma
-	id      = entidades.ID
+	erro         = *erros.Aplicação
+	matéria      = entidades.Matéria
+	curso        = entidades.Curso
+	cursoMatéria = entidades.CursoMatéria
+	turma        = entidades.Turma
+	id           = entidades.ID
 )
 
 // Conexão representa a conexão com o banco de dados MongoDB.

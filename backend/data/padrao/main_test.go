@@ -68,7 +68,7 @@ func TestDataPadrão(t *testing.T) {
 
 	tipos := map[string]struct{ quer, recebou string }{
 		"Pessoa":         {"mariadb.PessoaBD", fmt.Sprintf("%T", data.Pessoa)},
-		"Curso":          {"<nil>", fmt.Sprintf("%T", data.Curso)},
+		"Curso":          {"mongodb.CursoBD", fmt.Sprintf("%T", data.Curso)},
 		"Aluno":          {"<nil>", fmt.Sprintf("%T", data.Aluno)},
 		"Professor":      {"<nil>", fmt.Sprintf("%T", data.Professor)},
 		"Administrativo": {"<nil>", fmt.Sprintf("%T", data.Administrativo)},

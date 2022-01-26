@@ -37,25 +37,8 @@ Tabelas:
   - DataDeNascimento: Data
   - Senha: Caracteres
 
-- Nome: Curso
-  BancoDeDados: Administrativo
-  Atributos:
-  - ID: ID
-  - Nome: Caracteres
-  - DataDeInício: Data
-  - DataDeDesativação: Data
-  - Nome: Matérias
-    Tipo: Array
-    Atributos:
-      Tipo: Estrutura
-      Atributos:
-      - Matéria: ID
-      - Período: Número Inteiro
-      - Status: Caracteres
-      - Observação: Caracteres
-
 - Nome: Aluno
-  BancoDeDados: Administrativo
+  BancoDeDados: Amariadb.CursoBDdministrativo
   Atributos:
   - ID: ID
   - Pessoa: ID
@@ -109,6 +92,23 @@ Tabelas:
     Tipo: Array
     Atributos: ID
   - Tipo: Caracteres
+
+- Nome: Curso
+  BancoDeDados: Matéria
+  Atributos:
+  - ID: ID
+  - Nome: Caracteres
+  - DataDeInício: Data
+  - DataDeDesativação: Data
+  - Nome: Matérias
+    Tipo: Array
+    Atributos:
+      Tipo: Estrutura
+      Atributos:
+      - Matéria: ID
+      - Período: Número Inteiro
+      - Status: Caracteres
+      - Observação: Caracteres
 
 - Nome: Turma
   BancoDeDados: Matéria

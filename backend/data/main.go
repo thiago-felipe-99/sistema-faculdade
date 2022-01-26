@@ -11,7 +11,6 @@ type (
 	cpf            = entidades.CPF
 	pessoa         = entidades.Pessoa
 	curso          = entidades.Curso
-	cursomatéria   = entidades.CursoMatéria
 	aluno          = entidades.Aluno
 	professor      = entidades.Professor
 	administrativo = entidades.Administrativo
@@ -32,13 +31,9 @@ type Pessoa interface {
 // Curso representa quais são as opereçãoes necessárias para salvar e
 // alterar um Curso definitivamente.
 type Curso interface {
-	InserirMatérias(*[]cursomatéria) erro
 	Inserir(*curso) erro
-	AtualizarMatérias(*[]cursomatéria) erro
 	Atualizar(id, *curso) erro
-	PegarMatérias(id) (*[]cursomatéria, erro)
 	Pegar(id) (*curso, erro)
-	DeletarMatérias(id) erro
 	Deletar(id) erro
 }
 

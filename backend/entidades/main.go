@@ -67,8 +67,7 @@ type Horário struct {
 
 // CursoMatéria representa as matérias que um curso pode ter.
 type CursoMatéria struct {
-	IDCurso    ID
-	IDMatéria  ID
+	Matéria    ID
 	Período    string
 	Tipo       string
 	Status     string
@@ -77,9 +76,8 @@ type CursoMatéria struct {
 
 // TurmaAluno representa as turmas do aluno.
 type TurmaAluno struct {
-	IDTurma ID
-	IDAluno ID
-	Status  string
+	Turma  ID
+	Status string
 }
 
 // Pessoa representa a entidade Pessoa.

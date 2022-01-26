@@ -14,12 +14,34 @@ import (
 )
 
 type matériaParse struct {
-	ID                  id `bson:"_id"`
-	Nome                string
+	ID                  id            `bson:"_id"`
+	Nome                string        `bson:"nome"`
 	CargaHoráriaSemanal time.Duration `bson:"carga_horária_semanal"`
-	Créditos            float32
-	PréRequisitos       []id `bson:"pré-requisitos"`
-	Tipo                string
+	Créditos            float32       `bson:"créditos"`
+	PréRequisitos       []id          `bson:"pré-requisitos"`
+	Tipo                string        `bso:"tipo"`
+}
+
+func paraMatériaParse(matéria matéria) matériaParse {
+	return matériaParse{
+		ID:                  matéria.ID,
+		Nome:                matéria.Nome,
+		CargaHoráriaSemanal: matéria.CargaHoráriaSemanal,
+		Créditos:            matéria.Créditos,
+		PréRequisitos:       matéria.PréRequisitos,
+		Tipo:                matéria.Tipo,
+	}
+}
+
+func paraMatéria(matériaparse matériaParse) matéria {
+	return matéria{
+		ID:                  matériaparse.ID,
+		Nome:                matériaparse.Nome,
+		CargaHoráriaSemanal: matériaparse.CargaHoráriaSemanal,
+		Créditos:            matériaparse.Créditos,
+		PréRequisitos:       matériaparse.PréRequisitos,
+		Tipo:                matériaparse.Tipo,
+	}
 }
 
 // MatériaBD representa a conexão com o banco de dados MongoDB para fazer
@@ -40,14 +62,7 @@ func (bd MatériaBD) inserirMúltiplas(matérias *[]matéria) erro {
 	inserir := []interface{}{}
 
 	for _, matéria := range *matérias {
-		inserir = append(inserir, &matériaParse{
-			ID:                  matéria.ID,
-			Nome:                matéria.Nome,
-			CargaHoráriaSemanal: matéria.CargaHoráriaSemanal,
-			Créditos:            matéria.Créditos,
-			PréRequisitos:       matéria.PréRequisitos,
-			Tipo:                matéria.Tipo,
-		})
+		inserir = append(inserir, paraMatériaParse(matéria))
 	}
 
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
@@ -68,17 +83,10 @@ func (bd MatériaBD) inserirMúltiplas(matérias *[]matéria) erro {
 func (bd MatériaBD) Inserir(matéria *matéria) erro {
 	bd.Log.Informação("Inserindo Matéria com ID:", matéria.ID.String())
 
-	inserir := &matériaParse{
-		ID:                  matéria.ID,
-		Nome:                matéria.Nome,
-		CargaHoráriaSemanal: matéria.CargaHoráriaSemanal,
-		Créditos:            matéria.Créditos,
-		PréRequisitos:       matéria.PréRequisitos,
-		Tipo:                matéria.Tipo,
-	}
-
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
 	defer cancel()
+
+	inserir := paraMatériaParse(*matéria)
 
 	_, err := bd.Collection.InsertOne(ctx, inserir)
 	if err != nil {
@@ -93,19 +101,11 @@ func (bd MatériaBD) Inserir(matéria *matéria) erro {
 func (bd MatériaBD) Atualizar(id id, matéria *matéria) erro {
 	bd.Log.Informação("Atualizando Matéria com ID:", matéria.ID.String())
 
-	atualizar := &matériaParse{
-		ID:                  id,
-		Nome:                matéria.Nome,
-		CargaHoráriaSemanal: matéria.CargaHoráriaSemanal,
-		Créditos:            matéria.Créditos,
-		PréRequisitos:       matéria.PréRequisitos,
-		Tipo:                matéria.Tipo,
-	}
-
-	query := bson.D{{Key: "$set", Value: atualizar}}
-
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
 	defer cancel()
+
+	atualizar := paraMatériaParse(*matéria)
+	query := bson.D{{Key: "$set", Value: atualizar}}
 
 	_, err := bd.Collection.UpdateByID(ctx, id, query)
 	if err != nil {
@@ -122,9 +122,9 @@ func (bd MatériaBD) Pegar(id id) (*matéria, erro) {
 	ctx, cancel := context.WithTimeout(bd.ctx, bd.Timeout)
 	defer cancel()
 
-	var resultado matériaParse
+	var matériaparse matériaParse
 
-	err := bd.Collection.FindOne(ctx, bson.M{"_id": id}).Decode(&resultado)
+	err := bd.Collection.FindOne(ctx, bson.M{"_id": id}).Decode(&matériaparse)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, erros.Novo(data.ErroMatériaNãoEncontrada, nil, err)
@@ -133,14 +133,9 @@ func (bd MatériaBD) Pegar(id id) (*matéria, erro) {
 		return nil, erros.Novo(data.ErroPegarMatéria, nil, err)
 	}
 
-	return &matéria{
-		ID:                  resultado.ID,
-		Nome:                resultado.Nome,
-		CargaHoráriaSemanal: resultado.CargaHoráriaSemanal,
-		Créditos:            resultado.Créditos,
-		PréRequisitos:       resultado.PréRequisitos,
-		Tipo:                resultado.Tipo,
-	}, nil
+	matéria := paraMatéria(matériaparse)
+
+	return &matéria, nil
 }
 
 // PegarPréRequisitos é uma método que retorna os pré-requisitos de uma Matéria
@@ -196,14 +191,7 @@ func (bd MatériaBD) PegarMúltiplos(ids []id) ([]matéria, erro) {
 	matérias := []matéria{}
 
 	for _, matériaparse := range results {
-		matérias = append(matérias, matéria{
-			ID:                  matériaparse.ID,
-			Nome:                matériaparse.Nome,
-			CargaHoráriaSemanal: matériaparse.CargaHoráriaSemanal,
-			Créditos:            matériaparse.Créditos,
-			PréRequisitos:       matériaparse.PréRequisitos,
-			Tipo:                matériaparse.Tipo,
-		})
+		matérias = append(matérias, paraMatéria(matériaparse))
 	}
 
 	return matérias, nil

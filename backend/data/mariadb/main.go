@@ -12,16 +12,10 @@ import (
 )
 
 type (
-	erro           = *erros.Aplicação
-	id             = entidades.ID
-	cpf            = entidades.CPF
-	pessoa         = entidades.Pessoa
-	curso          = entidades.Curso
-	cursoMatéria   = entidades.CursoMatéria
-	aluno          = entidades.Aluno
-	turmaAluno     = entidades.TurmaAluno
-	professor      = entidades.Professor
-	administrativo = entidades.Administrativo
+	erro   = *erros.Aplicação
+	id     = entidades.ID
+	cpf    = entidades.CPF
+	pessoa = entidades.Pessoa
 )
 
 // Conexão representa a conexão com o banco de dados MariaDB.

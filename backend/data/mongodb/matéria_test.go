@@ -1,3 +1,4 @@
+//nolint: dupl
 package mongodb
 
 import (
@@ -22,7 +23,7 @@ func criarMatériaAleatória() *matéria {
 
 	ch := aleatorio.Número(cargaHoráriaMáxima) + 1
 
-	matéria := &matéria{
+	return &matéria{
 		ID:                  entidades.NovoID(),
 		Nome:                aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 		CargaHoráriaSemanal: time.Hour * time.Duration(ch),
@@ -30,8 +31,6 @@ func criarMatériaAleatória() *matéria {
 		PréRequisitos:       préRequisitos,
 		Tipo:                aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 	}
-
-	return matéria
 }
 
 func criarMatériasAleatórias(quantidade uint) []matéria {
@@ -104,7 +103,7 @@ func TestInserirMatéria(t *testing.T) {
 		if !mongo.IsDuplicateKeyError(erro.ErroExterno) {
 			t.Fatalf(
 				"Erro ao inserir a matéria queria: %v, chegou: %v",
-				"Erro de id fuplicado",
+				"Erro de id duplicado",
 				erro.ErroExterno,
 			)
 		}
@@ -186,7 +185,7 @@ func TestPegarMatéria(t *testing.T) {
 	})
 }
 
-func TestPegarPréRequisitos(t *testing.T) {
+func TestPegarMatériaPréRequisitos(t *testing.T) {
 	t.Parallel()
 
 	t.Run("OKAY", func(t *testing.T) {
@@ -334,7 +333,7 @@ func TestPegarMúltiplos(t *testing.T) {
 	})
 }
 
-func TestDeletar(t *testing.T) {
+func TestDeletarMatéria(t *testing.T) {
 	t.Parallel()
 
 	t.Run("OKAY", func(t *testing.T) {
@@ -361,7 +360,7 @@ func TestDeletar(t *testing.T) {
 }
 
 //nolint: funlen, cyclop
-func TestMúltiplos(t *testing.T) {
+func TestMúltiplasMatérias(t *testing.T) {
 	t.Parallel()
 
 	t.Run("OKAY", func(t *testing.T) {

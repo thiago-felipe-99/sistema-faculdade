@@ -9,7 +9,12 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
-func criarCursoAleatório(t *testing.T) (string, time.Time, time.Time, []cursoMatéria) {
+func criarCursoAleatório(t *testing.T) (
+	string,
+	time.Time,
+	time.Time,
+	[]cursoMatéria,
+) {
 	t.Helper()
 
 	nome := aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
@@ -47,14 +52,14 @@ func adicionarCurso(
 		t.Fatalf("Não esperava erro ao criar curso: %v", erro)
 	}
 
-	cursoSalva, erro := logicaTeste.Curso.Pegar(curso.ID)
+	cursoSalvo, erro := logicaTeste.Curso.Pegar(curso.ID)
 	if erro != nil {
 		t.Log("Ffoi4")
 		t.Fatalf("Não esperava erro ao pegar o curso: %v", erro)
 	}
 
-	if !reflect.DeepEqual(curso, cursoSalva) {
-		t.Fatalf("Esperava: %v\nChegou: %v", curso, cursoSalva)
+	if !reflect.DeepEqual(curso, cursoSalvo) {
+		t.Fatalf("Esperava: %v\nChegou: %v", curso, cursoSalvo)
 	}
 
 	t.Cleanup(func() {
@@ -128,6 +133,103 @@ func TestCriarCurso(t *testing.T) {
 			Criar(nome, dataDeInício, dataDeDesativação, matérias)
 		if erro == nil || !erro.ÉPadrão(ErroCriarCurso) {
 			t.Fatalf("Esperava: %v\nChegou: %v", ErroCriarCurso, erro)
+		}
+	})
+}
+
+//nolint: funlen, cyclop
+func TestAtualizarCurso(t *testing.T) {
+	t.Parallel()
+
+	nome, dataDeInício, dataDeDesativação, matérias := criarCursoAleatório(t)
+	id := adicionarCurso(t, nome, dataDeInício, dataDeDesativação, matérias)
+
+	t.Run("OKAY", func(t *testing.T) {
+		t.Parallel()
+
+		nome, dataDeInício, dataDeDesativação, matérias := criarCursoAleatório(t)
+		curso, erro := logicaTeste.Curso.
+			Atualizar(id, nome, dataDeInício, dataDeDesativação, matérias)
+		if erro != nil {
+			t.Fatalf("Não esperava erro ao atualizar curso: %v", erro)
+		}
+
+		cursoSalvo, erro := logicaTeste.Curso.Pegar(id)
+		if erro != nil {
+			t.Log("Ffoi4")
+			t.Fatalf("Não esperava erro ao pegar o curso: %v", erro)
+		}
+
+		if !reflect.DeepEqual(curso, cursoSalvo) {
+			t.Fatalf("Esperava: %v\nChegou: %v", curso, cursoSalvo)
+		}
+	})
+
+	t.Run("CursoNãoEncontrado", func(t *testing.T) {
+		t.Parallel()
+
+		_, erro := logicaTeste.Curso.
+			Atualizar(entidades.NovoID(), nome, dataDeInício, dataDeDesativação, matérias)
+		if erro == nil || !erro.ÉPadrão(ErroCursoNãoEncontrado) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroCursoNãoEncontrado, erro)
+		}
+	})
+
+	t.Run("DatasInválida", func(t *testing.T) {
+		t.Parallel()
+
+		_, erro := logicaTeste.Curso.
+			Atualizar(id, nome, dataDeDesativação, dataDeInício, matérias)
+		if erro == nil || !erro.ÉPadrão(ErroDataDeInícioMaior) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroDataDeInícioMaior, erro)
+		}
+	})
+
+	t.Run("MatériaNãoEncontrada", func(t *testing.T) {
+		t.Parallel()
+
+		matéria := cursoMatéria{
+			Matéria:    entidades.NovoID(),
+			Período:    "erro",
+			Tipo:       "teste",
+			Status:     "teste",
+			Observação: "teste",
+		}
+
+		_, erro := logicaTeste.Curso.
+			Atualizar(id, nome, dataDeInício, dataDeDesativação, append(matérias, matéria))
+		if erro == nil || !erro.ÉPadrão(ErroMatériaNãoEncontrada) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroMatériaNãoEncontrada, erro)
+		}
+	})
+
+	t.Run("TimeOut", func(t *testing.T) {
+		t.Parallel()
+
+		_, erro := cursoBDTimeOut.
+			Atualizar(id, nome, dataDeInício, dataDeDesativação, []cursoMatéria{})
+		if erro == nil || !erro.ÉPadrão(ErroAtualizarCurso) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroCriarCurso, erro)
+		}
+	})
+
+	t.Run("BDInválido", func(t *testing.T) {
+		t.Parallel()
+
+		_, erro := cursoBDInválido.
+			Atualizar(id, nome, dataDeInício, dataDeDesativação, []cursoMatéria{})
+		if erro == nil || !erro.ÉPadrão(ErroAtualizarCurso) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroAtualizarCurso, erro)
+		}
+	})
+
+	t.Run("BDInválido/2", func(t *testing.T) {
+		t.Parallel()
+
+		_, erro := cursoBDInválido.
+			Atualizar(id, nome, dataDeInício, dataDeDesativação, matérias)
+		if erro == nil || !erro.ÉPadrão(ErroAtualizarCurso) {
+			t.Fatalf("Esperava: %v\nChegou: %v", ErroAtualizarCurso, erro)
 		}
 	})
 }

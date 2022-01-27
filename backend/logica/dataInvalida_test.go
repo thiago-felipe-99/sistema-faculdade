@@ -69,10 +69,6 @@ func (p *dataMatériaInvalida) PegarPréRequisitos(ids id) ([]id, erro) {
 	return []id{}, erros.Novo(ErroAtualizarMatéria, nil, nil)
 }
 
-// func (p *dataMatériaInvalida) PegarMúltiplos(ids []id) ([]matéria, erro) {
-// 	return []matéria{}, erros.Novo(ErroPegarMatéria, nil, nil)
-// }
-
 func (p *dataMatériaInvalida) PegarMúltiplos(ids []id) ([]matéria, erro) {
 	return p.data.PegarMúltiplos(ids)
 }

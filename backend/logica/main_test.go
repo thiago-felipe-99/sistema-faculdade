@@ -78,6 +78,7 @@ func criarConexãoBDs() (*sql.DB, *mongo.Database) {
 	return sqlConexão, mongoConexão
 }
 
+//nolint: funlen
 func TestMain(m *testing.M) {
 	sqlDB, mongoDB := criarConexãoBDs()
 	logFiles := logs.AbrirArquivos("./logs/data/")
@@ -140,7 +141,7 @@ func TestMain(m *testing.M) {
 
 	cursoBDInválido = &Curso{
 		data:    &dataCursoInvalido{logicaTeste.Curso.data},
-		matéria: *matériaBDInválido,
+		matéria: *matériaBDInválido2,
 	}
 
 	código := m.Run()

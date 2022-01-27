@@ -73,6 +73,61 @@ func (lógica Curso) Criar(
 	return curso, nil
 }
 
+// Atualizar atualiza um Curso na aplicação.
+func (lógica Curso) Atualizar(
+	idCurso id,
+	nome string,
+	dataDeInício time.Time,
+	dataDeDesativação time.Time,
+	matérias []cursoMatéria,
+) (*curso, erro) {
+	existe, erro := lógica.existe(idCurso)
+	if erro != nil {
+		return nil, erros.Novo(ErroAtualizarCurso, erro, nil)
+	}
+
+	if !existe {
+		return nil, erros.Novo(ErroCursoNãoEncontrado, nil, nil)
+	}
+
+	dataDeInício = entidades.RemoverHorário(dataDeInício)
+	dataDeDesativação = entidades.RemoverHorário(dataDeDesativação)
+
+	if dataDeInício.Unix() >= dataDeDesativação.Unix() {
+		return nil, erros.Novo(ErroDataDeInícioMaior, nil, nil)
+	}
+
+	matériasID := []id{}
+
+	for _, matéria := range matérias {
+		matériasID = append(matériasID, matéria.Matéria)
+	}
+
+	_, existe, erro = lógica.matéria.existeIDs(matériasID)
+	if erro != nil && !erro.ÉPadrão(ErroIDsTamanho) {
+		return nil, erros.Novo(ErroAtualizarCurso, erro, nil)
+	}
+
+	if !existe {
+		return nil, erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
+	}
+
+	curso := &curso{
+		ID:                idCurso,
+		Nome:              nome,
+		DataDeInício:      dataDeInício,
+		DataDeDesativação: dataDeDesativação,
+		Matérias:          matérias,
+	}
+
+	erro = lógica.data.Atualizar(idCurso, curso)
+	if erro != nil {
+		return nil, erros.Novo(ErroAtualizarCurso, erro, nil)
+	}
+
+	return curso, nil
+}
+
 // Pegar é um método que pega uma Curso na aplicação.
 func (lógica Curso) Pegar(id id) (*curso, erro) {
 	curso, erro := lógica.data.Pegar(id)

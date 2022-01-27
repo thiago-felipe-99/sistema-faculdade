@@ -160,7 +160,7 @@ func TestAtualizarMatéria(t *testing.T) {
 			[]id{id1},
 		)
 		if erro != nil {
-			t.Fatalf("Não esperava um erro ao atulizar o atulizar a matéria: %v", erro)
+			t.Fatalf("Não esperava um erro ao atualizar o atulizar a matéria: %v", erro)
 		}
 
 		matériaSalva, erro := logicaTeste.Matéria.Pegar(id3)
@@ -244,7 +244,7 @@ func TestAtualizarMatéria(t *testing.T) {
 
 		_, erro := matériaBDInválido.Atualizar(id1, nome1, ch1, créditos1, tipo1, []id{})
 		if erro == nil || !erro.ÉPadrão(ErroAtualizarMatéria) {
-			t.Fatalf("Esperava um erro ao atulizar matéria: %v", erro)
+			t.Fatalf("Esperava um erro ao atualizar matéria: %v", erro)
 		}
 	})
 }
@@ -341,7 +341,7 @@ func TestPréRequisitosCiclo(t *testing.T) {
 			[]id{id2},
 		)
 		if erro == nil || !erro.ÉPadrão(ErroAtualizarMatéria) {
-			t.Fatalf("Esperava um erro ao atulizar matéria: %v", erro)
+			t.Fatalf("Esperava um erro ao atualizar matéria: %v", erro)
 		}
 	})
 
@@ -357,7 +357,7 @@ func TestPréRequisitosCiclo(t *testing.T) {
 			[]id{id2},
 		)
 		if erro == nil || !erro.ÉPadrão(ErroAtualizarMatéria) {
-			t.Fatalf("Esperava um erro ao atulizar matéria: %v", erro)
+			t.Fatalf("Esperava um erro ao atualizar matéria: %v", erro)
 		}
 	})
 }

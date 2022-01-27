@@ -112,3 +112,23 @@ func (p *dataMatériaInvalida2) Pegar(id id) (*matéria, erro) {
 func (p *dataMatériaInvalida2) Deletar(id) erro {
 	return erros.Novo(ErroDeletarMatéria, nil, nil)
 }
+
+type dataCursoInvalido struct {
+	data data.Curso
+}
+
+func (p *dataCursoInvalido) Inserir(curso *curso) erro {
+	return erros.Novo(ErroCriarCurso, nil, nil)
+}
+
+func (p *dataCursoInvalido) Atualizar(id id, curso *curso) erro {
+	return erros.Novo(ErroAtualizarCurso, nil, nil)
+}
+
+func (p *dataCursoInvalido) Pegar(id id) (*curso, erro) {
+	return p.data.Pegar(id)
+}
+
+func (p *dataCursoInvalido) Deletar(id) erro {
+	return erros.Novo(ErroDeletarCurso, nil, nil)
+}

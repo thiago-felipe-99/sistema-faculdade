@@ -29,6 +29,12 @@ const (
 	préRequisitosCiclo
 	pegarMatéria
 	deletarMatéria
+	criarCurso
+	dataDeInícioMaior
+	atualizarCurso
+	cursoNãoEncontrado
+	pegarCurso
+	deletarCurso
 )
 
 var criarErroPadrão = erros.NovoPadrãoFunc("LÓGICA") //nolint:gochecknoglobals
@@ -129,5 +135,29 @@ var (
 	ErroDeletarMatéria = criarErroPadrão(
 		"Erro ao deletar a matéria",
 		deletarMatéria,
+	)
+	ErroCriarCurso = criarErroPadrão(
+		"Erro ao criar a curso",
+		criarCurso,
+	)
+	ErroDataDeInícioMaior = criarErroPadrão(
+		"Data de início é maior que a data final",
+		dataDeInícioMaior,
+	)
+	ErroCursoNãoEncontrado = criarErroPadrão(
+		"Não foi encontrado o curso na aplicação",
+		cursoNãoEncontrado,
+	)
+	ErroAtualizarCurso = criarErroPadrão(
+		"Erro ao atualizar a curso",
+		atualizarCurso,
+	)
+	ErroPegarCurso = criarErroPadrão(
+		"Erro ao pegar o curso",
+		pegarCurso,
+	)
+	ErroDeletarCurso = criarErroPadrão(
+		"Erro ao deletar o curso",
+		deletarCurso,
 	)
 )

@@ -7,11 +7,13 @@ import (
 )
 
 type (
-	erro    = *erros.Aplicação
-	matéria = entidades.Matéria
-	pessoa  = entidades.Pessoa
-	cpf     = entidades.CPF
-	id      = entidades.ID
+	erro         = *erros.Aplicação
+	pessoa       = entidades.Pessoa
+	matéria      = entidades.Matéria
+	cursoMatéria = entidades.CursoMatéria
+	curso        = entidades.Curso
+	cpf          = entidades.CPF
+	id           = entidades.ID
 )
 
 // Lógica representa as operações que se possa fazer com as entidades da
@@ -19,12 +21,18 @@ type (
 type Lógica struct {
 	Pessoa
 	Matéria
+	Curso
 }
 
 // NovaLógica cria uma Lógica da aplicação.
 func NovaLógica(data *data.Data) *Lógica {
+	pessoa := Pessoa{data: data.Pessoa}
+	matéria := Matéria{data: data.Matéria}
+	curso := Curso{data: data.Curso, matéria: matéria}
+
 	return &Lógica{
-		Pessoa:  Pessoa{data: data.Pessoa},
-		Matéria: Matéria{data: data.Matéria},
+		Pessoa:  pessoa,
+		Matéria: matéria,
+		Curso:   curso,
 	}
 }

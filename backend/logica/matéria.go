@@ -15,7 +15,7 @@ type Matéria struct {
 
 const cargaHoráriaSemanalMímima = time.Hour
 
-// existe verifica se a matéria existe na aplicação.
+// existe verifica se a Matéria existe na aplicação.
 func (lógica Matéria) existe(id id) (bool, erro) {
 	_, erro := lógica.data.Pegar(id)
 	if erro != nil {
@@ -29,7 +29,7 @@ func (lógica Matéria) existe(id id) (bool, erro) {
 	return true, nil
 }
 
-// existeIDs verifica se as matérias existe na aplicação.
+// existeIDs verifica se as Matérias existe na aplicação.
 func (lógica Matéria) existeIDs(ids []id) ([]id, bool, erro) {
 	if len(ids) == 0 {
 		return []id{}, true, erros.Novo(ErroIDsTamanho, nil, nil)
@@ -116,7 +116,7 @@ func (lógica Matéria) préRequisitoCiclicos( //nolint: cyclop
 	return false, nil
 }
 
-// Criar adiciona uma matéria na aplicação.
+// Criar adiciona uma Matéria na aplicação.
 func (lógica Matéria) Criar(
 	nome string,
 	cargaHoráriaSemanal time.Duration,
@@ -158,7 +158,7 @@ func (lógica Matéria) Criar(
 	return matéria, nil
 }
 
-// Atualizar é um método que atualiza um matéria na aplicação.
+// Atualizar é um método que atualiza um Matéria na aplicação.
 func (lógica Matéria) Atualizar( //nolint: cyclop
 	id id,
 	nome string,
@@ -219,7 +219,7 @@ func (lógica Matéria) Atualizar( //nolint: cyclop
 	return matéria, nil
 }
 
-// Pegar é um método que pega uma matéria na aplicação.
+// Pegar é um método que pega uma Matéria na aplicação.
 func (lógica Matéria) Pegar(id id) (*matéria, erro) {
 	matéria, erro := lógica.data.Pegar(id)
 	if erro != nil {

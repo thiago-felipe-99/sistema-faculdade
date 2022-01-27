@@ -22,6 +22,8 @@ const (
 	tamanhoMáximoPalavra      = 25
 	tamanhoMáximoCargaHorária = 10
 	tamanhoMáximoCréditos     = 20
+	tamanhoMáximoData         = 15
+	tamanhoMáximoMatéria      = 10
 )
 
 //nolint: gochecknoglobals
@@ -33,6 +35,8 @@ var (
 	matériaBDTimeOut    *Matéria
 	matériaBDInválido   *Matéria
 	matériaBDInválido2  *Matéria
+	cursoBDTimeOut      *Curso
+	cursoBDInválido     *Curso
 	ambiente            = env.PegandoVariáveisDeAmbiente()
 )
 
@@ -87,7 +91,6 @@ func TestMain(m *testing.M) {
 		Conexão:      *mariadb.NovaConexão(log.Pessoa, sqlDB),
 		NomeDaTabela: "PessoaInválida",
 	}
-
 	pessoaBDInválido = &Pessoa{data: dataPessoaInválido}
 
 	pessoaDataInvalida = &Pessoa{
@@ -108,7 +111,6 @@ func TestMain(m *testing.M) {
 		Conexão:    conexãoMatériaTimeOut,
 		Collection: conexãoMatériaTimeOut.BD.Collection("Matéria"),
 	}
-
 	matériaBDTimeOut = &Matéria{
 		data: dataMatériaTimeOut,
 	}
@@ -119,6 +121,26 @@ func TestMain(m *testing.M) {
 
 	matériaBDInválido2 = &Matéria{
 		&dataMatériaInvalida2{logicaTeste.Matéria.data},
+	}
+
+	conexãoCursoTimeOut := *mongodb.NovaConexão(
+		context.Background(),
+		log.Matéria,
+		mongoDB,
+	)
+	conexãoCursoTimeOut.Timeout = time.Nanosecond
+	dataCursoTimeOut := &mongodb.CursoBD{
+		Conexão:    conexãoMatériaTimeOut,
+		Collection: conexãoMatériaTimeOut.BD.Collection("Curso"),
+	}
+	cursoBDTimeOut = &Curso{
+		data:    dataCursoTimeOut,
+		matéria: *matériaBDTimeOut,
+	}
+
+	cursoBDInválido = &Curso{
+		data:    &dataCursoInvalido{logicaTeste.Curso.data},
+		matéria: *matériaBDInválido,
 	}
 
 	código := m.Run()

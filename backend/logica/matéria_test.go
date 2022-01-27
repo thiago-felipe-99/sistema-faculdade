@@ -9,7 +9,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/entidades"
 )
 
-func criarMatériaAleatórira() (string, time.Duration, float32, string) {
+func criarMatériaAleatória() (string, time.Duration, float32, string) {
 	nome := aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1)
 	ch := time.Duration(aleatorio.Número(tamanhoMáximoCargaHorária)+1) * time.Hour
 	créditos := float32(aleatorio.Número(tamanhoMáximoCréditos) + 1)
@@ -65,20 +65,20 @@ func TestCriarMatéria(t *testing.T) {
 	t.Run("OKAY", func(t *testing.T) {
 		t.Parallel()
 
-		nome1, ch1, créditos1, tipo1 := criarMatériaAleatórira()
+		nome1, ch1, créditos1, tipo1 := criarMatériaAleatória()
 		id1 := adicionarMatéria(t, nome1, ch1, créditos1, tipo1, []id{})
 
-		nome2, ch2, créditos2, tipo2 := criarMatériaAleatórira()
+		nome2, ch2, créditos2, tipo2 := criarMatériaAleatória()
 		id2 := adicionarMatéria(t, nome2, ch2, créditos2, tipo2, []id{})
 
-		nome3, ch3, créditos3, tipo3 := criarMatériaAleatórira()
+		nome3, ch3, créditos3, tipo3 := criarMatériaAleatória()
 		adicionarMatéria(t, nome3, ch3, créditos3, tipo3, []id{id1, id2})
 	})
 
 	t.Run("CargaHoráriaSemanalInválido", func(t *testing.T) {
 		t.Parallel()
 
-		nome, _, créditos, tipo := criarMatériaAleatórira()
+		nome, _, créditos, tipo := criarMatériaAleatória()
 
 		_, erro := logicaTeste.Matéria.Criar(nome, time.Minute, créditos, tipo, []id{})
 		if erro == nil || !erro.ÉPadrão(ErroCargaHoráriaMínima) {
@@ -89,7 +89,7 @@ func TestCriarMatéria(t *testing.T) {
 	t.Run("CréditosInválido", func(t *testing.T) {
 		t.Parallel()
 
-		nome, ch, _, tipo := criarMatériaAleatórira()
+		nome, ch, _, tipo := criarMatériaAleatória()
 
 		_, erro := logicaTeste.Matéria.Criar(nome, ch, 0, tipo, []id{})
 		if erro == nil || !erro.ÉPadrão(ErroCréditosInválido) {
@@ -101,7 +101,7 @@ func TestCriarMatéria(t *testing.T) {
 		t.Parallel()
 
 		id1, id2 := entidades.NovoID(), entidades.NovoID()
-		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		nome, ch, créditos, tipo := criarMatériaAleatória()
 
 		_, erro := logicaTeste.Matéria.Criar(nome, ch, créditos, tipo, []id{id1, id2})
 		if erro == nil || !erro.ÉPadrão(ErroPréRequisitosNãoExiste) {
@@ -113,7 +113,7 @@ func TestCriarMatéria(t *testing.T) {
 		t.Parallel()
 
 		id1, id2 := entidades.NovoID(), entidades.NovoID()
-		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		nome, ch, créditos, tipo := criarMatériaAleatória()
 
 		_, erro := matériaBDTimeOut.Criar(nome, ch, créditos, tipo, []id{id1, id2})
 		if erro == nil || erro.ErroInicial == nil {
@@ -124,7 +124,7 @@ func TestCriarMatéria(t *testing.T) {
 	t.Run("TimeOut2", func(t *testing.T) {
 		t.Parallel()
 
-		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		nome, ch, créditos, tipo := criarMatériaAleatória()
 
 		_, erro := matériaBDTimeOut.Criar(nome, ch, créditos, tipo, []id{})
 		if erro == nil || erro.ErroInicial == nil {
@@ -137,10 +137,10 @@ func TestCriarMatéria(t *testing.T) {
 func TestAtualizarMatéria(t *testing.T) {
 	t.Parallel()
 
-	nome1, ch1, créditos1, tipo1 := criarMatériaAleatórira()
+	nome1, ch1, créditos1, tipo1 := criarMatériaAleatória()
 	id1 := adicionarMatéria(t, nome1, ch1, créditos1, tipo1, []id{})
 
-	nome2, ch2, créditos2, tipo2 := criarMatériaAleatórira()
+	nome2, ch2, créditos2, tipo2 := criarMatériaAleatória()
 	id2 := adicionarMatéria(t, nome2, ch2, créditos2, tipo2, []id{})
 
 	id3, id4 := entidades.NovoID(), entidades.NovoID()
@@ -148,7 +148,7 @@ func TestAtualizarMatéria(t *testing.T) {
 	t.Run("OKAY", func(t *testing.T) {
 		t.Parallel()
 
-		nome3, ch3, créditos3, tipo3 := criarMatériaAleatórira()
+		nome3, ch3, créditos3, tipo3 := criarMatériaAleatória()
 		id3 := adicionarMatéria(t, nome3, ch3, créditos3, tipo3, []id{id1, id2})
 
 		matéria, erro := logicaTeste.Matéria.Atualizar(
@@ -253,19 +253,19 @@ func TestAtualizarMatéria(t *testing.T) {
 func TestPréRequisitosCiclo(t *testing.T) {
 	t.Parallel()
 
-	nome1, ch1, créditos1, tipo1 := criarMatériaAleatórira()
+	nome1, ch1, créditos1, tipo1 := criarMatériaAleatória()
 	id1 := adicionarMatéria(t, nome1, ch1, créditos1, tipo1, []id{})
 
-	nome2, ch2, créditos2, tipo2 := criarMatériaAleatórira()
+	nome2, ch2, créditos2, tipo2 := criarMatériaAleatória()
 	id2 := adicionarMatéria(t, nome2, ch2, créditos2, tipo2, []id{})
 
-	nome3, ch3, créditos3, tipo3 := criarMatériaAleatórira()
+	nome3, ch3, créditos3, tipo3 := criarMatériaAleatória()
 	id3 := adicionarMatéria(t, nome3, ch3, créditos3, tipo3, []id{id1, id2})
 
-	nome4, ch4, créditos4, tipo4 := criarMatériaAleatórira()
+	nome4, ch4, créditos4, tipo4 := criarMatériaAleatória()
 	id4 := adicionarMatéria(t, nome4, ch4, créditos4, tipo4, []id{id1, id2, id3})
 
-	nome5, ch5, créditos5, tipo5 := criarMatériaAleatórira()
+	nome5, ch5, créditos5, tipo5 := criarMatériaAleatória()
 	id5 := adicionarMatéria(t, nome5, ch5, créditos5, tipo5, []id{id1, id2, id4})
 
 	t.Run("OKAY", func(t *testing.T) {
@@ -368,7 +368,7 @@ func TestPegarMatéria(t *testing.T) {
 	t.Run("OKAY", func(t *testing.T) {
 		t.Parallel()
 
-		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		nome, ch, créditos, tipo := criarMatériaAleatória()
 		adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
 	})
 
@@ -397,7 +397,7 @@ func TestDeletarMatéria(t *testing.T) {
 	t.Run("OKAY", func(t *testing.T) {
 		t.Parallel()
 
-		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		nome, ch, créditos, tipo := criarMatériaAleatória()
 		adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
 	})
 
@@ -422,7 +422,7 @@ func TestDeletarMatéria(t *testing.T) {
 	t.Run("BDInválido", func(t *testing.T) {
 		t.Parallel()
 
-		nome, ch, créditos, tipo := criarMatériaAleatórira()
+		nome, ch, créditos, tipo := criarMatériaAleatória()
 		id := adicionarMatéria(t, nome, ch, créditos, tipo, []id{})
 
 		erro := matériaBDInválido.Deletar(id)

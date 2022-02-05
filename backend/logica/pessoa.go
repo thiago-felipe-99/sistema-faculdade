@@ -10,7 +10,7 @@ import (
 
 // Pessoa representa operações que se possa fazer com a entidade Pessoa.
 type Pessoa struct {
-	data data.Pessoa
+	Data data.Pessoa
 }
 
 // existeMatéria verifica se a matéria existeMatéria na aplicação.
@@ -29,7 +29,7 @@ func (lógica *Pessoa) existe(id id) (bool, erro) {
 
 // existeCPF procura se já existe uma pessoa com esse CPF na aplicação.
 func (lógica *Pessoa) existeCPF(cpf cpf) (bool, erro) {
-	_, erro := lógica.data.PegarPorCPF(cpf)
+	_, erro := lógica.Data.PegarPorCPF(cpf)
 	if erro != nil {
 		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
 			return false, nil
@@ -81,7 +81,7 @@ func (lógica *Pessoa) Criar(
 		Senha:            gerenciadorSenha.GerarHash(senha),
 	}
 
-	erro = lógica.data.Inserir(pessoaNova)
+	erro = lógica.Data.Inserir(pessoaNova)
 	if erro != nil {
 		return nil, erros.Novo(ErroCriarPessoa, erro, nil)
 	}
@@ -91,7 +91,7 @@ func (lógica *Pessoa) Criar(
 
 // Pegar retorna uma pessoa já criada na aplicação.
 func (lógica *Pessoa) Pegar(id id) (*pessoa, erro) {
-	pessoa, erro := lógica.data.Pegar(id)
+	pessoa, erro := lógica.Data.Pegar(id)
 	if erro != nil {
 		if erro.ÉPadrão(data.ErroPessoaNãoEncontrada) {
 			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
@@ -117,7 +117,12 @@ func (lógica *Pessoa) VerificarSenha(senha string, id id) (bool, erro) {
 
 	gerenciadorSenha := entidades.GerenciadorSenhaPadrão()
 
-	return gerenciadorSenha.ÉIgual(senha, pessoa.Senha)
+	igual, erro := gerenciadorSenha.ÉIgual(senha, pessoa.Senha)
+	if erro != nil {
+		return false, erros.Novo(ErroVerificarSenha, erro, nil)
+	}
+
+	return igual, nil
 }
 
 // Atualizar atualiza os dados de uma pessoa na aplicação.
@@ -172,7 +177,7 @@ func (lógica *Pessoa) Atualizar(
 		Senha:            gerenciadorSenha.GerarHash(senha),
 	}
 
-	erro = lógica.data.Atualizar(id, pessoaNova)
+	erro = lógica.Data.Atualizar(id, pessoaNova)
 	if erro != nil {
 		return nil, erros.Novo(ErroAtualizarPessoa, erro, nil)
 	}
@@ -191,7 +196,7 @@ func (lógica *Pessoa) Deletar(id id) erro {
 		return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 	}
 
-	erro = lógica.data.Deletar(id)
+	erro = lógica.Data.Deletar(id)
 	if erro != nil {
 		return erros.Novo(ErroDeletarPessoa, erro, nil)
 	}

@@ -10,6 +10,7 @@ const (
 	verificarSenhaHash
 	desencriptarAESErroNo
 	desencriptarAESNonceSize
+	idStringInválida
 )
 
 var criarErroPadrão = erros.NovoPadrãoFunc("ENTIDADES") //nolint: gochecknoglobals
@@ -42,5 +43,9 @@ var (
 	ErroDesencriptarAESNonceSize = criarErroPadrão(
 		"A senha cifrada é menor que o nonce",
 		desencriptarAESNonceSize,
+	)
+	ErroIDStringInválida = criarErroPadrão(
+		"Foi passada uma string inválida para gerar o ID",
+		idStringInválida,
 	)
 )

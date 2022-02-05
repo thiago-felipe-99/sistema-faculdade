@@ -26,7 +26,7 @@ type Lógica struct {
 
 // NovaLógica cria uma Lógica da aplicação.
 func NovaLógica(data *data.Data) *Lógica {
-	pessoa := Pessoa{data: data.Pessoa}
+	pessoa := Pessoa{Data: data.Pessoa}
 	matéria := Matéria{data: data.Matéria}
 	curso := Curso{data: data.Curso, matéria: matéria}
 

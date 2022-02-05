@@ -92,14 +92,14 @@ func TestMain(m *testing.M) {
 		Conexão:      *mariadb.NovaConexão(log.Pessoa, sqlDB),
 		NomeDaTabela: "PessoaInválida",
 	}
-	pessoaBDInválido = &Pessoa{data: dataPessoaInválido}
+	pessoaBDInválido = &Pessoa{Data: dataPessoaInválido}
 
 	pessoaDataInvalida = &Pessoa{
-		&dataPessoaInvalida{logicaTeste.Pessoa.data},
+		&dataPessoaInvalida{logicaTeste.Pessoa.Data},
 	}
 
 	pessoaDataInvalida2 = &Pessoa{
-		&dataPessoaInvalida2{logicaTeste.Pessoa.data},
+		&dataPessoaInvalida2{logicaTeste.Pessoa.Data},
 	}
 
 	conexãoMatériaTimeOut := *mongodb.NovaConexão(

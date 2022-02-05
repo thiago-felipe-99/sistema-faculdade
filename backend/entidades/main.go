@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
 // ID representa o indificador único da entidades.
@@ -12,6 +13,16 @@ type ID = uuid.UUID
 // NovoID gera um novo ID.
 func NovoID() ID {
 	return uuid.New()
+}
+
+// ParseID retorna o id a partir de uma string.
+func ParseID(id string) (*ID, *erros.Aplicação) {
+	novoID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, erros.Novo(ErroIDStringInválida, nil, err)
+	}
+
+	return &novoID, nil
 }
 
 func IDsÚnicos(ids []ID) []ID {

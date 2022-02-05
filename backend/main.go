@@ -2,119 +2,66 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	"database/sql"
 	"log"
-	"net/http"
-	"reflect"
-	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
-	"thiagofelipe.com.br/sistema-faculdade-backend/data"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mariadb"
 	"thiagofelipe.com.br/sistema-faculdade-backend/data/mongodb"
-	dataPadrão "thiagofelipe.com.br/sistema-faculdade-backend/data/padrao"
+	"thiagofelipe.com.br/sistema-faculdade-backend/data/padrao"
+	"thiagofelipe.com.br/sistema-faculdade-backend/env"
+	"thiagofelipe.com.br/sistema-faculdade-backend/http"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logica"
 	"thiagofelipe.com.br/sistema-faculdade-backend/logs"
 )
 
-func newData() *data.Data {
-	logFiles := logs.AbrirArquivos("./logs/data/")
-
+func criarConexãoBDs(ambiente env.VariáveisDeAmbiente) (*sql.DB, *mongo.Database) {
 	//nolint:exhaustivestruct
 	config := mysql.Config{
-		User:                 "Administrativo",
-		Passwd:               "Administrativo",
+		User:                 "root",
+		Passwd:               "root",
 		Net:                  "tcp",
-		Addr:                 "localhost:9000",
+		Addr:                 "127.0.0.1:" + ambiente.Portas.BDAdministrativo,
 		DBName:               "Administrativo",
 		AllowNativePasswords: true,
 		ParseTime:            true,
+		MultiStatements:      true,
 	}
 
-	dns := config.FormatDSN()
-	log.Println(dns)
+	sqlConexão, erro := mariadb.NovoBD(config.FormatDSN())
+	if erro != nil {
+		log.Fatalf("Erro ao configurar o banco de dados MariaDB: %v", erro)
+	}
 
-	sqlBD, err := mariadb.NovoBD(config.FormatDSN())
+	err := sqlConexão.Ping()
 	if err != nil {
-		log.Panicln(err.Mensagem)
+		log.Fatalf("Erro ao conectar o banco de dados MariaDB: %v", err)
 	}
 
-	uri := "mongodb://root:root@localhost:9001"
+	uri := "mongodb://root:root@localhost:" + ambiente.Portas.BDMateria
 
-	mongoDB, err := mongodb.NovoDB(context.Background(), uri, "Matéria")
+	mongoConexão, erro := mongodb.NovoDB(context.Background(), uri, "Matéria")
+	if erro != nil {
+		log.Fatalf("Erro ao configurar o banco de dados MongoDB: %v", erro)
+	}
+
+	err = mongoConexão.Client().Ping(context.Background(), readpref.Primary())
 	if err != nil {
-		log.Panicln(err.Mensagem)
+		log.Fatalf("Erro ao conectar o banco de dados MongoDB: %v", err)
 	}
 
-	return dataPadrão.DataPadrão(
-		logs.NovoLogEntidades(logFiles, logs.NívelDebug),
-		sqlBD,
-		mongoDB,
-	)
-}
-
-func prettyStruct(s ...interface{}) string {
-	sJSON, err := json.MarshalIndent(s, "", "  ")
-	if err != nil {
-		log.Panicln(err.Error())
-	}
-
-	return string(sJSON)
+	return sqlConexão, mongoConexão
 }
 
 func main() {
-	r := gin.Default()
+	ambiente := env.PegandoVariáveisDeAmbiente()
+	sqlDB, mongoDB := criarConexãoBDs(ambiente)
+	logFiles := logs.AbrirArquivos("./logs/data/")
+	log := logs.NovoLogEntidades(logFiles, logs.NívelDebug)
+	Data := padrao.DataPadrão(log, sqlDB, mongoDB)
+	logica := logica.NovaLógica(Data)
 
-	data := newData()
-	lógica := logica.NovaLógica(data)
-
-	r.GET("/ping", func(c *gin.Context) {
-		pessoaCriar, erro := lógica.Pessoa.Criar(
-			"Thiago Felipe",
-			"00000000000",
-			time.Date(1999, 12, 8, 0, 0, 0, 0, time.UTC),
-			"senha",
-		)
-		if erro != nil {
-			log.Println(erro.Traçado())
-
-			return
-		}
-
-		pessoaPegar, erro := lógica.Pessoa.Pegar(pessoaCriar.ID)
-		if erro != nil {
-			log.Println(erro.Traçado())
-
-			return
-		}
-
-		if !reflect.DeepEqual(pessoaCriar, pessoaPegar) {
-			log.Printf(
-				"Devia chegar %s chegou %s\n",
-				prettyStruct(pessoaCriar),
-				prettyStruct(pessoaPegar),
-			)
-
-			return
-		}
-
-		log.Println(prettyStruct(pessoaPegar))
-
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-			"pessoa":  pessoaPegar,
-		})
-	})
-
-	r.GET("/pong", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "ping",
-		})
-	})
-
-	err := r.Run()
-	if err != nil {
-		panic(err)
-	}
+	http.Rotas("127.0.0.1:8080", *logica)
 }

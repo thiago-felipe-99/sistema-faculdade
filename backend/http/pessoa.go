@@ -14,11 +14,13 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/logica"
 )
 
+// Pessoa representa os midlewares que uma pessoa pode ter.
 type Pessoa struct {
 	logica    *logica.Pessoa
 	validator *validator.Validate
 }
 
+// CriarPessoa inicializa a estrutura pessoa.
 func CriarPessoa(lógica *logica.Pessoa, validador *validator.Validate) *Pessoa {
 	return &Pessoa{
 		logica:    lógica,
@@ -31,7 +33,7 @@ func (p *Pessoa) enviar(c *gin.Context, codigo int) {
 	c.Abort()
 }
 
-func (p *Pessoa) enviarPessoa(c *gin.Context, codigo int, pessoa *entidades.Pessoa) {
+func (p *Pessoa) enviarPessoa(contexto *gin.Context, codigo int, pessoa *entidades.Pessoa) {
 	enviar := struct {
 		ID               id        `json:"id"`
 		Nome             string    `json:"nome"`
@@ -44,13 +46,15 @@ func (p *Pessoa) enviarPessoa(c *gin.Context, codigo int, pessoa *entidades.Pess
 		DataDeNascimento: pessoa.DataDeNascimento,
 	}
 
-	c.JSON(codigo, enviar)
-	c.Abort()
+	contexto.JSON(codigo, enviar)
+	contexto.Abort()
 }
 
-func (p *Pessoa) enviarErro(c *gin.Context, erro erro) {
-	status := 0
-	mensagem := ""
+func (p *Pessoa) enviarErro(contexto *gin.Context, erro erro) {
+	var (
+		status   int
+		mensagem string
+	)
 
 	switch {
 	case erro.ÉPadrão(logica.ErroCPFInválido):
@@ -90,20 +94,20 @@ func (p *Pessoa) enviarErro(c *gin.Context, erro erro) {
 		mensagem = ErroInesperado.Mensagem
 	}
 
-	c.Abort()
-	enviarErro(c, status, mensagem)
+	contexto.Abort()
+	enviarErro(contexto, status, mensagem)
 }
 
-func (p *Pessoa) pegarID(c *gin.Context) {
-	id, erro := entidades.ParseID(c.Params.ByName("id"))
+func (p *Pessoa) pegarID(contexto *gin.Context) {
+	id, erro := entidades.ParseID(contexto.Params.ByName("id"))
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
 
-	c.Set("id", id)
-	c.Next()
+	contexto.Set("id", id)
+	contexto.Next()
 }
 
 func (p *Pessoa) pegarIDContexto(c *gin.Context) (*id, erro) {
@@ -120,8 +124,8 @@ func (p *Pessoa) pegarIDContexto(c *gin.Context) (*id, erro) {
 	return id, nil
 }
 
-func (p *Pessoa) pegarBody(c *gin.Context) {
-	decodificador := json.NewDecoder(c.Request.Body)
+func (p *Pessoa) pegarBody(contexto *gin.Context) {
+	decodificador := json.NewDecoder(contexto.Request.Body)
 	pessoaString := struct {
 		Nome             string `json:"nome" validate:"required"`
 		CPF              string `json:"cpf" validate:"required"`
@@ -132,12 +136,12 @@ func (p *Pessoa) pegarBody(c *gin.Context) {
 	err := decodificador.Decode(&pessoaString)
 	if err != nil {
 		if errors.Is(err, io.EOF) {
-			p.enviarErro(c, erros.Novo(ErroRequisiçãoSemBody, nil, err))
+			p.enviarErro(contexto, erros.Novo(ErroRequisiçãoSemBody, nil, err))
 
 			return
 		}
 
-		p.enviarErro(c, erros.Novo(ErroDecodificarJSON, nil, err))
+		p.enviarErro(contexto, erros.Novo(ErroDecodificarJSON, nil, err))
 
 		return
 	}
@@ -146,23 +150,23 @@ func (p *Pessoa) pegarBody(c *gin.Context) {
 	if err != nil {
 		if erros, ok := err.(validator.ValidationErrors); ok { //nolint: errorlint
 			mensagens := []string{}
-			for _, erro := range erros.Translate(pegarTradutor(c)) {
+			for _, erro := range erros.Translate(pegarTradutor(contexto)) {
 				mensagens = append(mensagens, erro)
 			}
 
-			enviarErro(c, http.StatusBadRequest, mensagens...)
+			enviarErro(contexto, http.StatusBadRequest, mensagens...)
 
 			return
 		}
 
-		p.enviarErro(c, erros.Novo(ErroValidarPessoa, nil, nil))
+		p.enviarErro(contexto, erros.Novo(ErroValidarPessoa, nil, nil))
 
 		return
 	}
 
 	data, err := time.Parse(dataFormatato, pessoaString.DataDeNascimento)
 	if err != nil {
-		p.enviarErro(c, erros.Novo(ErroDataDeNascimentoInválido, nil, nil))
+		p.enviarErro(contexto, erros.Novo(ErroDataDeNascimentoInválido, nil, nil))
 
 		return
 	}
@@ -174,8 +178,8 @@ func (p *Pessoa) pegarBody(c *gin.Context) {
 		Senha:            pessoaString.Senha,
 	}
 
-	c.Set("pessoa", pessoa)
-	c.Next()
+	contexto.Set("pessoa", pessoa)
+	contexto.Next()
 }
 
 func (p *Pessoa) pegarPessoaContexto(c *gin.Context) (*entidades.Pessoa, erro) {
@@ -192,10 +196,11 @@ func (p *Pessoa) pegarPessoaContexto(c *gin.Context) (*entidades.Pessoa, erro) {
 	return pessoa, nil
 }
 
-func (p *Pessoa) Criar(c *gin.Context) {
-	body, erro := p.pegarPessoaContexto(c)
+// Criar é a rota que cria uma pessoa na aplicação.
+func (p *Pessoa) Criar(contexto *gin.Context) {
+	body, erro := p.pegarPessoaContexto(contexto)
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
@@ -203,25 +208,26 @@ func (p *Pessoa) Criar(c *gin.Context) {
 	pessoa, erro := p.logica.
 		Criar(body.Nome, body.CPF, body.DataDeNascimento, body.Senha)
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
 
-	p.enviarPessoa(c, http.StatusCreated, pessoa)
+	p.enviarPessoa(contexto, http.StatusCreated, pessoa)
 }
 
-func (p *Pessoa) Atualizar(c *gin.Context) {
-	id, erro := p.pegarIDContexto(c)
+// Atualizar é a rota que atualiza uma pessoa na aplicação.
+func (p *Pessoa) Atualizar(contexto *gin.Context) {
+	id, erro := p.pegarIDContexto(contexto)
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
 
-	body, erro := p.pegarPessoaContexto(c)
+	body, erro := p.pegarPessoaContexto(contexto)
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
@@ -229,50 +235,53 @@ func (p *Pessoa) Atualizar(c *gin.Context) {
 	pessoa, erro := p.logica.
 		Atualizar(*id, body.Nome, body.CPF, body.DataDeNascimento, body.Senha)
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
 
-	p.enviarPessoa(c, http.StatusOK, pessoa)
+	p.enviarPessoa(contexto, http.StatusOK, pessoa)
 }
 
-func (p *Pessoa) Pegar(c *gin.Context) {
-	id, erro := p.pegarIDContexto(c)
+// Pegar é a rota que retorna uma pessoa da aplicação.
+func (p *Pessoa) Pegar(contexto *gin.Context) {
+	id, erro := p.pegarIDContexto(contexto)
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
 
 	pessoa, erro := p.logica.Pegar(*id)
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
 
-	p.enviarPessoa(c, http.StatusOK, pessoa)
+	p.enviarPessoa(contexto, http.StatusOK, pessoa)
 }
 
-func (p *Pessoa) Deletar(c *gin.Context) {
-	id, erro := p.pegarIDContexto(c)
+// Deletar é a rota que remove uma pessoa da aplicação.
+func (p *Pessoa) Deletar(contexto *gin.Context) {
+	id, erro := p.pegarIDContexto(contexto)
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
 
 	erro = p.logica.Deletar(*id)
 	if erro != nil {
-		p.enviarErro(c, erro)
+		p.enviarErro(contexto, erro)
 
 		return
 	}
 
-	p.enviar(c, http.StatusNoContent)
+	p.enviar(contexto, http.StatusNoContent)
 }
 
+// PessoaRotas define quais são os caminhos de cada rota da pessoa.
 func PessoaRotas(roteamento *gin.RouterGroup, pessoa *Pessoa) {
 	roteamento.POST("", pessoa.pegarBody, pessoa.Criar)
 	roteamento.PUT("/:id", pessoa.pegarID, pessoa.pegarBody, pessoa.Atualizar)

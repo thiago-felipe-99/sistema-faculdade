@@ -24,6 +24,7 @@ func enviarErro(c *gin.Context, código int, erros ...string) {
 
 var criarErroPadrão = erros.NovoPadrãoFunc("HTTP") //nolint:gochecknoglobals
 
+// Erros do servidor http.
 var (
 	ErroInesperado = criarErroPadrão(
 		"Ocorreu um erro inesperado",

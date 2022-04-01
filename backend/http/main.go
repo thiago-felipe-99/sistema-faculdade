@@ -1,3 +1,4 @@
+// Package http é o pacote que cria um servidor http para rodar a aplicação.
 package http
 
 import (
@@ -24,6 +25,7 @@ var uni *ut.UniversalTranslator //nolint: gochecknoglobals
 
 const dataFormatato = "2/1/2006"
 
+// nolint: ireturn
 func pegarTradutor(c *gin.Context) ut.Translator {
 	trans, existe := uni.GetTranslator(c.Request.Header.Get("Accept-Language"))
 	if !existe {
@@ -33,6 +35,7 @@ func pegarTradutor(c *gin.Context) ut.Translator {
 	return trans
 }
 
+// Rotas é a função que cria as rotas do servidor http.
 func Rotas(url string, lógica *logica.Lógica) {
 	roteamento := gin.Default()
 

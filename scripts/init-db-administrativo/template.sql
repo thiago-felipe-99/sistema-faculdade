@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS `Curso` (
   PRIMARY KEY(ID)
 );
 
-CREATE TABLE IF NOT EXISTS `CursoMatérias` (
+CREATE TABLE IF NOT EXISTS `CursoMaterias` (
   `ID_Curso` $UUID NOT NULL,
   `ID_Matéria` $UUID NOT NULL,
   `Período` $STRING NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `Professor` (
   FOREIGN KEY(ID_Pessoa) REFERENCES Pessoa(ID)
 );
 
-CREATE TABLE IF NOT EXISTS `ProfessorHorário` (
+CREATE TABLE IF NOT EXISTS `ProfessorHorario` (
   `ID` $UUID NOT NULL,
   `ID_Professor` $UUID NOT NULL,
   `ID_Turma` $UUID,
@@ -92,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `Administrativo` (
   FOREIGN KEY(ID_Pessoa) REFERENCES Pessoa(ID)
 );
 
-CREATE TABLE IF NOT EXISTS `AdministrativoHorário` (
+CREATE TABLE IF NOT EXISTS `AdministrativoHorario` (
   `ID` $UUID NOT NULL,
   `ID_Administrativo` $UUID NOT NULL,
   `ID_Turma` $UUID,

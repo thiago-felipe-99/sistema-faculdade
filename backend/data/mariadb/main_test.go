@@ -70,7 +70,7 @@ func deletarTabelas(bd *sql.DB) {
 
 	query += "DELETE FROM AlunoTurma;"
 	query += "DELETE FROM Aluno;"
-	query += "DELETE FROM CursoMatérias;"
+	query += "DELETE FROM CursoMaterias;"
 	query += "DELETE FROM Curso;"
 	query += "DELETE FROM Pessoa;"
 

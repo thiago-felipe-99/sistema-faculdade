@@ -6,7 +6,7 @@ $SCRIPT_DIR/scripts/init-db-administrativo/init-db.sh
 
 export $(grep -v '^#' .env | xargs)
 
-mysql --user root --password=$DB_ADMINISTRATIVO_ROOT_PASSWORD --port=$DB_ADMINISTRATIVO_PORT < $SCRIPT_DIR/scripts/init-db-administrativo/init.sql
+docker exec -i db-administrativo mysql --user root --password=$DB_ADMINISTRATIVO_ROOT_PASSWORD < $SCRIPT_DIR/scripts/init-db-administrativo/init.sql
 
 unset $(grep -v '^#' .env | sed -E 's/(.*)=.*/\1/' | xargs -d '\n')
 

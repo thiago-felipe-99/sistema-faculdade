@@ -184,7 +184,7 @@ func TestAbrirArquivos(t *testing.T) {
 				}
 
 				caminhoArquivo := arquivo.MethodByName("Name").Call(nil)[0].String()
-				caminhoEsperado := pasta + entidade + ".log"
+				caminhoEsperado := filepath.Clean(pasta + entidade + ".log")
 				if caminhoArquivo != caminhoEsperado {
 					t.Fatalf("Esperava: %s, chegou: %s", caminhoEsperado, caminhoArquivo)
 				}
@@ -226,7 +226,7 @@ func TestAbrirArquivos(t *testing.T) {
 					recuperar := recover()
 					pathError := os.PathError{
 						Op:   "open",
-						Path: caminhoArquivo,
+						Path: filepath.Clean(caminhoArquivo),
 						Err:  os.ErrPermission,
 					}
 					erroEsperado := erros.ErroExterno(&pathError)

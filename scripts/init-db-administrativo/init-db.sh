@@ -12,13 +12,13 @@ export NEW_USER='Administrativo' \
        DATE='DATE' \
        TIME='TIME' \
        SENHA='VARCHAR(255)' \
-       ID='VARCHAR(11)' \
+       ID='VARCHAR(11)'
 
 envsubst < $SCRIPT_DIR/template.sql > $SCRIPT_DIR/init.sql
 
 export DB_NAME='Teste' \
        NEW_USER='Teste' \
-       USER_PASSWORD='Teste' \
+       USER_PASSWORD='Teste'
 
 envsubst <  $SCRIPT_DIR/template.sql >> $SCRIPT_DIR/init.sql
 

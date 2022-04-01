@@ -1,18 +1,22 @@
+// Package logs define como vai ser tratado os logs da aplicação.
 package logs
 
 import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
+// ErroNívelInválido da aplicação.
 var ErroNívelInválido = &erros.Padrão{
 	Mensagem: "O nível escolhido é inválido",
 	Código:   "LOGS-[1]",
 }
 
+// Possíveis níveis de log.
 const (
 	NívelPanic uint = iota
 	NívelErro
@@ -21,6 +25,7 @@ const (
 	NívelDebug
 )
 
+// Log representa como deve ser tratado um log na aplicação.
 type Log struct {
 	outPanic      *log.Logger
 	outErro       *log.Logger
@@ -30,12 +35,14 @@ type Log struct {
 	Nível         uint
 }
 
-func (log *Log) Panic(imprimir ...interface{}) {
+// Panic é o método que um log quando acontece um panic na aplicação.
+func (log *Log) Panic(imprimir ...any) {
 	log.outPanic.Println(imprimir...)
 	panic(imprimir)
 }
 
-func (log *Log) Erro(imprimir ...interface{}) {
+// Erro é o método que faz log de um erro na aplicação.
+func (log *Log) Erro(imprimir ...any) {
 	if log.Nível < NívelErro {
 		return
 	}
@@ -43,7 +50,8 @@ func (log *Log) Erro(imprimir ...interface{}) {
 	log.outErro.Println(imprimir...)
 }
 
-func (log *Log) Aviso(imprimir ...interface{}) {
+// Aviso é o método que faz mensagens de aviso a aplicação.
+func (log *Log) Aviso(imprimir ...any) {
 	if log.Nível < NívelAviso {
 		return
 	}
@@ -51,7 +59,8 @@ func (log *Log) Aviso(imprimir ...interface{}) {
 	log.outAviso.Println(imprimir...)
 }
 
-func (log *Log) Informação(imprimir ...interface{}) {
+// Informação é o método que imprimi mensagens de Informações da aplicação.
+func (log *Log) Informação(imprimir ...any) {
 	if log.Nível < NívelInfo {
 		return
 	}
@@ -59,7 +68,8 @@ func (log *Log) Informação(imprimir ...interface{}) {
 	log.outInformação.Println(imprimir...)
 }
 
-func (log *Log) Debug(imprimir ...interface{}) {
+// Debug é o método que imprimi mensagens de depuração da aplicação.
+func (log *Log) Debug(imprimir ...any) {
 	if log.Nível < NívelDebug {
 		return
 	}
@@ -67,6 +77,7 @@ func (log *Log) Debug(imprimir ...interface{}) {
 	log.outDebug.Println(imprimir...)
 }
 
+// NovoLog cria um log para aplicação.
 func NovoLog(out io.Writer, nível uint) *Log {
 	if nível < NívelPanic || nível > NívelDebug {
 		panic(erros.Novo(ErroNívelInválido, nil, nil))
@@ -82,6 +93,7 @@ func NovoLog(out io.Writer, nível uint) *Log {
 	}
 }
 
+// Arquivos representa os arquivos de saída do log.
 type Arquivos struct {
 	Pessoa         io.Writer
 	Curso          io.Writer
@@ -92,6 +104,7 @@ type Arquivos struct {
 	Turma          io.Writer
 }
 
+// AbrirArquivos abre os arquivos de log.
 func AbrirArquivos(defaultDir string) *Arquivos {
 	const flags = os.O_APPEND | os.O_CREATE | os.O_WRONLY
 
@@ -99,37 +112,37 @@ func AbrirArquivos(defaultDir string) *Arquivos {
 
 	const extension = ".log"
 
-	pessoa, err := os.OpenFile(defaultDir+"Pessoa"+extension, flags, mode)
+	pessoa, err := os.OpenFile(filepath.Clean(defaultDir+"Pessoa"+extension), flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	curso, err := os.OpenFile(defaultDir+"Curso"+extension, flags, mode)
+	curso, err := os.OpenFile(filepath.Clean(defaultDir+"Curso"+extension), flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	aluno, err := os.OpenFile(defaultDir+"Aluno"+extension, flags, mode)
+	aluno, err := os.OpenFile(filepath.Clean(defaultDir+"Aluno"+extension), flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	professor, err := os.OpenFile(defaultDir+"Professor"+extension, flags, mode)
+	professor, err := os.OpenFile(filepath.Clean(defaultDir+"Professor"+extension), flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	administrativo, err := os.OpenFile(defaultDir+"Administrativo"+extension, flags, mode) //nolint:lll
+	administrativo, err := os.OpenFile(filepath.Clean(defaultDir+"Administrativo"+extension), flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	matéria, err := os.OpenFile(defaultDir+"Matéria"+extension, flags, mode)
+	matéria, err := os.OpenFile(filepath.Clean(defaultDir+"Matéria"+extension), flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	turma, err := os.OpenFile(defaultDir+"Turma"+extension, flags, mode)
+	turma, err := os.OpenFile(filepath.Clean(defaultDir+"Turma"+extension), flags, mode)
 	if err != nil {
 		panic(erros.ErroExterno(err))
 	}
@@ -145,6 +158,7 @@ func AbrirArquivos(defaultDir string) *Arquivos {
 	}
 }
 
+// Entidades representa o log de cada entidade da aplicação.
 type Entidades struct {
 	Pessoa         *Log
 	Curso          *Log
@@ -155,6 +169,7 @@ type Entidades struct {
 	Turma          *Log
 }
 
+// NovoLogEntidades cria um log para cada entidade da aplicação.
 func NovoLogEntidades(arquivos *Arquivos, nível uint) *Entidades {
 	pessoa := NovoLog(arquivos.Pessoa, nível)
 

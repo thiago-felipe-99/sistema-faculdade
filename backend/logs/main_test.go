@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 	"reflect"
 	"regexp"
 	"testing"
@@ -19,9 +20,8 @@ func TestNovoLog(t *testing.T) {
 		t.Parallel()
 
 		mensagem := "teste"
-		flags :=
-			` - [0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} main.go:[0-9]+: ` +
-				mensagem + `\n$`
+		flags := ` - [0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} main.go:[0-9]+: ` +
+			mensagem + `\n$`
 
 		outs := map[string]string{
 			"Panic":      "PANIC" + flags,
@@ -112,13 +112,13 @@ func TestNovoLog(t *testing.T) {
 				}
 
 				defer func() {
-					r := recover()
+					recuperar := recover()
 
-					rValue := fmt.Sprintf("%v", r)
+					rValue := fmt.Sprintf("%v", recuperar)
 					mensagemInputValue := fmt.Sprintf("%v", mensagemInput)
 
 					if rValue != mensagemInputValue {
-						t.Fatalf("Esperava: %s, chegou: %v", mensagemInput, r)
+						t.Fatalf("Esperava: %s, chegou: %v", mensagemInput, recuperar)
 					}
 
 					padrão := regexp.MustCompile(outs["Panic"])
@@ -207,7 +207,7 @@ func TestAbrirArquivos(t *testing.T) {
 
 				caminhoArquivo := pasta + entidade + ".log"
 
-				arquivo, erro := os.OpenFile(caminhoArquivo, flags, mode)
+				arquivo, erro := os.OpenFile(filepath.Clean(caminhoArquivo), flags, mode)
 				if erro != nil {
 					t.Fatalf("Um erro inesperado aconteceu: %v", erro)
 				}
@@ -223,15 +223,15 @@ func TestAbrirArquivos(t *testing.T) {
 				chmod(0o000)
 
 				defer func() {
-					r := recover()
+					recuperar := recover()
 					pathError := os.PathError{
 						Op:   "open",
 						Path: caminhoArquivo,
 						Err:  os.ErrPermission,
 					}
 					erroEsperado := erros.ErroExterno(&pathError)
-					if r != erroEsperado {
-						t.Fatalf("Esperava: %v\nChegou: %v", erroEsperado, r)
+					if recuperar != erroEsperado {
+						t.Fatalf("Esperava: %v\nChegou: %v", erroEsperado, recuperar)
 					}
 				}()
 

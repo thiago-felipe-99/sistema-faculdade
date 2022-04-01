@@ -1,3 +1,4 @@
+// Package aleatorio contém funções aleatórias necessárias para aplicação.
 package aleatorio
 
 import (
@@ -8,6 +9,7 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/erros"
 )
 
+// ErroTamanhoInválido é um erro do pacote.
 var ErroTamanhoInválido = erros.Padrão{
 	Mensagem: "Tamanho da estrutura aleatória é inválida",
 	Código:   "ALEATÓRIO-[1]",
@@ -33,7 +35,7 @@ func Palavra(tamanho uint) string {
 		panic(ErroTamanhoInválido.Error())
 	}
 
-	letters := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũçABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ") //nolint:lll
+	letters := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũçABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ")
 	lettersLen := len(letters)
 
 	s := make([]rune, tamanho)
@@ -73,22 +75,21 @@ func CPF() string {
 
 // Bytes retorna uma slice de bytes aleatório de tamanho n.
 func Bytes(n uint32) []byte {
-	b := make([]byte, n)
+	bytes := make([]byte, n)
 
-	_, err := rand.Read(b)
-	if err != nil {
+	if _, err := rand.Read(bytes); err != nil {
 		panic(erros.ErroExterno(err))
 	}
 
-	return b
+	return bytes
 }
 
 // Senha retorna uma senha aleatória válida na aplicação.
 func Senha() string {
 	senha := ""
 
-	letrasMinúsculas := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũç") //nolint:lll
-	letrasMaiúsculas := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ") //nolint:lll
+	letrasMinúsculas := []rune("abcdefghijklmnopqrstuvwxyzáéíóúâêîôûãẽĩõũç")
+	letrasMaiúsculas := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÎÔÛÃẼĨÕŨÇ")
 	tamanhoLetras := uint(len(letrasMaiúsculas))
 
 	for índice := 0; índice < 4; índice++ {

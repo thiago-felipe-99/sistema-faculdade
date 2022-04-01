@@ -13,13 +13,13 @@ func TestNúmero(t *testing.T) {
 	const tamanho uint = 1000
 
 	t.Run("OKAY", func(t *testing.T) {
-		n := Número(tamanho)
+		máximo := Número(tamanho)
 
-		if tamanho <= n {
+		if tamanho <= máximo {
 			t.Fatalf(
 				"O número deveria ser maior que 0 e menor que %d, porém chegou %d.",
 				tamanho,
-				n,
+				máximo,
 			)
 		}
 	})
@@ -67,8 +67,7 @@ func TestPalavra(t *testing.T) {
 }
 
 func TestCPF(t *testing.T) {
-	cpf := CPF()
-
+	cpf := CPF() //nolint: ifshort
 	if _, válido := entidades.ValidarCPF(cpf); !válido {
 		t.Fatalf("Esperava um CPF válido, chegou: %s", cpf)
 	}
@@ -77,10 +76,8 @@ func TestCPF(t *testing.T) {
 func TestBytes(t *testing.T) {
 	const tamanho uint32 = 50
 
-	b := Bytes(tamanho)
-
-	if len(b) != int(tamanho) {
-		t.Fatalf("Tamanho esperado: %d, chegou: %d", tamanho, len(b))
+	if bytes := Bytes(tamanho); len(bytes) != int(tamanho) {
+		t.Fatalf("Tamanho esperado: %d, chegou: %d", tamanho, len(bytes))
 	}
 }
 

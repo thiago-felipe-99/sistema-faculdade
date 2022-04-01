@@ -39,6 +39,7 @@ const (
 
 var criarErroPadrão = erros.NovoPadrãoFunc("LÓGICA") //nolint:gochecknoglobals
 
+// Possíveis erros do pacote.
 var (
 	ErroAoVerificarCPF = criarErroPadrão(
 		"Erro ao verificar o CPF",

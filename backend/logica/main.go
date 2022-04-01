@@ -1,3 +1,4 @@
+// Package logica está todas as operações lógicas das entidades.
 package logica
 
 import (

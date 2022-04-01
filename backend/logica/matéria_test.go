@@ -21,14 +21,14 @@ func criarMatériaAleatória() (string, time.Duration, float32, string) {
 func adicionarMatéria(
 	t *testing.T,
 	nome string,
-	ch time.Duration,
+	carga time.Duration,
 	créditos float32,
 	tipo string,
 	préRequisitos []id,
 ) id {
 	t.Helper()
 
-	matéria, erro := logicaTeste.Matéria.Criar(nome, ch, créditos, tipo, préRequisitos)
+	matéria, erro := logicaTeste.Matéria.Criar(nome, carga, créditos, tipo, préRequisitos)
 	if erro != nil {
 		t.Fatalf("Não esperava erro ao criar pessoa: %v", erro)
 	}

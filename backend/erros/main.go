@@ -1,3 +1,4 @@
+// Package erros representa cmo será tratados os erros na aplicação.
 package erros
 
 import (
@@ -5,7 +6,7 @@ import (
 )
 
 // Aplicação representa um erro na aplicação.
-type Aplicação struct {
+type Aplicação struct { // nolint: errname
 	Mensagem    string
 	ErroInicial *Aplicação
 	ErroExterno error
@@ -38,7 +39,7 @@ func (erro *Aplicação) ÉPadrão(defaultError *Padrão) bool {
 }
 
 // Padrão representa os erros padrões da aplicação.
-type Padrão struct {
+type Padrão struct { // nolint: errname
 	Mensagem string
 	Código   string
 }

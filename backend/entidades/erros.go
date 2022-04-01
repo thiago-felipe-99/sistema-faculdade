@@ -15,6 +15,7 @@ const (
 
 var criarErroPadrão = erros.NovoPadrãoFunc("ENTIDADES") //nolint: gochecknoglobals
 
+// Possíveis erros do pacote.
 var (
 	ErroDecodificarBase64 = criarErroPadrão(
 		"Erro ao decodificar a palavra na base64",

@@ -1,3 +1,4 @@
+// Package entidades contém todas as definições de entidades da aplicação.
 package entidades
 
 import (
@@ -25,6 +26,7 @@ func ParseID(id string) (*ID, *erros.Aplicação) {
 	return &novoID, nil
 }
 
+// IDsÚnicos retorna todos os ids únicos do slice.
 func IDsÚnicos(ids []ID) []ID {
 	idsÚnicos := []ID{}
 
@@ -53,7 +55,7 @@ func RemoverHorário(data time.Time) time.Time {
 	return time.Date(data.Year(), data.Month(), data.Day(), 0, 0, 0, 0, time.UTC)
 }
 
-// CursosOfertado, quando uma turma é ofericido para um certo curso.
+// CursosOfertado é quando uma turma é ofericido para um certo curso.
 type CursosOfertado struct {
 	ID
 	Vagas   int

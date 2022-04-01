@@ -330,8 +330,8 @@ func desencriptarAES(senhaCifrada, chave []byte, nonceSize uint) (
 	return senhaPlana, nil
 }
 
-// nolint:gomnd
 // GerenciadorSenhaPadrão retorna o gerenciador padrão de senhas.
+// nolint:gomnd
 func GerenciadorSenhaPadrão() *Senha {
 	argon2Config := &Argon2Config{
 		memory:      64 * 1024,

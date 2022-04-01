@@ -33,7 +33,7 @@ func pegarTradutor(c *gin.Context) ut.Translator {
 	return trans
 }
 
-func Rotas(url string, lógica logica.Lógica) {
+func Rotas(url string, lógica *logica.Lógica) {
 	roteamento := gin.Default()
 
 	validate := validator.New()
@@ -61,8 +61,8 @@ func Rotas(url string, lógica logica.Lógica) {
 		panic(err)
 	}
 
-	pessoaTeste := pessoa{lógica.Pessoa, validate}
-	pessoaotas(roteamento.Group("/pessoa"), pessoaTeste)
+	pessoaTeste := CriarPessoa(lógica.Pessoa, validate)
+	PessoaRotas(roteamento.Group("/pessoa"), pessoaTeste)
 
 	err = roteamento.Run(url)
 	if err != nil {

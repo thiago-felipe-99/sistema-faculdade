@@ -11,7 +11,7 @@ import (
 // Curso representa operações que se possa fazer com a entidade Curso.
 type Curso struct {
 	data    data.Curso
-	matéria Matéria
+	matéria *Matéria
 }
 
 // existe verifica se a Curso existe na aplicação.

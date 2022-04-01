@@ -14,17 +14,24 @@ import (
 	"thiagofelipe.com.br/sistema-faculdade-backend/logica"
 )
 
-type pessoa struct {
-	logica    logica.Pessoa
+type Pessoa struct {
+	logica    *logica.Pessoa
 	validator *validator.Validate
 }
 
-func (p *pessoa) enviar(c *gin.Context, codigo int) {
+func CriarPessoa(lógica *logica.Pessoa, validador *validator.Validate) *Pessoa {
+	return &Pessoa{
+		logica:    lógica,
+		validator: validador,
+	}
+}
+
+func (p *Pessoa) enviar(c *gin.Context, codigo int) {
 	c.Status(codigo)
 	c.Abort()
 }
 
-func (p *pessoa) enviarPessoa(c *gin.Context, codigo int, pessoa *entidades.Pessoa) {
+func (p *Pessoa) enviarPessoa(c *gin.Context, codigo int, pessoa *entidades.Pessoa) {
 	enviar := struct {
 		ID               id        `json:"id"`
 		Nome             string    `json:"nome"`
@@ -41,7 +48,7 @@ func (p *pessoa) enviarPessoa(c *gin.Context, codigo int, pessoa *entidades.Pess
 	c.Abort()
 }
 
-func (p *pessoa) enviarErro(c *gin.Context, erro erro) {
+func (p *Pessoa) enviarErro(c *gin.Context, erro erro) {
 	status := 0
 	mensagem := ""
 
@@ -87,7 +94,7 @@ func (p *pessoa) enviarErro(c *gin.Context, erro erro) {
 	enviarErro(c, status, mensagem)
 }
 
-func (p *pessoa) pegarID(c *gin.Context) {
+func (p *Pessoa) pegarID(c *gin.Context) {
 	id, erro := entidades.ParseID(c.Params.ByName("id"))
 	if erro != nil {
 		p.enviarErro(c, erro)
@@ -99,7 +106,7 @@ func (p *pessoa) pegarID(c *gin.Context) {
 	c.Next()
 }
 
-func (p *pessoa) pegarIDContexto(c *gin.Context) (*id, erro) {
+func (p *Pessoa) pegarIDContexto(c *gin.Context) (*id, erro) {
 	IDGet, existe := c.Get("id")
 	if !existe {
 		return nil, erros.Novo(ErroIDNãoExisteContexto, nil, nil)
@@ -113,7 +120,7 @@ func (p *pessoa) pegarIDContexto(c *gin.Context) (*id, erro) {
 	return id, nil
 }
 
-func (p *pessoa) pegarBody(c *gin.Context) {
+func (p *Pessoa) pegarBody(c *gin.Context) {
 	decodificador := json.NewDecoder(c.Request.Body)
 	pessoaString := struct {
 		Nome             string `json:"nome" validate:"required"`
@@ -171,7 +178,7 @@ func (p *pessoa) pegarBody(c *gin.Context) {
 	c.Next()
 }
 
-func (p *pessoa) pegarPessoaContexto(c *gin.Context) (*entidades.Pessoa, erro) {
+func (p *Pessoa) pegarPessoaContexto(c *gin.Context) (*entidades.Pessoa, erro) {
 	pessoaGet, existe := c.Get("pessoa")
 	if !existe {
 		return nil, erros.Novo(ErroPessoaNãoExisteContexto, nil, nil)
@@ -185,7 +192,7 @@ func (p *pessoa) pegarPessoaContexto(c *gin.Context) (*entidades.Pessoa, erro) {
 	return pessoa, nil
 }
 
-func (p *pessoa) criar(c *gin.Context) {
+func (p *Pessoa) Criar(c *gin.Context) {
 	body, erro := p.pegarPessoaContexto(c)
 	if erro != nil {
 		p.enviarErro(c, erro)
@@ -204,7 +211,7 @@ func (p *pessoa) criar(c *gin.Context) {
 	p.enviarPessoa(c, http.StatusCreated, pessoa)
 }
 
-func (p *pessoa) atualizar(c *gin.Context) {
+func (p *Pessoa) Atualizar(c *gin.Context) {
 	id, erro := p.pegarIDContexto(c)
 	if erro != nil {
 		p.enviarErro(c, erro)
@@ -230,7 +237,7 @@ func (p *pessoa) atualizar(c *gin.Context) {
 	p.enviarPessoa(c, http.StatusOK, pessoa)
 }
 
-func (p *pessoa) pegar(c *gin.Context) {
+func (p *Pessoa) Pegar(c *gin.Context) {
 	id, erro := p.pegarIDContexto(c)
 	if erro != nil {
 		p.enviarErro(c, erro)
@@ -248,7 +255,7 @@ func (p *pessoa) pegar(c *gin.Context) {
 	p.enviarPessoa(c, http.StatusOK, pessoa)
 }
 
-func (p *pessoa) deletar(c *gin.Context) {
+func (p *Pessoa) Deletar(c *gin.Context) {
 	id, erro := p.pegarIDContexto(c)
 	if erro != nil {
 		p.enviarErro(c, erro)
@@ -266,9 +273,9 @@ func (p *pessoa) deletar(c *gin.Context) {
 	p.enviar(c, http.StatusNoContent)
 }
 
-func pessoaotas(roteamento *gin.RouterGroup, pessoa pessoa) {
-	roteamento.POST("", pessoa.pegarBody, pessoa.criar)
-	roteamento.PUT("/:id", pessoa.pegarID, pessoa.pegarBody, pessoa.atualizar)
-	roteamento.GET("/:id", pessoa.pegarID, pessoa.pegar)
-	roteamento.DELETE("/:id", pessoa.pegarID, pessoa.deletar)
+func PessoaRotas(roteamento *gin.RouterGroup, pessoa *Pessoa) {
+	roteamento.POST("", pessoa.pegarBody, pessoa.Criar)
+	roteamento.PUT("/:id", pessoa.pegarID, pessoa.pegarBody, pessoa.Atualizar)
+	roteamento.GET("/:id", pessoa.pegarID, pessoa.Pegar)
+	roteamento.DELETE("/:id", pessoa.pegarID, pessoa.Deletar)
 }

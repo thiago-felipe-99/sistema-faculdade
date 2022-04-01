@@ -33,13 +33,13 @@ type Argon2Config struct {
 
 // Senha gerencia como as senhas são tratadas na aplicação.
 type Senha struct {
-	argon2    Argon2Config
+	argon2    *Argon2Config
 	chave     []byte
 	nonceSize uint
 }
 
 // NovaSenha criar um gerenciador de senhas.
-func NovaSenha(chave string, argon2Config Argon2Config, nonceSize uint) *Senha {
+func NovaSenha(chave string, argon2Config *Argon2Config, nonceSize uint) *Senha {
 	return &Senha{
 		argon2:    argon2Config,
 		chave:     []byte(chave),
@@ -131,7 +131,7 @@ func gerarHashSHA3_512(senhaPlana []byte) []byte {
 
 // gerarHashArgon2id gera o hash de uma senha plana pelo algoritmo argon2id, e
 // retona o hash e o sal usado para gerar ela.
-func gerarHashArgon2id(senhaPlana []byte, config Argon2Config) (hash, sal []byte) {
+func gerarHashArgon2id(senhaPlana []byte, config *Argon2Config) (hash, sal []byte) {
 	sal = aleatorio.Bytes(config.saltLength)
 
 	hash = gerarHashArgon2idComSal(senhaPlana, sal, config)
@@ -141,7 +141,7 @@ func gerarHashArgon2id(senhaPlana []byte, config Argon2Config) (hash, sal []byte
 
 // gerarHashArgon2idComSal gera o hash de uma senha plana pelo algoritmo
 // argon2id.
-func gerarHashArgon2idComSal(senhaPlana, sal []byte, config Argon2Config) []byte {
+func gerarHashArgon2idComSal(senhaPlana, sal []byte, config *Argon2Config) []byte {
 	hash := argon2.IDKey(
 		senhaPlana,
 		sal,
@@ -165,7 +165,7 @@ func verificarSenhaHashArgon2id(
 		return false, erros.Novo(ErroVerificarSenhaHash, erro, nil)
 	}
 
-	hashTeste := gerarHashArgon2idComSal([]byte(senhaPlana), sal, *config)
+	hashTeste := gerarHashArgon2idComSal([]byte(senhaPlana), sal, config)
 
 	if subtle.ConstantTimeCompare(hash, hashTeste) == 1 {
 		return true, nil
@@ -191,7 +191,7 @@ func base64Decodificar(codificado string) ([]byte, *erros.Aplicação) {
 
 // base64CodificarArgon2id retorna o hash de um algoritmo argon2id codificado na
 // base64.
-func base64CodificarArgon2id(senha, sal []byte, config Argon2Config) Hash {
+func base64CodificarArgon2id(senha, sal []byte, config *Argon2Config) Hash {
 	codificadoSal := base64Codificar(sal)
 	codiciadoSenhaPlana := base64Codificar(senha)
 
@@ -333,7 +333,7 @@ func desencriptarAES(senhaCifrada, chave []byte, nonceSize uint) (
 // nolint:gomnd
 // GerenciadorSenhaPadrão retorna o gerenciador padrão de senhas.
 func GerenciadorSenhaPadrão() *Senha {
-	argon2Config := Argon2Config{
+	argon2Config := &Argon2Config{
 		memory:      64 * 1024,
 		iterations:  3,
 		parallelism: 2,

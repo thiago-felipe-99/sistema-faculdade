@@ -136,12 +136,12 @@ func TestMain(m *testing.M) {
 	}
 	cursoBDTimeOut = &Curso{
 		data:    dataCursoTimeOut,
-		matéria: *matériaBDTimeOut,
+		matéria: matériaBDTimeOut,
 	}
 
 	cursoBDInválido = &Curso{
 		data:    &dataCursoInvalido{logicaTeste.Curso.data},
-		matéria: *matériaBDInválido2,
+		matéria: matériaBDInválido2,
 	}
 
 	código := m.Run()

@@ -127,13 +127,13 @@ func (lógica *Pessoa) VerificarSenha(senha string, id id) (bool, erro) {
 
 // Atualizar atualiza os dados de uma pessoa na aplicação.
 func (lógica *Pessoa) Atualizar(
-	id id,
+	idPessoa id,
 	nome string,
 	cpf string,
 	dataDeNascimento time.Time,
 	senha string,
 ) (*pessoa, erro) {
-	pessoaSalva, erro := lógica.Pegar(id)
+	pessoaSalva, erro := lógica.Pegar(idPessoa)
 	if erro != nil {
 		if erro.ÉPadrão(ErroPessoaNãoEncontrada) {
 			return nil, erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
@@ -170,14 +170,14 @@ func (lógica *Pessoa) Atualizar(
 	}
 
 	pessoaNova := &pessoa{
-		ID:               id,
+		ID:               idPessoa,
 		Nome:             nome,
 		CPF:              cpf,
 		DataDeNascimento: dataDeNascimento,
 		Senha:            gerenciadorSenha.GerarHash(senha),
 	}
 
-	erro = lógica.Data.Atualizar(id, pessoaNova)
+	erro = lógica.Data.Atualizar(idPessoa, pessoaNova)
 	if erro != nil {
 		return nil, erros.Novo(ErroAtualizarPessoa, erro, nil)
 	}
@@ -186,8 +186,8 @@ func (lógica *Pessoa) Atualizar(
 }
 
 // Deletar remove uma pessoa da aplicação.
-func (lógica *Pessoa) Deletar(id id) erro {
-	existe, erro := lógica.existe(id)
+func (lógica *Pessoa) Deletar(idPessoa id) erro {
+	existe, erro := lógica.existe(idPessoa)
 	if erro != nil {
 		return erros.Novo(ErroDeletarPessoa, erro, nil)
 	}
@@ -196,7 +196,7 @@ func (lógica *Pessoa) Deletar(id id) erro {
 		return erros.Novo(ErroPessoaNãoEncontrada, nil, nil)
 	}
 
-	erro = lógica.Data.Deletar(id)
+	erro = lógica.Data.Deletar(idPessoa)
 	if erro != nil {
 		return erros.Novo(ErroDeletarPessoa, erro, nil)
 	}

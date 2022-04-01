@@ -85,24 +85,24 @@ func (lógica Matéria) préRequisitoCiclicos( //nolint: cyclop
 
 	var éCiclico func(id) bool
 
-	éCiclico = func(id id) bool {
-		if pilha[id] {
+	éCiclico = func(idMatéria id) bool {
+		if pilha[idMatéria] {
 			return true
 		}
 
-		if visitados[id] {
+		if visitados[idMatéria] {
 			return false
 		}
 
-		visitados[id], pilha[id] = true, true
+		visitados[idMatéria], pilha[idMatéria] = true, true
 
-		for _, matéria := range matériasPréRequisitos[id] {
+		for _, matéria := range matériasPréRequisitos[idMatéria] {
 			if éCiclico(matéria) {
 				return true
 			}
 		}
 
-		pilha[id] = false
+		pilha[idMatéria] = false
 
 		return false
 	}
@@ -160,14 +160,14 @@ func (lógica Matéria) Criar(
 
 // Atualizar é um método que atualiza um Matéria na aplicação.
 func (lógica Matéria) Atualizar( //nolint: cyclop
-	id id,
+	idMatéria id,
 	nome string,
 	cargaHoráriaSemanal time.Duration,
 	créditos float32,
 	tipo string,
 	préRequisitos []id,
 ) (*matéria, erro) {
-	existe, erro := lógica.existe(id)
+	existe, erro := lógica.existe(idMatéria)
 	if erro != nil {
 		return nil, erros.Novo(ErroAtualizarMatéria, erro, nil)
 	}
@@ -193,7 +193,7 @@ func (lógica Matéria) Atualizar( //nolint: cyclop
 		return nil, erros.Novo(ErroPréRequisitosNãoExiste, nil, nil)
 	}
 
-	ciclo, erro := lógica.préRequisitoCiclicos(id, préRequisitos)
+	ciclo, erro := lógica.préRequisitoCiclicos(idMatéria, préRequisitos)
 	if erro != nil {
 		return nil, erros.Novo(ErroAtualizarMatéria, erro, nil)
 	}
@@ -203,7 +203,7 @@ func (lógica Matéria) Atualizar( //nolint: cyclop
 	}
 
 	matéria := &matéria{
-		ID:                  id,
+		ID:                  idMatéria,
 		Nome:                nome,
 		CargaHoráriaSemanal: cargaHoráriaSemanal,
 		Créditos:            créditos,
@@ -211,7 +211,7 @@ func (lógica Matéria) Atualizar( //nolint: cyclop
 		Tipo:                tipo,
 	}
 
-	erro = lógica.data.Atualizar(id, matéria)
+	erro = lógica.data.Atualizar(idMatéria, matéria)
 	if erro != nil {
 		return nil, erros.Novo(ErroAtualizarMatéria, erro, nil)
 	}
@@ -234,8 +234,8 @@ func (lógica Matéria) Pegar(id id) (*matéria, erro) {
 }
 
 // Deletar é um método que deleta uma matéria da aplicação.
-func (lógica Matéria) Deletar(id id) erro {
-	existe, erro := lógica.existe(id)
+func (lógica Matéria) Deletar(idMatéria id) erro {
+	existe, erro := lógica.existe(idMatéria)
 	if erro != nil {
 		return erros.Novo(ErroDeletarMatéria, erro, nil)
 	}
@@ -244,7 +244,7 @@ func (lógica Matéria) Deletar(id id) erro {
 		return erros.Novo(ErroMatériaNãoEncontrada, nil, nil)
 	}
 
-	erro = lógica.data.Deletar(id)
+	erro = lógica.data.Deletar(idMatéria)
 	if erro != nil {
 		return erros.Novo(ErroDeletarMatéria, erro, nil)
 	}

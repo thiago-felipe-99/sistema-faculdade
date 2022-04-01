@@ -19,16 +19,16 @@ type (
 // Lógica representa as operações que se possa fazer com as entidades da
 // aplicação.
 type Lógica struct {
-	Pessoa
-	Matéria
-	Curso
+	Pessoa  *Pessoa
+	Matéria *Matéria
+	Curso   *Curso
 }
 
 // NovaLógica cria uma Lógica da aplicação.
 func NovaLógica(data *data.Data) *Lógica {
-	pessoa := Pessoa{Data: data.Pessoa}
-	matéria := Matéria{data: data.Matéria}
-	curso := Curso{data: data.Curso, matéria: matéria}
+	pessoa := &Pessoa{Data: data.Pessoa}
+	matéria := &Matéria{data: data.Matéria}
+	curso := &Curso{data: data.Curso, matéria: matéria}
 
 	return &Lógica{
 		Pessoa:  pessoa,

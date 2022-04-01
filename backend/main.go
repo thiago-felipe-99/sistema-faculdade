@@ -63,5 +63,5 @@ func main() {
 	Data := padrao.DataPadrão(log, sqlDB, mongoDB)
 	logica := logica.NovaLógica(Data)
 
-	http.Rotas("127.0.0.1:8080", *logica)
+	http.Rotas("127.0.0.1:8080", logica)
 }

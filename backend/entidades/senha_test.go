@@ -207,7 +207,7 @@ func TestBase64DecodificarArgon2id(t *testing.T) {
 			t.Run(string(teste.senha)+"-"+string(teste.sal), func(t *testing.T) {
 				t.Parallel()
 
-				config := Argon2Config{
+				config := &Argon2Config{
 					memory:      64 * 1024,
 					iterations:  3,
 					parallelism: 2,
@@ -227,7 +227,7 @@ func TestBase64DecodificarArgon2id(t *testing.T) {
 				if !bytes.Equal(sal, teste.sal) {
 					t.Fatalf("Esperava sal: %x\nChegou: %x", teste.sal, sal)
 				}
-				if !reflect.DeepEqual(config, *configRecebido) {
+				if !reflect.DeepEqual(config, configRecebido) {
 					t.Fatalf("Esperava config: %v\nChegou: %v", config, configRecebido)
 				}
 			})
@@ -307,7 +307,7 @@ func TestGerenciadorSenhaPadrão(t *testing.T) {
 	t.Parallel()
 
 	esperado := &Senha{
-		argon2: Argon2Config{
+		argon2: &Argon2Config{
 			memory:      64 * 1024,
 			iterations:  3,
 			parallelism: 2,

@@ -53,8 +53,7 @@ func adicionarPessoa(t *testing.T, pessoa *pessoa) {
 func removerPessoa(t *testing.T, id id) {
 	t.Helper()
 
-	erro := pessoaBD.Deletar(id)
-	if erro != nil {
+	if erro := pessoaBD.Deletar(id); erro != nil {
 		t.Fatalf("Erro ao tentar deletar a pessoa teste: %v", erro.Error())
 	}
 }

@@ -33,25 +33,25 @@ const (
 func criarConexão(ctx context.Context) *mongo.Database {
 	uri := "mongodb://root:root@localhost:" + ambiente.Portas.BDMateria
 
-	db, erro := NovoDB(ctx, uri, "Teste")
+	banco, erro := NovoDB(ctx, uri, "Teste")
 	if erro != nil {
 		log.Fatalf("Erro ao configurar o banco de dados: %s", erro)
 	}
 
-	err := db.Client().Ping(ctx, readpref.Primary())
+	err := banco.Client().Ping(ctx, readpref.Primary())
 	if err != nil {
 		log.Fatalf("Erro ao conectar o banco de dados: %s", err)
 	}
 
-	return db
+	return banco
 }
 
-func criandoConexõesComAsColeções(bd *mongo.Database) {
+func criandoConexõesComAsColeções(banco *mongo.Database) {
 	arquivos := logs.AbrirArquivos("./logs/")
 
 	logMatéria := logs.NovoLog(arquivos.Matéria, logs.NívelDebug)
 
-	conexãoMatéria := *NovaConexão(context.Background(), logMatéria, bd)
+	conexãoMatéria := *NovaConexão(context.Background(), logMatéria, banco)
 
 	matériaBD = &MatériaBD{
 		Conexão:    conexãoMatéria,
@@ -67,7 +67,7 @@ func criandoConexõesComAsColeções(bd *mongo.Database) {
 
 	logCurso := logs.NovoLog(arquivos.Curso, logs.NívelDebug)
 
-	conexãoCurso := *NovaConexão(context.Background(), logCurso, bd)
+	conexãoCurso := *NovaConexão(context.Background(), logCurso, banco)
 
 	cursoBD = &CursoBD{
 		Conexão:    conexãoCurso,

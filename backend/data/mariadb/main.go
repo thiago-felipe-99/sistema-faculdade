@@ -1,3 +1,4 @@
+// Package mariadb impleta as interfaces de data para o banco de dados mariadb.
 package mariadb
 
 import (

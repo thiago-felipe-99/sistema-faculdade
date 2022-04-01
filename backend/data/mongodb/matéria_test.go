@@ -21,13 +21,13 @@ func criarMatériaAleatória() *matéria {
 		préRequisitos = append(préRequisitos, entidades.NovoID())
 	}
 
-	ch := aleatorio.Número(cargaHoráriaMáxima) + 1
+	carga := aleatorio.Número(cargaHoráriaMáxima) + 1
 
 	return &matéria{
 		ID:                  entidades.NovoID(),
 		Nome:                aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
-		CargaHoráriaSemanal: time.Hour * time.Duration(ch),
-		Créditos:            float32(ch),
+		CargaHoráriaSemanal: time.Hour * time.Duration(carga),
+		Créditos:            float32(carga),
 		PréRequisitos:       préRequisitos,
 		Tipo:                aleatorio.Palavra(aleatorio.Número(tamanhoMáximoPalavra) + 1),
 	}
@@ -74,8 +74,7 @@ func adicionarMatéria(t *testing.T, matéria *matéria) id {
 func removerMatéria(t *testing.T, id id) {
 	t.Helper()
 
-	erro := matériaBD.Deletar(id)
-	if erro != nil {
+	if erro := matériaBD.Deletar(id); erro != nil {
 		t.Fatalf("Erro ao tentar deletar a matéria teste: %v", erro.Error())
 	}
 }
@@ -312,7 +311,11 @@ func TestPegarMúltiplos(t *testing.T) {
 			}
 		}()
 
-		idsErrados := append(ids, entidades.NovoID(), entidades.NovoID())
+		idsErrados := make([]id, len(ids))
+		copy(idsErrados, ids)
+
+		// nolint: makezero
+		idsErrados = append(idsErrados, entidades.NovoID(), entidades.NovoID())
 
 		matériasSalvas, erro := matériaBD.PegarMúltiplos(idsErrados)
 		if erro != nil {

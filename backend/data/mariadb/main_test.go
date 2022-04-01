@@ -41,31 +41,30 @@ func criarConexão() *sql.DB {
 		log.Fatalf("Erro ao configurar o banco de dados: %s", erro)
 	}
 
-	erroPing := conexão.Ping()
-	if erroPing != nil {
+	if erroPing := conexão.Ping(); erroPing != nil {
 		log.Fatalf("Erro ao conectar o banco de dados: %s", erroPing)
 	}
 
 	return conexão
 }
 
-func criandoConexõesComAsTabelas(bd *sql.DB) {
+func criandoConexõesComAsTabelas(banco *sql.DB) {
 	arquivos := logs.AbrirArquivos("./logs/")
 
 	logPessoa := logs.NovoLog(arquivos.Pessoa, logs.NívelDebug)
 
 	pessoaBD = &PessoaBD{
-		Conexão:      *NovaConexão(logPessoa, bd),
+		Conexão:      *NovaConexão(logPessoa, banco),
 		NomeDaTabela: "Pessoa",
 	}
 
 	pessoaBDInválido = &PessoaBD{
-		Conexão:      *NovaConexão(logPessoa, bd),
+		Conexão:      *NovaConexão(logPessoa, banco),
 		NomeDaTabela: "PessoaErrada",
 	}
 }
 
-func deletarTabelas(bd *sql.DB) {
+func deletarTabelas(banco *sql.DB) {
 	query := ""
 
 	query += "DELETE FROM AlunoTurma;"
@@ -74,20 +73,19 @@ func deletarTabelas(bd *sql.DB) {
 	query += "DELETE FROM Curso;"
 	query += "DELETE FROM Pessoa;"
 
-	_, erro := bd.Exec(query)
-	if erro != nil {
+	if _, erro := banco.Exec(query); erro != nil {
 		log.Fatalf("Erro ao deletar os valores das tabelas: %s", erro.Error())
 	}
 }
 
 func TestMain(m *testing.M) {
-	bd := criarConexão()
+	banco := criarConexão()
 
-	criandoConexõesComAsTabelas(bd)
+	criandoConexõesComAsTabelas(banco)
 
 	código := m.Run()
 
-	deletarTabelas(bd)
+	deletarTabelas(banco)
 
 	os.Exit(código)
 }

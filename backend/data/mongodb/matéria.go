@@ -162,8 +162,7 @@ func (bd MatériaBD) PegarPréRequisitos(id id) ([]id, erro) {
 	return resultado.PréRequisitos, nil
 }
 
-// PegarIDs é um método que retorna se as matérias existe no banco de dados
-// MongoDB.
+// PegarMúltiplos retorna múltiplas matérias a patir de ids.
 func (bd MatériaBD) PegarMúltiplos(ids []id) ([]matéria, erro) {
 	if len(ids) == 0 {
 		return []matéria{}, erros.Novo(data.ErroIDsTamanho, nil, nil)

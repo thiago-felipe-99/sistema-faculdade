@@ -158,8 +158,7 @@ func (bd PessoaBD) Deletar(id id) erro {
 
 	query := "DELETE FROM " + bd.NomeDaTabela + " WHERE ID = ?"
 
-	_, err := bd.BD.Exec(query, id)
-	if err != nil {
+	if _, err := bd.BD.Exec(query, id); err != nil {
 		bd.Log.Aviso(
 			"Erro ao tentar deletar a pessoa com o seguinte ID: "+id.String(),
 			"\n\t"+erros.ErroExterno(err),

@@ -1,3 +1,4 @@
+// Package data representa como a aplicação lida com interação externa.
 package data
 
 import (

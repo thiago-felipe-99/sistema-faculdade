@@ -1,3 +1,4 @@
+// Package mongodb implenta as interfaces de data para o banco de dados mongodb
 package mongodb
 
 import (
@@ -27,7 +28,7 @@ type Conexão struct {
 	Log     *logs.Log
 	BD      *mongo.Database
 	Timeout time.Duration
-	ctx     context.Context
+	ctx     context.Context // nolint: containedctx
 }
 
 // NovoDB cria um link com o banco de dados MongoDB.
@@ -44,13 +45,13 @@ func NovoDB(ctx context.Context, uri string, nomeDB string) (
 }
 
 // NovaConexão cria uma conexão com o banco de dados MongoDB.
-func NovaConexão(ctx context.Context, log *logs.Log, bd *mongo.Database) *Conexão {
+func NovaConexão(ctx context.Context, log *logs.Log, banco *mongo.Database) *Conexão {
 	const quantidade = 1
 
 	return &Conexão{
 		ID:      entidades.NovoID(),
 		Log:     log,
-		BD:      bd,
+		BD:      banco,
 		Timeout: time.Second * quantidade,
 		ctx:     ctx,
 	}

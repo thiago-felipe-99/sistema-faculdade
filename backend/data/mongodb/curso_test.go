@@ -39,8 +39,7 @@ func criarCursoAleatória() *curso {
 func adicionarCurso(t *testing.T, curso *curso) id {
 	t.Helper()
 
-	erro := cursoBD.Inserir(curso)
-	if erro != nil {
+	if erro := cursoBD.Inserir(curso); erro != nil {
 		t.Fatalf("Erro ao inserir a curso no banco de dados: %v", erro)
 	}
 
@@ -67,8 +66,7 @@ func adicionarCurso(t *testing.T, curso *curso) id {
 func removerCurso(t *testing.T, id id) {
 	t.Helper()
 
-	erro := cursoBD.Deletar(id)
-	if erro != nil {
+	if erro := cursoBD.Deletar(id); erro != nil {
 		t.Fatalf("Erro ao tentar deletar a curso teste: %v", erro.Error())
 	}
 }

@@ -44,6 +44,7 @@ const (
 
 var criarErroPadrão = erros.NovoPadrãoFunc("LÓGICA") //nolint:gochecknoglobals
 
+// Possíveis erros do pacote.
 var (
 	ErroConfigurarBD = criarErroPadrão(
 		"Erro ao configurar o banco de dados",
@@ -94,7 +95,7 @@ var (
 		deletarCurso,
 	)
 	ErroInserirCursoMatériasTamanhoMínimo = criarErroPadrão(
-		"Erro ao inserir as matérias do curso, tem que ter no mínimo uma matéra para inserir", //nolint:lll
+		"Erro ao inserir as matérias do curso, tem que ter no mínimo uma matéra para inserir",
 		inserirCursoMatériasTamanhoMínimo,
 	)
 	ErroInserirCursoMatérias = criarErroPadrão(

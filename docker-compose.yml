@@ -34,6 +34,11 @@ services:
     depends_on: 
       - db-administrativo
       - db-materia
+    environment:
+      DB_ADMINISTRATIVO_HOST: $DB_ADMINISTRATIVO_HOST
+      DB_ADMINISTRATIVO_PORT: 3306
+      DB_MATERIA_HOST: $DB_MATERIA_HOST
+      DB_MATERIA_PORT: 27017
 
 volumes:
   mariaDB:

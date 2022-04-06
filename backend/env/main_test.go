@@ -17,6 +17,10 @@ func TestPegandoVariáveisDeAmbiente(t *testing.T) {
 				BDAdministrativo: portaPadrãoBDAdministrativo,
 				BDMateria:        portaPadrãoBDMatéria,
 			},
+			Hosts: Hosts{
+				BDAdministrativo: hostPadrãoBDAdministrativo,
+				BDMateria:        hostPadrãoBDMatéria,
+			},
 		}
 
 		recebido := PegandoVariáveisDeAmbiente()
@@ -33,6 +37,10 @@ func TestPegandoVariáveisDeAmbiente(t *testing.T) {
 			Portas: Portas{
 				BDAdministrativo: portaPadrãoBDAdministrativo + "0",
 				BDMateria:        portaPadrãoBDMatéria + "0",
+			},
+			Hosts: Hosts{
+				BDAdministrativo: hostPadrãoBDAdministrativo,
+				BDMateria:        hostPadrãoBDMatéria,
 			},
 		}
 

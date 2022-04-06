@@ -23,7 +23,7 @@ func criarConexãoBDs(ambiente env.VariáveisDeAmbiente) (*sql.DB, *mongo.Databa
 		User:                 "root",
 		Passwd:               "root",
 		Net:                  "tcp",
-		Addr:                 "127.0.0.1:" + ambiente.Portas.BDAdministrativo,
+		Addr:                 ambiente.Hosts.BDAdministrativo + ":" + ambiente.Portas.BDAdministrativo,
 		DBName:               "Administrativo",
 		AllowNativePasswords: true,
 		ParseTime:            true,
@@ -40,7 +40,7 @@ func criarConexãoBDs(ambiente env.VariáveisDeAmbiente) (*sql.DB, *mongo.Databa
 		log.Fatalf("Erro ao conectar o banco de dados MariaDB: %v", err)
 	}
 
-	uri := "mongodb://root:root@localhost:" + ambiente.Portas.BDMateria
+	uri := "mongodb://root:root@" + ambiente.Hosts.BDMateria + ":" + ambiente.Portas.BDMateria
 
 	mongoConexão, erro := mongodb.NovoDB(context.Background(), uri, "Matéria")
 	if erro != nil {
@@ -63,5 +63,5 @@ func main() {
 	Data := padrao.DataPadrão(log, sqlDB, mongoDB)
 	logica := logica.NovaLógica(Data)
 
-	http.Rotas("127.0.0.1:8080", logica)
+	http.Rotas("0.0.0.0:8080", logica)
 }

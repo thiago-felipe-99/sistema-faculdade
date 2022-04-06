@@ -9,6 +9,7 @@ RUN go get -d -v ./...
 RUN go install -v ./...
 
 COPY . .
+RUN mkdir -p logs/data
 
 RUN go build -o main .
 
